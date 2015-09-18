@@ -1,0 +1,71 @@
+/********************************************************************************
+** Form generated from reading UI file 'SampleWidgetEa5185.ui'
+**
+** Created by: Qt User Interface Compiler version 4.8.6
+**
+** WARNING! All changes made in this file will be lost when recompiling UI file!
+********************************************************************************/
+
+#ifndef SAMPLEWIDGETEA5185_H
+#define SAMPLEWIDGETEA5185_H
+
+#include <QtCore/QVariant>
+#include <QtGui/QAction>
+#include <QtGui/QApplication>
+#include <QtGui/QButtonGroup>
+#include <QtGui/QHeaderView>
+#include <QtGui/QPushButton>
+#include <QtGui/QVBoxLayout>
+#include <QtGui/QWidget>
+
+QT_BEGIN_NAMESPACE
+
+class Ui_SampleWidgetClass
+{
+public:
+    QVBoxLayout *verticalLayout;
+    QPushButton *_readyrobot;
+    QPushButton *_homerobot;
+
+    void setupUi(QWidget *SampleWidgetClass)
+    {
+        if (SampleWidgetClass->objectName().isEmpty())
+            SampleWidgetClass->setObjectName(QString::fromUtf8("SampleWidgetClass"));
+        SampleWidgetClass->resize(168, 374);
+        verticalLayout = new QVBoxLayout(SampleWidgetClass);
+        verticalLayout->setSpacing(6);
+        verticalLayout->setContentsMargins(11, 11, 11, 11);
+        verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+        _readyrobot = new QPushButton(SampleWidgetClass);
+        _readyrobot->setObjectName(QString::fromUtf8("_readyrobot"));
+
+        verticalLayout->addWidget(_readyrobot);
+
+        _homerobot = new QPushButton(SampleWidgetClass);
+        _homerobot->setObjectName(QString::fromUtf8("_homerobot"));
+
+        verticalLayout->addWidget(_homerobot);
+
+
+        retranslateUi(SampleWidgetClass);
+
+        QMetaObject::connectSlotsByName(SampleWidgetClass);
+    } // setupUi
+
+    void retranslateUi(QWidget *SampleWidgetClass)
+    {
+        SampleWidgetClass->setWindowTitle(QApplication::translate("SampleWidgetClass", "Rob01 Milling Player", 0, QApplication::UnicodeUTF8));
+        _readyrobot->setText(QApplication::translate("SampleWidgetClass", "Ready Robot", 0, QApplication::UnicodeUTF8));
+        _homerobot->setText(QApplication::translate("SampleWidgetClass", "Home Robot", 0, QApplication::UnicodeUTF8));
+    } // retranslateUi
+
+};
+
+namespace Ui {
+    class SampleWidgetClass: public Ui_SampleWidgetClass {};
+} // namespace Ui
+
+QT_END_NAMESPACE
+
+#endif // SAMPLEWIDGETEA5185_H
+
