@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>rc_camera</name>
+  <name>uvc_camera</name>
   <version>0.2.4</version>
   <description>
      A collection of node(let)s that stream images from USB cameras (UVC)
