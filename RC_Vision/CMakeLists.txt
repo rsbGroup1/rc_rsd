@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rc_vision)
 
+SET(OpenCV_DIR "/usr/local/share/OpenCV")
+
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs message_generation cv_bridge genmsg image_transport sensor_msgs OpenCV)
 
