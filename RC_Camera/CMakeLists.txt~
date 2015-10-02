@@ -28,11 +28,6 @@ set(V4L2_LIBRARIES v4l2)
 #   Message2.msg
 # )
 
-<<<<<<< HEAD
-add_executable(${PROJECT_NAME} ${SrcFiles})
-
-target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
-=======
 ## Generate services in the 'srv' folder
 # add_service_files(
 #   FILES
@@ -45,7 +40,6 @@ target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
 #   DEPENDENCIES
 #   sensor_msgs
 # )
->>>>>>> d2cf1725ea59a567a0d81def9508f960be0512b2
 
 ###################################
 ## catkin specific configuration ##

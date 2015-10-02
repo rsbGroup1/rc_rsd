@@ -1,12 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>rc_camera</name>
-<<<<<<< HEAD
-  <version>0.0.0</version>
-  <description>The RC Camera package</description>
-  <maintainer email="yoali11@student.sdu.dk">Yonas Alizadeh</maintainer>
-  <license>TODO</license>
-=======
+  <name>uvc_camera</name>
   <version>0.2.4</version>
   <description>
      A collection of node(let)s that stream images from USB cameras (UVC)
@@ -33,7 +27,6 @@
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
   <url type="website">http://ros.org/wiki/uvc_camera</url>
->>>>>>> d2cf1725ea59a567a0d81def9508f960be0512b2
 
 
   <!-- Author tags are optional, mutiple are allowed, one per tag -->
