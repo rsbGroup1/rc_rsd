@@ -1,5 +1,7 @@
 // Includes
 #include <ros/ros.h>
+#include "std_msgs/Bool.h"
+//#include "vision"
 #include <image_transport/image_transport.h>
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -14,6 +16,7 @@
 // Global variables
 cv::Mat _image;
 boost::mutex _mImage;
+ros::Publisher _anyBricksPublisher;
 
 void imageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
@@ -35,12 +38,16 @@ int main()
     ros::NodeHandle nh;
 
     // Topic names
-    std::string imageSub;
+    std::string imageSub, anyBricksPub;
     nh.param<std::string>("/RC_Vision/Vision/image_sub", imageSub, "/rcCamera/image");
+    nh.param<std::string>("/RC_Vision/Vision/any_brick_pub", anyBricksPub, "/rcVision/anyBricks");
 
-    // ROS
+    // Subscribers
     image_transport::ImageTransport itImg(nh);
     image_transport::Subscriber subImg = itImg.subscribe(imageSub, 1, imageCallback);
+
+    // Publishers
+    _anyBricksPublisher = nh.advertise<std_msgs::Bool>(anyBricksPub, 1);
 
     // Set loop rate
     ros::Rate loop_rate(1);
