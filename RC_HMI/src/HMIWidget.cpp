@@ -71,11 +71,15 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         _nodeHandle = new ros::NodeHandle;
 
         // Topic names
-        std::string imageSub;
+        std::string imageSub, qPub;
         _nodeHandle->param<std::string>("/RC_HMI/HMI/image_sub", imageSub, "/rcCamera/image");
+        _nodeHandle->param<std::string>("/RC_HMI/HMI/q_pub", qPub, "/KukaNode/setConfiguration");
 
         _itImg = new image_transport::ImageTransport(*_nodeHandle);
         _subImg = _itImg->subscribe(imageSub, 1, &HMIWidget::imageCallback, this);
+
+        // Create topic subscribers and publisher
+        _qPub = _nodeHandle->advertise<sensor_msgs::JointState>(qPub, 1);
 
         // Start new threads
         boost::thread rosSpin(&HMIWidget::startROSThread, this);
@@ -125,8 +129,28 @@ void HMIWidget::imageQueueHandler()
 
 void HMIWidget::stateChangedListener(const rw::kinematics::State &state)
 {
+    static bool runOnce = false;
+
     // Update new state
     _state = state;
+
+    // Run once
+    if(runOnce)
+    {
+        // Get Q
+        rw::math::Q q = _deviceKuka->getQ(_state);
+
+        // Convert Q
+        sensor_msgs::JointState msg;
+        msg.position.resize(6);
+        for(int i=0; i<6; i++)
+            msg.position [i] = q[i] * RADTODEGREE;
+
+        // Publish
+        _qPub.publish(msg);
+    }
+
+    runOnce = !runOnce;
 }
 
 void HMIWidget::eventCb(bool input)

@@ -26,6 +26,7 @@
 
 // ROS
 #include <ros/ros.h>
+#include <sensor_msgs/JointState.h>
 #include <image_transport/image_transport.h>
 
 // OpenCV
@@ -53,6 +54,7 @@
 
 // Defines
 #define DEGREETORAD             (M_PI/180.0)
+#define RADTODEGREE             (180.0/M_PI)
 #define IMAGE_SHOW_FREQUENCY    (1000/20) // 20 FPS
 #define SSTR(x)                 dynamic_cast< std::ostringstream & >(( std::ostringstream() << std::dec << x )).str()
 
@@ -146,8 +148,7 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
         ros::NodeHandle *_nodeHandle;
         image_transport::ImageTransport *_itImg;
         image_transport::Subscriber _subImg;
-        //ros::ServiceClient _serviceURGetConfiguration;
-        //ros::Subscriber _subscriberURConf;
+        ros::Publisher _qPub;
 
         // Image
         QTimer *_imageShowTimer;
