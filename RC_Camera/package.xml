@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>rsd_camera</name>
+  <name>rc_camera</name>
   <version>0.0.0</version>
-  <description>The RSD_Camera package</description>
+  <description>The RC Camera package</description>
   <maintainer email="yoali11@student.sdu.dk">Yonas Alizadeh</maintainer>
   <license>TODO</license>
 

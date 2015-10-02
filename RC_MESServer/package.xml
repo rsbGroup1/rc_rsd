@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>rsd_rc_server</name>
+  <name>rc_messerver</name>
   <version>0.0.0</version>
-  <description>The RSD Robot Cell Server package</description>
+  <description>The RC Robot Cell Server package</description>
   <maintainer email="yoali11@student.sdu.dk">Yonas Alizadeh</maintainer>
   <license>TODO</license>
 

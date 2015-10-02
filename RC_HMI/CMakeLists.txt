@@ -1,6 +1,6 @@
 # %Tag(FULLTEXT)%
 cmake_minimum_required(VERSION 2.8.3)
-project(rsd_hmi)
+project(rc_hmi)
 
 SET(OpenCV_DIR "/usr/local")
 
@@ -44,7 +44,7 @@ SET(ROS_BUILD_SHARED_LIBS true)
 
 QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
 QT4_WRAP_CPP(MocSrcFiles src/HMIPlugin.hpp src/HMIWidget.hpp OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
-QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
+QT4_ADD_RESOURCES(RccSrcFiles src/resources.qrc)
 
-ADD_LIBRARY(rsd_hmi ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})
-TARGET_LINK_LIBRARIES(rsd_hmi ${ROBWORK_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES} ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) 
+ADD_LIBRARY(${PROJECT_NAME} ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${ROBWORK_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES} ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}) 

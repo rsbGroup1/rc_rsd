@@ -49,7 +49,7 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         _state = _rws->getState();
 
         // Get device name
-        //_devicePG70 = dynamic_cast<rw::models::TreeDevice*>(devices[0].get());
+        _devicePG70 = dynamic_cast<rw::models::TreeDevice*>(devices[1].get());
         _deviceKuka = dynamic_cast<rw::models::SerialDevice*>(devices[0].get());
         //std::cout << "Loaded device " << _deviceKuka->getName() << " and " << _devicePG70->getName() << std::endl;
 
@@ -65,15 +65,17 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         int argc = 0;
 
         // Init ROS
-        ros::init(argc, argv, "HMINode");
+        ros::init(argc, argv, "RSD_HMI_Node");
 
         // Setup ROS service clients and topic subscriptions
         _nodeHandle = new ros::NodeHandle;
 
+        // Topic names
+        std::string imageSub;
+        _nodeHandle->param<std::string>("/RC_HMI/HMI/image_sub", imageSub, "/rcCamera/image");
+
         _itImg = new image_transport::ImageTransport(*_nodeHandle);
-        _subImg = _itImg->subscribe("camera/image", 1, &HMIWidget::imageCallback, this);
-        //_serviceURGetConfiguration = _nodeHandle->serviceClient<tymproject::getConfiguration>("/UR5/GetConfiguration");
-        //_subscriberURConf = _nodeHandle->subscribe<tymproject::conf>("/UR5/Configuration", 1, &TymWidget::URPosCallback, this);
+        _subImg = _itImg->subscribe(imageSub, 1, &HMIWidget::imageCallback, this);
 
         // Start new threads
         boost::thread rosSpin(&HMIWidget::startROSThread, this);
@@ -88,9 +90,6 @@ void HMIWidget::startROSThread()
 
 void HMIWidget::imageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
-    // Convert to openCV format
-    //cv::Mat cvImg = cv_bridge::toCvShare(msg, "bgr8")->image;
-
     // Push to queue
     _imageQueue.enqueue(msg);
 }

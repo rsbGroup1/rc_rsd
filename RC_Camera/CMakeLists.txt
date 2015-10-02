@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(rsd_camera)
+project(rc_camera)
 
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs cv_bridge genmsg image_transport sensor_msgs OpenCV)
@@ -15,9 +15,9 @@ include_directories(${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 
 SET(SrcFiles src/cameraNode.cpp)
 
-add_executable(rsd_camera_node ${SrcFiles})
+add_executable(${PROJECT_NAME} ${SrcFiles})
 
-target_link_libraries(rsd_camera_node ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
 
 MESSAGE(${PROJECT_NAME} "Done!")
 

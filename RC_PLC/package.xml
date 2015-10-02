@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>rsd_plc</name>
+  <name>rc_plc</name>
   <version>0.0.0</version>
-  <description>The RSD_PLC package</description>
+  <description>The RC PLC package</description>
   <maintainer email="yoali11@student.sdu.dk">Yonas Alizadeh</maintainer>
   <license>TODO</license>
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(rsd_plc)
+project(rc_plc)
 
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs genmsg)
@@ -12,9 +12,9 @@ include_directories(${catkin_INCLUDE_DIRS})
 
 SET(SrcFiles src/plcNode.cpp)
 
-add_executable(rsd_plc_node ${SrcFiles})
+add_executable(${PROJECT_NAME} ${SrcFiles})
 
-target_link_libraries(rsd_plc_node ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 MESSAGE(${PROJECT_NAME} "Done!")
 

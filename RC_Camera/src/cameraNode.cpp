@@ -64,9 +64,13 @@ int main()
     ros::init(argc, argv, "RSD_Camera_Node");
     ros::NodeHandle nh;
 
+    // Topic names
+    std::string imagePub;
+    nh.param<std::string>("/RC_Camera/Camera/image_pub", imagePub, "/rcCamera/image");
+
     // Create publisher topic
     image_transport::ImageTransport it(nh);
-    image_transport::Publisher pub = it.advertise("camera/image", 1);
+    image_transport::Publisher pub = it.advertise(imagePub, 1);
 
     // Set loop rate
     ros::Rate loop_rate(CAMERA_FREQUENCY);
