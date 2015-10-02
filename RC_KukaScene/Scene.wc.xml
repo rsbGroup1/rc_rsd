@@ -1,16 +1,15 @@
 <WorkCell name="KukaKR6R700">
 
 	<!-- ROBOT -->
-	<!-- To move the robot, move the support -->
-	<Frame name="support" refframe="WORLD">
+	<Frame name="Foot" refframe="WORLD">
 		<RPY> 0 180 0 </RPY>
 		<Pos> 0 0.2 0.375 </Pos>
-		<Drawable name="support_geo" refframe="Env">
-			<Polytope file="Geometry/support" />
+		<Drawable name="foot_geo" refframe="Env">
+			<Polytope file="Geometry/foot" />
 		</Drawable>
 	</Frame>
 
-	<Frame name="Robot" refframe="support">
+	<Frame name="Robot" refframe="Foot">
 		<RPY>0 180 0 </RPY>
 		<Pos>0 0 -0.375 </Pos>
 	</Frame>
@@ -25,12 +24,23 @@
 	<Include file="PG70/PG70.wc.xml"/>
 
 	<!-- Geometry -->
-	<Frame name="conveyorBelt" refframe="support">
-		<RPY> 0 0 0 </RPY>
-		<Pos> -0.6 -0.81 -0.125 </Pos>
+	<Frame name="conveyorBelt" refframe="WORLD">
+		<RPY>0 0 0</RPY><Pos>0.1 -0.4 0.5</Pos>
 		<Drawable name="conveyor_geo" refframe="Env">
 			<Polytope file="Geometry/conveyor" />
 		</Drawable>
+	</Frame>
+
+	<Frame name="conveyorBeltTilted" refframe="conveyorBelt">
+		<RPY>0 18 0</RPY><Pos>0 0 -0.03</Pos>
+	</Frame>
+
+	<Frame name="Idle" refframe="conveyorBeltTilted">
+		<RPY>0 0 0</RPY><Pos>-0.3 0 0</Pos>
+	</Frame>
+
+	<Frame name="Camera" refframe="ToolMount">
+		<RPY>0 0 0</RPY><Pos>0 0 0</Pos>
 	</Frame>
 
 	<Frame name="fence_right" refframe="WORLD">
@@ -49,7 +59,7 @@
 		</Drawable>
 	</Frame>
 
-	<Frame name="table" refframe="WORLD">
+	<Frame name="Table" refframe="WORLD">
 		<RPY> 0 0 0 </RPY>
 		<Pos> 3.4 1.45 0 </Pos>
 		<Drawable name="table_geo" refframe="Env">
@@ -57,7 +67,7 @@
 		</Drawable>
 	</Frame>
 
-	<Frame name="box" refframe="table">
+	<Frame name="Box" refframe="Table">
 		<RPY> 0 0 0 </RPY>
 		<Pos> -2.7 -1 0.8 </Pos>
 		<Drawable name="box_geo" refframe="Env">
