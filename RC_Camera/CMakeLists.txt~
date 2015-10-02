@@ -30,11 +30,11 @@ add_executable(rc_camera src/camera_node.cpp src/camera.cpp src/uvc_cam.cpp)
 target_link_libraries(rc_camera ${Boost_LIBRARIES} ${V4L2_LIBRARIES} ${catkin_LIBRARIES})
 
 add_executable(rc_stereo src/stereo_node.cpp src/stereo.cpp src/uvc_cam.cpp)
-target_link_libraries(rc_stero ${Boost_LIBRARIES} ${V4L2_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(rc_stereo ${Boost_LIBRARIES} ${V4L2_LIBRARIES} ${catkin_LIBRARIES})
 
 
 ## Mark executables and/or libraries for installation
-install(TARGETS nodelet_uvc_camera uvc_camera_node uvc_stereo_node
+install(TARGETS nodelet_uvc_camera rc_camera uvc_stereo_node
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

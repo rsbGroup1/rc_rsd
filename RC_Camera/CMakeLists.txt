@@ -34,7 +34,7 @@ target_link_libraries(rc_stereo ${Boost_LIBRARIES} ${V4L2_LIBRARIES} ${catkin_LI
 
 
 ## Mark executables and/or libraries for installation
-install(TARGETS nodelet_uvc_camera uvc_camera_node uvc_stereo_node
+install(TARGETS nodelet_uvc_camera rc_camera rc_stereo
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
