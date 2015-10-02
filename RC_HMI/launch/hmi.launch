@@ -1,0 +1,9 @@
+<!-- HMI launch file -->
+
+<launch>
+	<group ns="RC_HMI">
+		<node pkg="rc_hmi" name="HMI" type="rc_hmi">
+			<param name="image_sub" value="/rcCamera/image"/> 
+		</node>
+	</group>
+</launch>

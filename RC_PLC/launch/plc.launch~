@@ -1,0 +1,9 @@
+<!-- PLC launch file -->
+
+<launch>
+	<group ns="RC_PLC">
+		<node pkg="rc_plc" name="Camera" type="rc_camera">
+			<param name="image_pub" value="/rcCamera/image"/> 
+		</node>
+	</group>
+</launch>

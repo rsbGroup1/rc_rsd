@@ -1,0 +1,9 @@
+<!-- Main Control launch file -->
+
+<launch>
+	<group ns="RC_Main">
+		<node pkg="rc_main" name="Main" type="rc_main">
+			<!--<param name="security_sub" value="/rcCamera/image"/>-->
+		</node>
+	</group>
+</launch>

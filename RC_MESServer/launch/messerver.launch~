@@ -1,0 +1,10 @@
+<!-- MES Server launch file -->
+
+<launch>
+	<group ns="RC_MESServer">
+		<node pkg="rc_messerver" name="MESServer" type="rc_messerver">
+			<param name="server_ip" value="/rcCamera/image"/>
+			<param name="server_port" value="/rcCamera/image"/> 
+		</node>
+	</group>
+</launch>

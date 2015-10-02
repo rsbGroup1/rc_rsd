@@ -1,0 +1,9 @@
+<!-- Vision launch file -->
+
+<launch>
+	<group ns="RC_Vision">
+		<node pkg="rc_vision" name="Vision" type="rc_vision">
+			<param name="image_sub" value="/rcCamera/image"/> 
+		</node>
+	</group>
+</launch>

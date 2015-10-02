@@ -1,0 +1,10 @@
+<!-- MES Server launch file -->
+
+<launch>
+	<group ns="RC_MESServer">
+		<node pkg="rc_messerver" name="MESServer" type="rc_messerver">
+			<param name="server_ip" value="192.168.100.124"/>
+			<param name="server_port" value="14141"/> 
+		</node>
+	</group>
+</launch>
