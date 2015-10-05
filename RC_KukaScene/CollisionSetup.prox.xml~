@@ -1,6 +1,0 @@
-<CollisionSetup>
-    <Exclude>
-    	<!-- Don't know why but it is necessary -->
-		<FramePair first="fence_right" second="foot"/>
-   </Exclude>
-</CollisionSetup>
