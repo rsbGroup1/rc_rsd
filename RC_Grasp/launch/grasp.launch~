@@ -1,9 +1,0 @@
-<!-- Grasp Planning launch file -->
-
-<launch>
-	<group ns="RC_Grasp">
-		<node pkg="rc_grasp" name="Grasp" type="rc_grasp">
-			<!--param name="image_pub" value="/rcCamera/image"/> -->
-		</node>
-	</group>
-</launch>

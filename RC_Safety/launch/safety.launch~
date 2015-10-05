@@ -1,9 +1,0 @@
-<!-- Safetyy launch file -->
-
-<launch>
-	<group ns="RC_Safety">
-		<node pkg="rc_safety" name="Safety" type="rc_safety">
-			<!--param name="image_pub" value="/rcCamera/image"/> -->
-		</node>
-	</group>
-</launch>
