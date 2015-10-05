@@ -144,7 +144,7 @@ void HMIWidget::stateChangedListener(const rw::kinematics::State &state)
         sensor_msgs::JointState msg;
         msg.position.resize(6);
         for(int i=0; i<6; i++)
-            msg.position [i] = q[i] * RADTODEGREE;
+            msg.position [i] = q[i];
 
         // Publish
         _qPub.publish(msg);
@@ -162,10 +162,16 @@ void HMIWidget::eventCb(bool input)
         if(_cbAuto->isChecked())
         {
             writeToLog("Switched to auto mode!");
+            rw::math::Q q(6,0,0,0,0,0,0);
+            _deviceKuka->setQ(q, _state);
+            _rws->setState(_state);
         }
         else if(_cbDebug->isChecked())
         {
             writeToLog("Switched to debug mode!");
+            rw::math::Q q(6,0,0,-90*DEGREETORAD,0,-90*DEGREETORAD,0);
+            _deviceKuka->setQ(q, _state);
+            _rws->setState(_state);
         }
         else if(_cbManual->isChecked())
         {
