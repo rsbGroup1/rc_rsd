@@ -162,16 +162,10 @@ void HMIWidget::eventCb(bool input)
         if(_cbAuto->isChecked())
         {
             writeToLog("Switched to auto mode!");
-            rw::math::Q q(6,0,0,0,0,0,0);
-            _deviceKuka->setQ(q, _state);
-            _rws->setState(_state);
         }
         else if(_cbDebug->isChecked())
         {
             writeToLog("Switched to debug mode!");
-            rw::math::Q q(6,0,0,-90*DEGREETORAD,0,-90*DEGREETORAD,0);
-            _deviceKuka->setQ(q, _state);
-            _rws->setState(_state);
         }
         else if(_cbManual->isChecked())
         {
@@ -190,14 +184,23 @@ void HMIWidget::eventBtn()
     {
         //if(msgBoxHelper("The robot will move directly to A Low position.","Do you want to continue?"))
         writeToLog("Cell Busy");
+        rw::math::Q q(6,0,0,0,0,0,0);
+        _deviceKuka->setQ(q, _state);
+        _rws->setState(_state);
     }
     else if(obj == _btnCellError)
     {
         writeToLog("Cell Error");
+        rw::math::Q q(6,0,0,-45*DEGREETORAD,0,-45*DEGREETORAD,0);
+        _deviceKuka->setQ(q, _state);
+        _rws->setState(_state);
     }
     else if(obj == _btnCellReady)
     {
         writeToLog("Cell Ready");
+        rw::math::Q q(6,0,0,-90*DEGREETORAD,0,-90*DEGREETORAD,0);
+        _deviceKuka->setQ(q, _state);
+        _rws->setState(_state);
     }
 }
 
