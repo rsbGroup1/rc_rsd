@@ -51,7 +51,7 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         // Get device name
         _devicePG70 = dynamic_cast<rw::models::TreeDevice*>(devices[1].get());
         _deviceKuka = dynamic_cast<rw::models::SerialDevice*>(devices[0].get());
-        //std::cout << "Loaded device " << _deviceKuka->getName() << " and " << _devicePG70->getName() << std::endl;
+        std::cout << "Loaded device " << _deviceKuka->getName() << " and " << _devicePG70->getName() << std::endl;
 
         // Check if the device is of DoF as desired
         if(_deviceKuka->getQ(_state).size() != 6)
@@ -71,15 +71,14 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         _nodeHandle = new ros::NodeHandle;
 
         // Topic names
-        std::string imageSub, qPub;
+        std::string imageSub, kukaService;
         _nodeHandle->param<std::string>("/RC_HMI/HMI/image_sub", imageSub, "/rcCamera/image");
-        _nodeHandle->param<std::string>("/RC_HMI/HMI/q_pub", qPub, "/KukaNode/setConfiguration");
+        _nodeHandle->param<std::string>("/RC_HMI/HMI/KukaCmdServiceName", kukaService, "/KukaNode");
+
+        _serviceKukaSetConfiguration = _nodeHandle->serviceClient<rc_hmi::setConfiguration>(kukaService + "/SetConfiguration");
 
         _itImg = new image_transport::ImageTransport(*_nodeHandle);
         _subImg = _itImg->subscribe(imageSub, 1, &HMIWidget::imageCallback, this);
-
-        // Create topic subscribers and publisher
-        _qPub = _nodeHandle->advertise<sensor_msgs::JointState>(qPub, 1);
 
         // Start new threads
         boost::thread rosSpin(&HMIWidget::startROSThread, this);
@@ -140,14 +139,16 @@ void HMIWidget::stateChangedListener(const rw::kinematics::State &state)
         // Get Q
         rw::math::Q q = _deviceKuka->getQ(_state);
 
-        // Convert Q
-        sensor_msgs::JointState msg;
-        msg.position.resize(6);
-        for(int i=0; i<6; i++)
-            msg.position [i] = q[i];
+        // Create setConfiguration service
+        rc_hmi::setConfiguration config;
 
-        // Publish
-        _qPub.publish(msg);
+        // Fill out information
+        for(int i = 0; i<6; i++)
+           config.request.q[i] = q(i);
+
+        // Call service
+        if(!_serviceKukaSetConfiguration.call(config))
+           ROS_ERROR("Failed to call the 'serviceKukaSetConfiguration'");
     }
 
     runOnce = !runOnce;

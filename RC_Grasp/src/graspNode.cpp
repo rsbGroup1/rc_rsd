@@ -1,6 +1,20 @@
 // Includes
 #include <ros/ros.h>
+#include <rw/math.hpp>
+#include <rw/math/Q.hpp>
+#include <rw/math/Transform3D.hpp>
+#include <rw/models/WorkCell.hpp>
+#include <rw/models/SerialDevice.hpp>
+#include <rw/invkin/IKMetaSolver.hpp>
+#include <rw/invkin/JacobianIKSolver.hpp>
+#include <rw/kinematics/State.hpp>
+#include <rw/kinematics/Frame.hpp>
+#include <rw/kinematics.hpp>
+#include <rw/kinematics/MovableFrame.hpp>
 #include <iostream>
+
+// Defines
+#define ROBOT_NAME                  "UR1"
 
 // Global variables
 ros::Publisher _safetyPublisher;

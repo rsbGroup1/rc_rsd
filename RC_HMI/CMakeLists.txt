@@ -8,7 +8,17 @@ SET(OpenCV_DIR "/usr/local/share/OpenCV")
 FIND_PACKAGE(catkin REQUIRED COMPONENTS roscpp rospy std_msgs message_generation cv_bridge genmsg image_transport sensor_msgs OpenCV)
 
 ## Declare ROS messages and services
-#add_service_files(#FILES)
+# Service files
+add_service_files(
+	FILES
+	getConfiguration.srv
+	setConfiguration.srv	
+	getQueueSize.srv	
+	stopRobot.srv
+	getIsMoving.srv
+)
+
+generate_messages(DEPENDENCIES std_msgs)
 
 #generate_messages(DEPENDENCIES sensor_msgs)
 catkin_package(CATKIN_DEPENDS message_runtime)

@@ -4,6 +4,7 @@
 	<group ns="RC_HMI">
 		<node pkg="rc_hmi" name="HMI" type="rc_hmi">
 			<param name="image_sub" value="/rcCamera/image"/> 
+			<param name="KukaCmdServiceName" value="/KukaNode"/> 
 		</node>
 	</group>
 </launch>

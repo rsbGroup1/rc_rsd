@@ -17,6 +17,8 @@
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/kinematics/State.hpp>
 
+#include <rc_hmi/setConfiguration.h>
+
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/TreeDevice.hpp>
 #include <rw/models/SerialDevice.hpp>
@@ -148,7 +150,7 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
         ros::NodeHandle *_nodeHandle;
         image_transport::ImageTransport *_itImg;
         image_transport::Subscriber _subImg;
-        ros::Publisher _qPub;
+        ros::ServiceClient _serviceKukaSetConfiguration;
 
         // Image
         QTimer *_imageShowTimer;
