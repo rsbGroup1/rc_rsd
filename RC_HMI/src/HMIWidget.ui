@@ -437,7 +437,7 @@ border-radius: 2px;
       <x>10</x>
       <y>40</y>
       <width>331</width>
-      <height>24</height>
+      <height>31</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -509,31 +509,40 @@ QRadioButton::indicator::checked {
       </widget>
      </item>
      <item>
-      <widget class="QRadioButton" name="_cbDebug">
+      <widget class="QPushButton" name="_btnEmStop">
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="styleSheet">
-        <string notr="true">QRadioButton::indicator::unchecked { 
-	border: 1px solid darkgray; 
-	border-radius: 6px; 
-	background-color: white; 
-	width: 15px; 
-	height: 15px; 
-	margin-left: 5px;
+        <string notr="true">QPushButton {
+color: red;
+border: 1px solid #003399;
+border-radius: 5px;
+padding: 5px;
+min-width: 80px;
 }
 
-QRadioButton::indicator::checked { 
-	border: 1px solid darkgray; 
-	border-radius: 6px; 
-	background-color: #003399; 
-	width: 15px; 
-	height: 15px; 
-	margin-left: 5px;
-}</string>
+QPushButton:hover {
+background: qradialgradient(cx: 0.4, cy: -0.1,
+fx: 0.9, fy: -0.1,
+radius: 10.35, stop: 0 #fff, stop: 1 #003399);
+}
+
+QPushButton:pressed {
+background: qradialgradient(cx: 0.4, cy: -0.1,
+fx: 0.9, fy: -0.1,
+radius: 5.35, stop: 0 #fff, stop: 1 #003399);
+}
+</string>
        </property>
        <property name="text">
-        <string>Debug</string>
+        <string>EMER. STOP</string>
        </property>
       </widget>
      </item>

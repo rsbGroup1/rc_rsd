@@ -11,8 +11,8 @@ HMIWidget::HMIWidget(QWidget *parent): QWidget(parent)
     connect(_btnCellBusy, SIGNAL(released()), this, SLOT(eventBtn()));
     connect(_btnCellError, SIGNAL(released()), this, SLOT(eventBtn()));
     connect(_btnCellReady, SIGNAL(released()), this, SLOT(eventBtn()));
+    connect(_btnEmStop, SIGNAL(released()), this, SLOT(eventBtn()));
     connect(_cbAuto, SIGNAL(toggled(bool)), this, SLOT(eventCb(bool)));
-    connect(_cbDebug, SIGNAL(toggled(bool)), this, SLOT(eventCb(bool)));
     connect(_cbManual, SIGNAL(toggled(bool)), this, SLOT(eventCb(bool)));
 
     // Set default text etc.
@@ -74,11 +74,11 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         std::string imageSub, kukaService, PG70Service;
         _nodeHandle->param<std::string>("/RC_HMI/HMI/image_sub", imageSub, "/rcCamera/image");
         _nodeHandle->param<std::string>("/RC_HMI/HMI/KukaCmdServiceName", kukaService, "/KukaNode");
-        _nodeHandle->param<std::string>("/RC_HMI/HMI/PG70CmdServiceName", PG70Service, "/PG70");
+        _nodeHandle->param<std::string>("/RC_HMI/HMI/PG70CmdServiceName", PG70Service, "/PG70/PG70");
 
         _serviceKukaSetConf = _nodeHandle->serviceClient<rc_hmi::setConfiguration>(kukaService + "/SetConfiguration");
-        _serviceKukaStop = _nodeHandle->serviceClient<rc_hmi::stopRobot>(kukaService + "/stopRobot");
         _serviceKukaGetConf = _nodeHandle->serviceClient<rc_hmi::getConfiguration>(kukaService + "/GetConfiguration");
+        _serviceKukaStop = _nodeHandle->serviceClient<rc_hmi::stopRobot>(kukaService + "/StopRobot");
         _servicePG70Move = _nodeHandle->serviceClient<rc_hmi::Move>(PG70Service + "/Move");
         _servicePG70Stop = _nodeHandle->serviceClient<rc_hmi::Stop>(PG70Service + "/Stop");
 
@@ -159,11 +159,11 @@ void HMIWidget::stateChangedListener(const rw::kinematics::State &state)
 
         // Move gripper
         // Get Q
-        rw::math::Q qGripper = _devicePG70->getQ(_state);
+        /*rw::math::Q qGripper = _devicePG70->getQ(_state);
         rc_hmi::Move moveObj;
         moveObj.request.pos = qGripper[0];
         if(!_servicePG70Move.call(moveObj))
-            ROS_ERROR("Failed to call the 'servicePG70Move'");
+            ROS_ERROR("Failed to call the 'servicePG70Move'");*/
     }
 
     runOnce = !runOnce;
@@ -179,10 +179,6 @@ void HMIWidget::eventCb(bool input)
         {
             writeToLog("Switched to auto mode!");
         }
-        else if(_cbDebug->isChecked())
-        {
-            writeToLog("Switched to debug mode!");
-        }
         else if(_cbManual->isChecked())
         {
             writeToLog("Switched to manual mode!");
@@ -196,31 +192,51 @@ void HMIWidget::eventBtn()
 {
     QObject *obj = sender();
 
+    if(obj == _btnCellReady)
+    {
+        writeToLog("Cell Ready");
+        if(msgBoxHelper("The robot will move.","Do you want to continue?"))
+        {
+            rw::math::Q q(6,0,0,0,0,0,0);
+            _deviceKuka->setQ(q, _state);
+            _rws->setState(_state);
+        }
+    }
     if(obj == _btnCellBusy)
     {
-        //if(msgBoxHelper("The robot will move directly to A Low position.","Do you want to continue?"))
         writeToLog("Cell Busy");
-        rw::math::Q q(6,0,0,0,0,0,0);
-        _deviceKuka->setQ(q, _state);
-        _rws->setState(_state);
+        if(msgBoxHelper("The robot will move.","Do you want to continue?"))
+        {
+            rw::math::Q q(6,0,0,-45*DEGREETORAD,0,-45*DEGREETORAD,0);
+            _deviceKuka->setQ(q, _state);
+            _rws->setState(_state);
+        }
     }
     else if(obj == _btnCellError)
     {
         writeToLog("Cell Error");
-        rw::math::Q q(6,0,0,-45*DEGREETORAD,0,-45*DEGREETORAD,0);
-        _deviceKuka->setQ(q, _state);
-        _rws->setState(_state);
+        if(msgBoxHelper("The robot will move.","Do you want to continue?"))
+        {
+            rw::math::Q q(6,0,0,-90*DEGREETORAD,0,-90*DEGREETORAD,0);
+            _deviceKuka->setQ(q, _state);
+            _rws->setState(_state);
+        }
     }
-    else if(obj == _btnCellReady)
+    else if(obj == _btnEmStop)
     {
-        writeToLog("Cell Ready");
-        rw::math::Q q(6,0,0,-90*DEGREETORAD,0,-90*DEGREETORAD,0);
-        _deviceKuka->setQ(q, _state);
-        _rws->setState(_state);
+        // Stop robot
+        rc_hmi::stopRobot stopObj;
+        if(!_serviceKukaStop.call(stopObj))
+            ROS_ERROR("Failed to call the 'serviceKukaStopRobot'");
+
+        // Stop gripper
+        /*rc_hmi::Stop stopObjPG70;
+        if(!_servicePG70Stop.call(stopObjPG70))
+            ROS_ERROR("Failed to call the 'servicePG70Stop'");*/
     }
 }
 
-bool HMIWidget::writeToLog(QString text)
+void HMIWidget::writeToLog(QString text)
 {
     QTime time;
     _txtBrowser->setText(time.currentTime().toString() + ": " + text + "\n" + _txtBrowser->toPlainText());

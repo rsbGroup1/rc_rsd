@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'HMIWidgetV16379.ui'
+** Form generated from reading UI file 'HMIWidgetF79249.ui'
 **
 ** Created by: Qt User Interface Compiler version 4.8.6
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef HMIWIDGETV16379_H
-#define HMIWIDGETV16379_H
+#ifndef HMIWIDGETF79249_H
+#define HMIWIDGETF79249_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -63,7 +63,7 @@ public:
     QHBoxLayout *horizontalLayout_5;
     QRadioButton *_cbAuto;
     QRadioButton *_cbManual;
-    QRadioButton *_cbDebug;
+    QPushButton *_btnEmStop;
     QPushButton *_btnCellReady;
     QPushButton *_btnCellBusy;
     QPushButton *_btnCellError;
@@ -294,7 +294,7 @@ public:
         label_5->setAlignment(Qt::AlignCenter);
         horizontalLayoutWidget_5 = new QWidget(groupBox_2);
         horizontalLayoutWidget_5->setObjectName(QString::fromUtf8("horizontalLayoutWidget_5"));
-        horizontalLayoutWidget_5->setGeometry(QRect(10, 40, 331, 24));
+        horizontalLayoutWidget_5->setGeometry(QRect(10, 40, 331, 31));
         horizontalLayout_5 = new QHBoxLayout(horizontalLayoutWidget_5);
         horizontalLayout_5->setObjectName(QString::fromUtf8("horizontalLayout_5"));
         horizontalLayout_5->setContentsMargins(0, 0, 0, 0);
@@ -347,28 +347,35 @@ public:
 
         horizontalLayout_5->addWidget(_cbManual);
 
-        _cbDebug = new QRadioButton(horizontalLayoutWidget_5);
-        _cbDebug->setObjectName(QString::fromUtf8("_cbDebug"));
-        _cbDebug->setFocusPolicy(Qt::NoFocus);
-        _cbDebug->setStyleSheet(QString::fromUtf8("QRadioButton::indicator::unchecked { \n"
-"	border: 1px solid darkgray; \n"
-"	border-radius: 6px; \n"
-"	background-color: white; \n"
-"	width: 15px; \n"
-"	height: 15px; \n"
-"	margin-left: 5px;\n"
+        _btnEmStop = new QPushButton(horizontalLayoutWidget_5);
+        _btnEmStop->setObjectName(QString::fromUtf8("_btnEmStop"));
+        QFont font1;
+        font1.setBold(false);
+        font1.setWeight(50);
+        _btnEmStop->setFont(font1);
+        _btnEmStop->setFocusPolicy(Qt::NoFocus);
+        _btnEmStop->setStyleSheet(QString::fromUtf8("QPushButton {\n"
+"color: red;\n"
+"border: 1px solid #003399;\n"
+"border-radius: 5px;\n"
+"padding: 5px;\n"
+"min-width: 80px;\n"
 "}\n"
 "\n"
-"QRadioButton::indicator::checked { \n"
-"	border: 1px solid darkgray; \n"
-"	border-radius: 6px; \n"
-"	background-color: #003399; \n"
-"	width: 15px; \n"
-"	height: 15px; \n"
-"	margin-left: 5px;\n"
-"}"));
+"QPushButton:hover {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 10.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+""));
 
-        horizontalLayout_5->addWidget(_cbDebug);
+        horizontalLayout_5->addWidget(_btnEmStop);
 
         _btnCellReady = new QPushButton(groupBox_2);
         _btnCellReady->setObjectName(QString::fromUtf8("_btnCellReady"));
@@ -491,13 +498,13 @@ public:
         label = new QLabel(HMIWidgetClass);
         label->setObjectName(QString::fromUtf8("label"));
         label->setGeometry(QRect(10, 0, 351, 41));
-        QFont font1;
-        font1.setFamily(QString::fromUtf8("Purisa"));
-        font1.setPointSize(21);
-        font1.setBold(false);
-        font1.setItalic(true);
-        font1.setWeight(50);
-        label->setFont(font1);
+        QFont font2;
+        font2.setFamily(QString::fromUtf8("Purisa"));
+        font2.setPointSize(21);
+        font2.setBold(false);
+        font2.setItalic(true);
+        font2.setWeight(50);
+        label->setFont(font2);
         label->setStyleSheet(QString::fromUtf8("color:#003399;"));
         label->setAlignment(Qt::AlignCenter);
 
@@ -527,7 +534,7 @@ public:
         label_5->setText(QApplication::translate("HMIWidgetClass", "Parameter tweak", 0, QApplication::UnicodeUTF8));
         _cbAuto->setText(QApplication::translate("HMIWidgetClass", "Auto", 0, QApplication::UnicodeUTF8));
         _cbManual->setText(QApplication::translate("HMIWidgetClass", "Manual", 0, QApplication::UnicodeUTF8));
-        _cbDebug->setText(QApplication::translate("HMIWidgetClass", "Debug", 0, QApplication::UnicodeUTF8));
+        _btnEmStop->setText(QApplication::translate("HMIWidgetClass", "EMER. STOP", 0, QApplication::UnicodeUTF8));
         _btnCellReady->setText(QApplication::translate("HMIWidgetClass", "Cell Ready", 0, QApplication::UnicodeUTF8));
         _btnCellBusy->setText(QApplication::translate("HMIWidgetClass", "Cell Busy", 0, QApplication::UnicodeUTF8));
         _btnCellError->setText(QApplication::translate("HMIWidgetClass", "Cell Error", 0, QApplication::UnicodeUTF8));
@@ -545,5 +552,5 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // HMIWIDGETV16379_H
+#endif // HMIWIDGETF79249_H
 

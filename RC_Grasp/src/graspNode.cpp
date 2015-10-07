@@ -82,9 +82,9 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     res.success = false;
 
     // Inverse kin
-    rw::math::Transform3D<> posOffset(rw::math::Vector3D<>(req.x, req.y, 0), rw::math::RPY<>(req.theta,0,0).toRotation3D());
+    rw::math::Transform3D<> posOffset(rw::math::Vector3D<>(req.x, req.y, 0.1), rw::math::RPY<>(0,0,0).toRotation3D());
     rw::math::Transform3D<> w2brickOffset = _w2brick * posOffset;
-    rw::math::Transform3D<> transform((inverse(_w2base)*w2brickOffset).P(), rw::math::RPY<>(M_PI, 0, M_PI));
+    rw::math::Transform3D<> transform((inverse(_w2base)*w2brickOffset).P(), rw::math::RPY<>(M_PI, -18*DEGREETORAD, M_PI));
     std::vector<rw::math::Q> qVec = _inverseKin->solve(transform, _state);
     if(qVec.empty())
     {
@@ -105,9 +105,9 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     //const float SchunkPG70::HOMEPOS = 0.034f;
     //const float SchunkPG70::MAXPOS = 0.068f;
 
-    rw::math::Q qGripper(1, req.size);
-    if(PG70SetConf(qGripper) == false)
-        return false;
+    //rw::math::Q qGripper(1, req.size);
+    //if(PG70SetConf(qGripper) == false)
+        //return false;
 
     // 3. Go to idle Q (when camera is taking pictures)
     if(moveRobotWait(_idleQ) == false)
@@ -120,7 +120,7 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
         return false;
 
     // 5. Open gripper
-    PG70Open();
+    //PG70Open();
 
     // 5b: TODO: Add between point
 
@@ -145,16 +145,16 @@ int main()
     // Topic names
     std::string kukaService, PG70Service, grabBrickService, scenePath;
     nh.param<std::string>("/RC_Grasp/Grasp/KukaCmdServiceName", kukaService, "/KukaNode");
-    nh.param<std::string>("/RC_Grasp/Grasp/PG70CmdServiceName", PG70Service, "/PG70");
+    nh.param<std::string>("/RC_Grasp/Grasp/PG70CmdServiceName", PG70Service, "/PG70/PG70");
     nh.param<std::string>("/RC_Grasp/Grasp/grabBrickServiceName", grabBrickService, "/mrGrasp/grabBrick");
     nh.param<std::string>("/RC_Grasp/Grasp/scenePath", scenePath, "/home/student/catkin_ws/src/rc_rsd/RC_KukaScene/Scene.wc.xml");
     nh.param<double>("/RC_Grasp/Grasp/idleHeight", _idleQHeight, 0.3);
 
     // Create service calls
     _serviceKukaSetConf = nh.serviceClient<rc_grasp::setConfiguration>(kukaService + "/SetConfiguration");
-    _serviceKukaStop = nh.serviceClient<rc_grasp::stopRobot>(kukaService + "/stopRobot");
+    _serviceKukaStop = nh.serviceClient<rc_grasp::stopRobot>(kukaService + "/StopRobot");
     _serviceKukaGetConf = nh.serviceClient<rc_grasp::getConfiguration>(kukaService + "/GetConfiguration");
-    _serviceKukaGetIsMoving = nh.serviceClient<rc_grasp::getIsMoving>(kukaService + "/GetIsMoving");
+    _serviceKukaGetIsMoving = nh.serviceClient<rc_grasp::getIsMoving>(kukaService + "/IsMoving");
     _serviceKukaGetQueueSize = nh.serviceClient<rc_grasp::getQueueSize>(kukaService + "/GetQueueSize");
     _servicePG70Move = nh.serviceClient<rc_grasp::Move>(PG70Service + "/Move");
     _servicePG70Stop = nh.serviceClient<rc_grasp::Stop>(PG70Service + "/Stop");
@@ -236,7 +236,7 @@ int main()
 
     // Initialize devices
     KukaSetConf(_idleQ);
-    PG70Open();
+    //PG70Open();
 
     // Set loop rate
     ros::Rate loop_rate(10);

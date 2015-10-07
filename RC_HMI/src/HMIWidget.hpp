@@ -141,7 +141,7 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
         void startROSThread();
         bool openWorkCell();
         bool msgBoxHelper(QString, QString);
-        bool writeToLog(QString text);
+        void writeToLog(QString text);
 
         // Variables
         rw::models::WorkCell::Ptr _rwWorkCell;
