@@ -71,11 +71,16 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         _nodeHandle = new ros::NodeHandle;
 
         // Topic names
-        std::string imageSub, kukaService;
+        std::string imageSub, kukaService, PG70Service;
         _nodeHandle->param<std::string>("/RC_HMI/HMI/image_sub", imageSub, "/rcCamera/image");
         _nodeHandle->param<std::string>("/RC_HMI/HMI/KukaCmdServiceName", kukaService, "/KukaNode");
+        _nodeHandle->param<std::string>("/RC_HMI/HMI/PG70CmdServiceName", PG70Service, "/PG70");
 
-        _serviceKukaSetConfiguration = _nodeHandle->serviceClient<rc_hmi::setConfiguration>(kukaService + "/SetConfiguration");
+        _serviceKukaSetConf = _nodeHandle->serviceClient<rc_hmi::setConfiguration>(kukaService + "/SetConfiguration");
+        _serviceKukaStop = _nodeHandle->serviceClient<rc_hmi::stopRobot>(kukaService + "/stopRobot");
+        _serviceKukaGetConf = _nodeHandle->serviceClient<rc_hmi::getConfiguration>(kukaService + "/GetConfiguration");
+        _servicePG70Move = _nodeHandle->serviceClient<rc_hmi::Move>(PG70Service + "/Move");
+        _servicePG70Stop = _nodeHandle->serviceClient<rc_hmi::Stop>(PG70Service + "/Stop");
 
         _itImg = new image_transport::ImageTransport(*_nodeHandle);
         _subImg = _itImg->subscribe(imageSub, 1, &HMIWidget::imageCallback, this);
@@ -136,19 +141,29 @@ void HMIWidget::stateChangedListener(const rw::kinematics::State &state)
     // Run once
     if(runOnce)
     {
+        // Move robot
         // Get Q
-        rw::math::Q q = _deviceKuka->getQ(_state);
+        rw::math::Q qRobot = _deviceKuka->getQ(_state);
 
         // Create setConfiguration service
-        rc_hmi::setConfiguration config;
+        rc_hmi::setConfiguration setQObj;
 
         // Fill out information
         for(int i = 0; i<6; i++)
-           config.request.q[i] = q(i);
+           setQObj.request.q[i] = qRobot(i);
 
         // Call service
-        if(!_serviceKukaSetConfiguration.call(config))
+        if(!_serviceKukaSetConf.call(setQObj))
            ROS_ERROR("Failed to call the 'serviceKukaSetConfiguration'");
+
+
+        // Move gripper
+        // Get Q
+        rw::math::Q qGripper = _devicePG70->getQ(_state);
+        rc_hmi::Move moveObj;
+        moveObj.request.pos = qGripper[0];
+        if(!_servicePG70Move.call(moveObj))
+            ROS_ERROR("Failed to call the 'servicePG70Move'");
     }
 
     runOnce = !runOnce;

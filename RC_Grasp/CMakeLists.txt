@@ -4,9 +4,25 @@ project(rc_grasp)
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs genmsg)
 
-#generate_messages(DEPENDENCIES sensor_msgs)
-
 SET(RW_ROOT "$ENV{RW_ROOT}")
+
+
+# Service files
+add_service_files(
+	FILES
+	getConfiguration.srv
+	setConfiguration.srv	
+	getQueueSize.srv	
+	stopRobot.srv
+	getIsMoving.srv
+	Move.srv
+	Stop.srv
+	Open.srv
+	grabBrick.srv
+)
+
+generate_messages(DEPENDENCIES std_msgs)
+
 catkin_package()
 
 #Include default settings for constructing a robwork dependent project

@@ -35,8 +35,12 @@
 		<RPY>0 18 0</RPY><Pos>0 0 -0.03</Pos>
 	</Frame>
 
-	<Frame name="Idle" refframe="conveyorBeltTilted">
+	<Frame name="Brick" refframe="conveyorBeltTilted">
 		<RPY>0 0 0</RPY><Pos>-0.3 0 0</Pos>
+	</Frame>
+
+	<Frame name="MobileRobot" refframe="WORLD">
+		<RPY>0 0 0</RPY><Pos>0.45 -0.15 0.7</Pos>
 	</Frame>
 
 	<Frame name="Camera" refframe="ToolMount">

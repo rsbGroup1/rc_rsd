@@ -12,10 +12,10 @@ FIND_PACKAGE(catkin REQUIRED COMPONENTS roscpp rospy std_msgs message_generation
 add_service_files(
 	FILES
 	getConfiguration.srv
-	setConfiguration.srv	
-	getQueueSize.srv	
+	setConfiguration.srv		
 	stopRobot.srv
-	getIsMoving.srv
+	Move.srv
+	Stop.srv
 )
 
 generate_messages(DEPENDENCIES std_msgs)

@@ -18,6 +18,10 @@
 #include <rw/kinematics/State.hpp>
 
 #include <rc_hmi/setConfiguration.h>
+#include <rc_hmi/getConfiguration.h>
+#include <rc_hmi/stopRobot.h>
+#include <rc_hmi/Move.h>
+#include <rc_hmi/Stop.h>
 
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/TreeDevice.hpp>
@@ -150,7 +154,8 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
         ros::NodeHandle *_nodeHandle;
         image_transport::ImageTransport *_itImg;
         image_transport::Subscriber _subImg;
-        ros::ServiceClient _serviceKukaSetConfiguration;
+        ros::ServiceClient _serviceKukaSetConf, _serviceKukaStop, _serviceKukaGetConf;
+        ros::ServiceClient _servicePG70Move, _servicePG70Stop;
 
         // Image
         QTimer *_imageShowTimer;
