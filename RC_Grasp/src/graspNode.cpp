@@ -31,6 +31,9 @@
 #define DEGREETORAD                 (M_PI/180.0)
 #define RADTODEGREE                 (180.0/M_PI)
 #define ROBOT_NAME                  "KukaKR6R700"
+#define CONNECT_KUKA                true
+#define CONNECT_PG70                false
+
 
 // Global variables
 ros::ServiceClient _serviceKukaSetConf, _serviceKukaStop, _serviceKukaGetConf, _serviceKukaGetQueueSize, _serviceKukaGetIsMoving;
@@ -44,6 +47,7 @@ rw::math::Transform3D<> _w2brick;
 rw::math::Transform3D<> _w2base;
 double _idleQHeight;
 rw::math::Q _idleQ, _releaseBrickQ;
+rw::models::Device::QBox _limits;
 
 // Prototypes
 void KukaStopRobot();
@@ -69,6 +73,12 @@ bool moveRobotWait(rw::math::Q q)
         return false;
 }
 
+void printT(rw::math::Transform3D<> T)
+{
+    rw::math::RPY<> rpy(T.R());
+    std::cout << "P(" << T.P()[0] << "," << T.P()[1] << "," << T.P()[2] << "), RPY(" << rpy[0]*RADTODEGREE << "," << rpy[1]*RADTODEGREE << "," << rpy[2]*RADTODEGREE << ")" << std::endl;
+}
+
 bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::Response &res)
 {
     /*req.x;
@@ -76,13 +86,11 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     req.theta;
     req.size;*/
 
-    std::cout << _releaseBrickQ << std::endl;
-
     // Default return message
     res.success = false;
 
     // Inverse kin
-    rw::math::Transform3D<> posOffset(rw::math::Vector3D<>(req.x, req.y, 0.1), rw::math::RPY<>(0,0,0).toRotation3D());
+    rw::math::Transform3D<> posOffset(rw::math::Vector3D<>(req.x, req.y, 0.1));
     rw::math::Transform3D<> w2brickOffset = _w2brick * posOffset;
     rw::math::Transform3D<> transform((inverse(_w2base)*w2brickOffset).P(), rw::math::RPY<>(M_PI, -18*DEGREETORAD, M_PI));
     std::vector<rw::math::Q> qVec = _inverseKin->solve(transform, _state);
@@ -96,6 +104,16 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     // Configuration for lego brick
     rw::math::Q qBrick = qVec[0];
 
+    // Fix rotation
+    if(qBrick[5] + req.theta < _limits.first[5])
+        ROS_ERROR("Joint 5 reached its limit!");
+    else if(qBrick[5] + req.theta > _limits.second[5])
+        ROS_ERROR("Joint 5 reached its limit!");
+    else
+        qBrick[5] += req.theta;
+
+    std::cout << qBrick << std::endl;
+
     // 1. Move to brick (blocking call)
     if(moveRobotWait(qBrick) == false)
         return false;
@@ -105,9 +123,9 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     //const float SchunkPG70::HOMEPOS = 0.034f;
     //const float SchunkPG70::MAXPOS = 0.068f;
 
-    //rw::math::Q qGripper(1, req.size);
-    //if(PG70SetConf(qGripper) == false)
-        //return false;
+    /*rw::math::Q qGripper(1, req.size);
+    if(PG70SetConf(qGripper) == false)
+        return false;*/
 
     // 3. Go to idle Q (when camera is taking pictures)
     if(moveRobotWait(_idleQ) == false)
@@ -167,18 +185,14 @@ int main()
     _device = _workcell->getDevices()[0];
     _state = _workcell->getDefaultState();
 
-    // Set robot in default position
-    const rw::math::Q qZero(6,0,0,0,0,0,0);
-    _device->setQ(qZero, _state);
-
     // Check if loaded
     if(_device == NULL)
     {
-        ROS_ERROR("RC_Grasp: Device not found!");
+        ROS_ERROR("Device not found!");
         return -1;
     }
     else
-        ROS_INFO("RC_Grasp: Device loaded!");
+        ROS_INFO("Device loaded!");
 
     // Find Brick Frame
     _brickFrame = _workcell->findFrame("Brick");
@@ -195,6 +209,13 @@ int main()
         ROS_ERROR("Cannot find PG70.TCP frame in Scene file!");
         return -1;
     }
+
+    // Set robot in default position
+    const rw::math::Q qZero(6,0,0,0,0,0,0);
+    _device->setQ(qZero, _state);
+
+    // Get limits
+    _limits = _device->getBounds();
 
     // Make new invkin object here
     _inverseKin = new rw::invkin::JacobianIKSolver(_device, _toolFrame, _state);
@@ -236,7 +257,7 @@ int main()
 
     // Initialize devices
     KukaSetConf(_idleQ);
-    //PG70Open();
+    PG70Open();
 
     // Set loop rate
     ros::Rate loop_rate(10);
@@ -253,58 +274,76 @@ int main()
 
 void KukaStopRobot()
 {
-    // Stop robot
-    rc_grasp::stopRobot stopObj;
-    if(!_serviceKukaStop.call(stopObj))
-        ROS_ERROR("Failed to call the 'serviceKukaStopRobot'");
+    if(CONNECT_KUKA)
+    {
+        // Stop robot
+        rc_grasp::stopRobot stopObj;
+        if(!_serviceKukaStop.call(stopObj))
+            ROS_ERROR("Failed to call the 'serviceKukaStopRobot'");
+    }
 }
 
 bool KukaIsMoving()
 {
-    // Is moving
-    rc_grasp::getIsMoving isMoveObj;
-    if(!_serviceKukaGetIsMoving.call(isMoveObj))
+    if(CONNECT_KUKA)
     {
-        ROS_ERROR("Failed to call the 'serviceKukaGetIsMoving'");
-        return true;
+        // Is moving
+        rc_grasp::getIsMoving isMoveObj;
+        if(!_serviceKukaGetIsMoving.call(isMoveObj))
+        {
+            ROS_ERROR("Failed to call the 'serviceKukaGetIsMoving'");
+            return true;
+        }
+        else
+            return isMoveObj.response.isMoving;
     }
-    else
-        return isMoveObj.response.isMoving;
+
+    return false;
 }
 
 bool KukaSetConf(rw::math::Q q)
 {
-    if(q.size() != 6)
-        return false;
-
-    // Create setConfiguration service
-    rc_grasp::setConfiguration config;
-
-    // Fill out information
-    for(unsigned int i = 0; i<q.size(); i++)
-        config.request.q[i] = q(i);
-
-    // Call service
-    if(!_serviceKukaSetConf.call(config))
+    if(CONNECT_KUKA)
     {
-        ROS_ERROR("Failed to call the 'serviceKukaSetConf'");
-        return false;
+        if(q.size() != 6)
+            return false;
+
+        // Create setConfiguration service
+        rc_grasp::setConfiguration config;
+
+        // Fill out information
+        for(unsigned int i = 0; i<q.size(); i++)
+            config.request.q[i] = q(i);
+
+        // Call service
+        if(!_serviceKukaSetConf.call(config))
+        {
+            ROS_ERROR("Failed to call the 'serviceKukaSetConf'");
+            return false;
+        }
+        else
+            return true;
     }
-    else
-        return true;
+
+    return false;
 }
 
 int KukaGetQueueSize()
 {
-    // Get UR queue size (commands)
-    rc_grasp::getQueueSize SizeObj;
-    if(!_serviceKukaGetQueueSize.call(SizeObj))
+    if(CONNECT_KUKA)
     {
-        ROS_ERROR("Failed to call the 'serviceKukaGetQueueSize'");
-        return -1;
+        // Get UR queue size (commands)
+        rc_grasp::getQueueSize SizeObj;
+        if(!_serviceKukaGetQueueSize.call(SizeObj))
+        {
+            ROS_ERROR("Failed to call the 'serviceKukaGetQueueSize'");
+            return -1;
+        }
+        else
+            return SizeObj.response.queueSize;
     }
-    else
-        return SizeObj.response.queueSize;
+
+    return -1;
 }
 
 rw::math::Q KukaGetConf()
@@ -312,53 +351,67 @@ rw::math::Q KukaGetConf()
     // Return object
     rw::math::Q qRet(6);
 
-    // Get current position
-    rc_grasp::getConfiguration confObj;
-    if(!_serviceKukaGetConf.call(confObj))
+    if(CONNECT_KUKA)
     {
-        ROS_ERROR("Failed to call the 'serviceKukaGetConf'");
-        return qRet;
-    }
+        // Get current position
+        rc_grasp::getConfiguration confObj;
+        if(!_serviceKukaGetConf.call(confObj))
+        {
+            ROS_ERROR("Failed to call the 'serviceKukaGetConf'");
+            return qRet;
+        }
 
-    for(unsigned int i=0; i<qRet.size(); i++)
-        qRet(i) = confObj.response.q[i];
+        for(unsigned int i=0; i<qRet.size(); i++)
+            qRet(i) = confObj.response.q[i];
+    }
 
     return qRet;
 }
 
 bool PG70SetConf(rw::math::Q q)
 {
-    if(q.size() != 1)
-        return false;
-
-    // Create setConfiguration service
-    rc_grasp::Move config;
-
-    // Fill out information
-    config.request.pos = q(0);
-
-    // Call service
-    if(!_servicePG70Move.call(config))
+    if(CONNECT_PG70)
     {
-        ROS_ERROR("Failed to call the 'servicePG70Move'");
-        return false;
+        if(q.size() != 1)
+            return false;
+
+        // Create setConfiguration service
+        rc_grasp::Move config;
+
+        // Fill out information
+        config.request.pos = q(0);
+
+        // Call service
+        if(!_servicePG70Move.call(config))
+        {
+            ROS_ERROR("Failed to call the 'servicePG70Move'");
+            return false;
+        }
+        else
+            return true;
     }
-    else
-        return true;
+
+    return false;
 }
 
 void PG70Stop()
 {
-    // Stop
-    rc_grasp::Stop stopObj;
-    if(!_servicePG70Stop.call(stopObj))
-        ROS_ERROR("Failed to call the 'servicePG70Stop'");
+    if(CONNECT_PG70)
+    {
+        // Stop
+        rc_grasp::Stop stopObj;
+        if(!_servicePG70Stop.call(stopObj))
+            ROS_ERROR("Failed to call the 'servicePG70Stop'");
+    }
 }
 
 void PG70Open()
 {
-    // Open
-    rc_grasp::Open openObj;
-    if(!_servicePG70Open.call(openObj))
-        ROS_ERROR("Failed to call the 'servicePG70Open'");
+    if(CONNECT_PG70)
+    {
+        // Open
+        rc_grasp::Open openObj;
+        if(!_servicePG70Open.call(openObj))
+            ROS_ERROR("Failed to call the 'servicePG70Open'");
+    }
 }
