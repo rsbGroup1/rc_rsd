@@ -1,102 +1,291 @@
 // Includes
-#include "opencv2/core/core.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/core/mat.hpp"
-#include "opencv/cv.hpp"
 #include <ros/ros.h>
-#include <image_transport/image_transport.h>
-#include <cv_bridge/cv_bridge.h>
-#include <cstdlib>
-#include <string>
-#include <iostream>
-#include <sstream>
+#include <ros/time.h>
+#include <boost/thread.hpp>
+#include "sensor_msgs/Image.h"
+#include "sensor_msgs/CompressedImage.h"
+#include "sensor_msgs/image_encodings.h"
+#include "sensor_msgs/CameraInfo.h"
+#include "camera_info_manager/camera_info_manager.h"
+#include "image_transport/image_transport.h"
+#include "uvc_camera/camera.h"
+#include "uvc_cam/uvc_cam.h"
 
-// Defines
-#define SSTR(x)                 dynamic_cast< std::ostringstream & >(( std::ostringstream() << std::dec << x )).str()
+using namespace sensor_msgs;
 
-#define CAMERA_FREQUENCY		15      // FPS
-#define AUTO_FOCUS              false   // Set autofocus: True/false
-#define FOCUS                   0       // Set focus to a specific value. High values for nearby objects and low values for distant objects.
-#define SHARPNESS               200     // Sharpness (int): min=0 max=255 step=1 default=128 value=128
-
-
-// Global variables
-cv::VideoCapture *_camera;
-
-int main()
+namespace uvc_camera
 {
-    // Loop through possible camera serial devices
-    for(int i=0; i<2; i++)
+    Camera::Camera(ros::NodeHandle _comm_nh, ros::NodeHandle _param_nh) : node(_comm_nh), pnode(_param_nh), it(_comm_nh), info_mgr(_comm_nh, "camera"), cam(0)
     {
-        // Open the video camera no. i
-        _camera = new cv::VideoCapture(i);
-        _camera->set(CV_CAP_PROP_FRAME_WIDTH, 1024); //1920, 1280, 1024, 640
-        _camera->set(CV_CAP_PROP_FRAME_HEIGHT, 576); //1080, 720, 576, 480
-        _camera->set(CV_CAP_PROP_FPS, CAMERA_FREQUENCY);
+        // Default config values
+        width = 640;
+        height = 480;
+        fps = 10;
+        skip_frames = 0;
+        frames_to_skip = 0;
+        device = "/dev/video0";
+        frame = "camera";
+        rotate = false;
+        format = "rgb";
 
-        // Change camera parameters
-        std::string msg = "v4l2-ctl -d " + SSTR(i) + " -c focus_auto=" + (AUTO_FOCUS?"1":"0");
-        std::system(msg.c_str());
-        msg = "v4l2-ctl -d " + SSTR(i) + " -c focus_absolute=" + SSTR(FOCUS);
-        std::system(msg.c_str());
-        msg = "v4l2-ctl -d " + SSTR(i) + " -c sharpness=" + SSTR(SHARPNESS);
-        std::system(msg.c_str());
+        // Set up information manager
+        std::string url, camera_name, image_raw_pub;
+        pnode.getParam("camera_info_url", url);
+        pnode.param<std::string>("camera_name", camera_name, "camera");
+        pnode.param<std::string>("image_pub", image_raw_pub, "/rcCamera/image_raw");
 
-        // If not success, exit program
-        if(!_camera->isOpened())
-        {
-            delete _camera;
-            std::cerr << "Error opening camera feed..!" << std::endl;
-        }
+        info_mgr.setCameraName(camera_name);
+        info_mgr.loadCameraInfo(url);
+
+        // Pull other configuration
+        pnode.getParam("device", device);
+        pnode.getParam("fps", fps);
+        pnode.getParam("skip_frames", skip_frames);
+        pnode.getParam("width", width);
+        pnode.getParam("height", height);
+        pnode.getParam("frame_id", frame);
+        pnode.getParam("format", format);
+
+        // Advertise image streams and info streams
+        if(format != "jpeg")
+            pub = it.advertise(image_raw_pub, 1);
         else
+            pubjpeg = node.advertise<CompressedImage>(image_raw_pub + "/compressed", 1);
+
+        info_pub = node.advertise<CameraInfo>("camera_info", 1);
+
+        // Initialize the cameras
+        uvc_cam::Cam::mode_t mode = uvc_cam::Cam::MODE_RGB;
+        if(format == "jpeg")
+            mode = uvc_cam::Cam::MODE_MJPG;
+
+        cam = new uvc_cam::Cam(device.c_str(), mode, width, height, fps);
+        cam->set_motion_thresholds(100, -1);
+
+        bool auto_focus;
+        if(pnode.getParam("auto_focus", auto_focus))
+            cam->set_v4l2_control(V4L2_CID_FOCUS_AUTO, auto_focus, "auto_focus");
+
+        int focus_absolute;
+        if(pnode.getParam("focus_absolute", focus_absolute))
+            cam->set_v4l2_control(V4L2_CID_FOCUS_ABSOLUTE, focus_absolute, "focus_absolute");
+
+        bool auto_exposure;
+        if(pnode.getParam("auto_exposure", auto_exposure))
         {
-            std::cout << "Camera " << i << " opened!" << std::endl;
-            break;
+            int val;
+
+            if(auto_exposure)
+                val = V4L2_EXPOSURE_AUTO;
+            else
+                val = V4L2_EXPOSURE_MANUAL;
+
+            cam->set_v4l2_control(V4L2_CID_EXPOSURE_AUTO, val, "auto_exposure");
         }
+
+        int exposure_auto_priority;
+        if(pnode.getParam("exposure_auto_priority", exposure_auto_priority))
+            cam->set_v4l2_control(V4L2_CID_EXPOSURE_AUTO_PRIORITY, exposure_auto_priority, "exposure_auto_priority");
+
+        int exposure_absolute;
+        if (pnode.getParam("exposure_absolute", exposure_absolute))
+        cam->set_v4l2_control(V4L2_CID_EXPOSURE_ABSOLUTE, exposure_absolute, "exposure_absolute");
+
+        int exposure;
+        if(pnode.getParam("exposure", exposure))
+            cam->set_v4l2_control(V4L2_CID_EXPOSURE, exposure, "exposure");
+
+        int brightness;
+        if(pnode.getParam("brightness", brightness))
+            cam->set_v4l2_control(V4L2_CID_BRIGHTNESS, brightness, "brightness");
+
+        int power_line_frequency;
+        if(pnode.getParam("power_line_frequency", power_line_frequency))
+        {
+            int val;
+            if (power_line_frequency == 0)
+            {
+                val = V4L2_CID_POWER_LINE_FREQUENCY_DISABLED;
+            }
+            else if (power_line_frequency == 50)
+            {
+                val = V4L2_CID_POWER_LINE_FREQUENCY_50HZ;
+            }
+            else if (power_line_frequency == 60)
+            {
+                val = V4L2_CID_POWER_LINE_FREQUENCY_60HZ;
+            }
+            else
+            {
+                printf("power_line_frequency=%d not supported. Using auto.\n", power_line_frequency);
+                val = V4L2_CID_POWER_LINE_FREQUENCY_AUTO;
+            }
+
+            cam->set_v4l2_control(V4L2_CID_POWER_LINE_FREQUENCY, val, "power_line_frequency");
+        }
+
+        int contrast;
+        if(pnode.getParam("contrast", contrast))
+            cam->set_v4l2_control(V4L2_CID_CONTRAST, contrast, "contrast");
+
+        int saturation;
+        if(pnode.getParam("saturation", saturation))
+            cam->set_v4l2_control(V4L2_CID_SATURATION, saturation, "saturation");
+
+        int hue;
+        if(pnode.getParam("hue", hue))
+            cam->set_v4l2_control(V4L2_CID_HUE, hue, "hue");
+
+        bool auto_white_balance;
+        if(pnode.getParam("auto_white_balance", auto_white_balance))
+            cam->set_v4l2_control(V4L2_CID_AUTO_WHITE_BALANCE, auto_white_balance, "auto_white_balance");
+
+        int white_balance_tmp;
+        if(pnode.getParam("white_balance_temperature", white_balance_tmp))
+            cam->set_v4l2_control(V4L2_CID_WHITE_BALANCE_TEMPERATURE, white_balance_tmp, "white_balance_temperature");
+
+        int gamma;
+        if (pnode.getParam("gamma", gamma))
+            cam->set_v4l2_control(V4L2_CID_GAMMA, gamma, "gamma");
+
+        int sharpness;
+        if(pnode.getParam("sharpness", sharpness))
+            cam->set_v4l2_control(V4L2_CID_SHARPNESS, sharpness, "sharpness");
+
+        int backlight_comp;
+        if(pnode.getParam("backlight_compensation", backlight_comp))
+            cam->set_v4l2_control(V4L2_CID_BACKLIGHT_COMPENSATION, backlight_comp, "backlight_compensation");
+
+
+        bool auto_gain;
+        if (pnode.getParam("auto_gain", auto_gain))
+            cam->set_v4l2_control(V4L2_CID_AUTOGAIN, auto_gain, "auto_gain");
+
+        int gain;
+        if (pnode.getParam("gain", gain))
+            cam->set_v4l2_control(V4L2_CID_GAIN, gain, "gain");
+
+        bool h_flip;
+        if (pnode.getParam("horizontal_flip", h_flip))
+            cam->set_v4l2_control(V4L2_CID_HFLIP, h_flip, "horizontal_flip");
+
+        bool v_flip;
+        if (pnode.getParam("vertical_flip", v_flip))
+            cam->set_v4l2_control(V4L2_CID_VFLIP, v_flip, "vertical_flip");
+
+        // TODO:
+        // - zoom absolute, zoom relative and zoom continuous controls
+        // - add generic parameter list:
+        //   [(id0, val0, name0), (id1, val1, name1), ...
+
+        // And turn on the streamer
+        ok = true;
+        image_thread = boost::thread(boost::bind(&Camera::feedImages, this));
     }
 
-    // Setup ROS Arguments
-    char** argv = NULL;
-    int argc = 0;
-
-    // Init ROS Node
-    ros::init(argc, argv, "RSD_Camera_Node");
-    ros::NodeHandle nh;
-
-    // Topic names
-    std::string imagePub;
-    nh.param<std::string>("/RC_Camera/Camera/image_pub", imagePub, "/rcCamera/image");
-
-    // Create publisher topic
-    image_transport::ImageTransport it(nh);
-    image_transport::Publisher pub = it.advertise(imagePub, 1);
-
-    // Set loop rate
-    ros::Rate loop_rate(CAMERA_FREQUENCY);
-
-    // Spin
-    cv::Mat _image;
-
-    while(nh.ok())
+    void Camera::sendInfo(ImagePtr &image, ros::Time time)
     {
-        if(_camera->read(_image))
-        {
-            // Convert to ROS format
-            sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", _image).toImageMsg();
+        CameraInfoPtr info(new CameraInfo(info_mgr.getCameraInfo()));
 
-            // Publish to topic
-            pub.publish(msg);
+        // Throw out any CamInfo that's not calibrated to this camera mode
+        if(info->K[0] != 0.0 && (image->width != info->width || image->height != info->height))
+            info.reset(new CameraInfo());
+
+        // If we don't have a calibration, set the image dimensions
+        if(info->K[0] == 0.0)
+        {
+            info->width = image->width;
+            info->height = image->height;
         }
 
-        ros::spinOnce();
-        loop_rate.sleep();
+        info->header.stamp = time;
+        info->header.frame_id = frame;
+        info_pub.publish(info);
     }
 
-    // Delete camera object
-    _camera->release();
-    delete _camera;
+    void Camera::sendInfoJpeg(ros::Time time)
+    {
+        CameraInfoPtr info(new CameraInfo(info_mgr.getCameraInfo()));
+        info->header.stamp = time;
+        info->header.frame_id = frame;
+        info_pub.publish(info);
+    }
 
-    // Return
+    void Camera::feedImages()
+    {
+        unsigned int pair_id = 0;
+
+        while(ok)
+        {
+            unsigned char *img_frame = NULL;
+            uint32_t bytes_used;
+            ros::Time capture_time = ros::Time::now();
+            int idx = cam->grab(&img_frame, bytes_used);
+
+            /* Read in every frame the camera generates, but only send each
+             * (skip_frames + 1)th frame. It's set up this way just because
+             * this is based on Stereo...
+             */
+
+            if(skip_frames == 0 || frames_to_skip == 0)
+            {
+                if(img_frame && format != "jpeg")
+                {
+                    ImagePtr image(new Image);
+                    image->height = height;
+                    image->width = width;
+                    image->step = 3 * width;
+                    image->encoding = image_encodings::RGB8;
+                    image->header.stamp = capture_time;
+                    image->header.seq = pair_id;
+                    image->header.frame_id = frame;
+                    image->data.resize(image->step * image->height);
+                    memcpy(&image->data[0], img_frame, width*height * 3);
+                    pub.publish(image);
+                    sendInfo(image, capture_time);
+
+                    ++pair_id;
+                }
+                else if(img_frame && format == "jpeg")
+                {
+                    CompressedImagePtr image(new CompressedImage);
+
+                    image->header.stamp = capture_time;
+                    image->header.seq = pair_id;
+                    image->header.frame_id = frame;
+                    image->data.resize(bytes_used);
+                    memcpy(&image->data[0], img_frame, bytes_used);
+                    pubjpeg.publish(image);
+                    sendInfoJpeg(capture_time);
+
+                    ++pair_id;
+                }
+
+                frames_to_skip = skip_frames;
+            }
+            else
+            {
+                frames_to_skip--;
+            }
+
+            if(img_frame)
+                cam->release(idx);
+        }
+    }
+
+    Camera::~Camera()
+    {
+        ok = false;
+        image_thread.join();
+        if(cam)
+            delete cam;
+    }
+}
+
+int main(int argc, char **argv)
+{
+    ros::init(argc, argv, "RC_Camera_Node");
+    uvc_camera::Camera camera(ros::NodeHandle(), ros::NodeHandle("~"));
+    ros::spin();
     return 0;
 }

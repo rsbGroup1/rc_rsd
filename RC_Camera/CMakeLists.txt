@@ -8,7 +8,6 @@ find_package(catkin REQUIRED COMPONENTS camera_info_manager image_transport node
 
 ## System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS thread system)
-#find_package(V4L2 REQUIRED)
 set(V4L2_LIBRARIES v4l2)
 
 catkin_package(
@@ -23,24 +22,13 @@ catkin_package(
 include_directories(include)
 include_directories(${catkin_INCLUDE_DIRS})
 
-add_library(nodelet_uvc_camera src/nodelets.cpp src/camera.cpp src/stereo.cpp src/uvc_cam.cpp)
-target_link_libraries(nodelet_uvc_camera ${Boost_LIBRARIES} ${V4L2_LIBRARIES} ${catkin_LIBRARIES})
-
-add_executable(rc_camera src/camera_node.cpp src/camera.cpp src/uvc_cam.cpp)
+add_executable(rc_camera src/cameraNode.cpp src/uvc_cam.cpp)
 target_link_libraries(rc_camera ${Boost_LIBRARIES} ${V4L2_LIBRARIES} ${catkin_LIBRARIES})
 
-add_executable(rc_stereo src/stereo_node.cpp src/stereo.cpp src/uvc_cam.cpp)
-target_link_libraries(rc_stereo ${Boost_LIBRARIES} ${V4L2_LIBRARIES} ${catkin_LIBRARIES})
-
-
 ## Mark executables and/or libraries for installation
-install(TARGETS nodelet_uvc_camera rc_camera rc_stereo
+install(TARGETS rc_camera  
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(FILES
-  nodelet_uvc_camera.xml
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-)

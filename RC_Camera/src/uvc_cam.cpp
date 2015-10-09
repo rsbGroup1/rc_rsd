@@ -12,7 +12,6 @@
 #include <unistd.h>
 #include <ros/console.h>
 #include <err.h>
-
 #include "uvc_cam/uvc_cam.h"
 
 using std::string;
