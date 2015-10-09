@@ -10,11 +10,11 @@ int main()
 
     // Init ROS Node
     ros::init(argc, argv, "RSD_Main_Node");
-    ros::NodeHandle nh;
+    ros::NodeHandle nh, pNh("~");
 
     // Topic names
     std::string imagePub;
-    nh.param<std::string>("/RC_Camera/Camera/image_pub", imagePub, "/rcCamera/image");
+    pNh.param<std::string>("image_pub", imagePub, "/rcCamera/image");
 
     // Set loop rate
     ros::Rate loop_rate(10);

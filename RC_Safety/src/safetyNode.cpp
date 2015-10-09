@@ -14,11 +14,11 @@ int main()
 
     // Init ROS Node
     ros::init(argc, argv, "RSD_Safety_Node");
-    ros::NodeHandle nh;
+    ros::NodeHandle nh, pNh("~");
 
     // Topic names
     std::string safetyPub;
-    nh.param<std::string>("/RC_Safety/Safety/safety_pub", safetyPub, "/rcSafety/safetyStatus");
+    pNh.param<std::string>("safety_pub", safetyPub, "/rcSafety/safetyStatus");
 
     // Create topic
     _safetyPublisher = nh.advertise<std_msgs::Bool>(safetyPub, 1);

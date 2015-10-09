@@ -3,7 +3,7 @@
 <launch>
 	<group ns="RC_Safety">
 		<node pkg="rc_safety" name="Safety" type="rc_safety">
-			<!--param name="image_pub" value="/rcCamera/image"/> -->
+			<param name="safety_pub" value="/rcSafety/safetyStatus"/>
 		</node>
 	</group>
 </launch>

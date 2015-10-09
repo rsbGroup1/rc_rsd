@@ -1,8 +1,0 @@
-prefix=/home/student/catkin_ws/src/rc_rsd/build-RC_Grasp-Desktop-Default/devel
-
-Name: rc_grasp
-Description: Description of rc_grasp
-Version: 0.0.0
-Cflags: -I/home/student/catkin_ws/src/rc_rsd/build-RC_Grasp-Desktop-Default/devel/include
-Libs: -L/home/student/catkin_ws/src/rc_rsd/build-RC_Grasp-Desktop-Default/devel/lib 
-Requires: 

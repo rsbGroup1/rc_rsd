@@ -192,15 +192,15 @@ int main()
 
     // Init ROS Node
     ros::init(argc, argv, "RSD_Grasp_Node");
-    ros::NodeHandle nh;
+    ros::NodeHandle nh, pNh("~");
 
     // Topic names
     std::string kukaService, PG70Service, grabBrickService, scenePath;
-    nh.param<std::string>("/RC_Grasp/Grasp/KukaCmdServiceName", kukaService, "/KukaNode");
-    nh.param<std::string>("/RC_Grasp/Grasp/PG70CmdServiceName", PG70Service, "/PG70/PG70");
-    nh.param<std::string>("/RC_Grasp/Grasp/grabBrickServiceName", grabBrickService, "/mrGrasp/grabBrick");
-    nh.param<std::string>("/RC_Grasp/Grasp/scenePath", scenePath, "/home/student/catkin_ws/src/rc_rsd/RC_KukaScene/Scene.wc.xml");
-    nh.param<double>("/RC_Grasp/Grasp/idleHeight", _idleQHeight, 0.3);
+    pNh.param<std::string>("KukaCmdServiceName", kukaService, "/KukaNode");
+    pNh.param<std::string>("PG70CmdServiceName", PG70Service, "/PG70/PG70");
+    pNh.param<std::string>("grabBrickServiceName", grabBrickService, "/mrGrasp/grabBrick");
+    pNh.param<std::string>("scenePath", scenePath, "/home/student/catkin_ws/src/rc_rsd/RC_KukaScene/Scene.wc.xml");
+    pNh.param<double>("idleHeight", _idleQHeight, 0.3);
 
     // Create service calls
     _serviceKukaSetConf = nh.serviceClient<rc_grasp::setConfiguration>(kukaService + "/SetConfiguration");

@@ -3,7 +3,7 @@
 <launch>
 	<group ns="RC_Vision">
 		<node pkg="rc_vision" name="Vision" type="rc_vision">
-			<param name="image_sub" value="/rcCamera/image"/> 
+			<param name="image_sub" value="/rcCamera/image_raw"/> 
 			<param name="any_brick_pub" value="/rcVision/anyBricks"/> 
 		</node>
 	</group>

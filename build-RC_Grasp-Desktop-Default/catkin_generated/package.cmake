@@ -1,7 +1,0 @@
-set(_CATKIN_CURRENT_PACKAGE "rc_grasp")
-set(rc_grasp_MAINTAINER "Yonas Alizadeh <yoali11@student.sdu.dk>")
-set(rc_grasp_DEPRECATED "")
-set(rc_grasp_VERSION "0.0.0")
-set(rc_grasp_BUILD_DEPENDS "roscpp" "rospy" "std_msgs" "message_generation")
-set(rc_grasp_RUN_DEPENDS "roscpp" "rospy" "std_msgs" "message_runtime")
-set(rc_grasp_BUILDTOOL_DEPENDS "catkin")

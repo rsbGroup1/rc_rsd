@@ -69,12 +69,13 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
 
         // Setup ROS service clients and topic subscriptions
         _nodeHandle = new ros::NodeHandle;
+        ros::NodeHandle pNh("~");
 
         // Topic names
         std::string imageSub, kukaService, PG70Service;
-        _nodeHandle->param<std::string>("/RC_HMI/HMI/image_sub", imageSub, "/rcCamera/image");
-        _nodeHandle->param<std::string>("/RC_HMI/HMI/KukaCmdServiceName", kukaService, "/KukaNode");
-        _nodeHandle->param<std::string>("/RC_HMI/HMI/PG70CmdServiceName", PG70Service, "/PG70/PG70");
+        pNh.param<std::string>("image_sub", imageSub, "/rcCamera/image_raw");
+        pNh.param<std::string>("KukaCmdServiceName", kukaService, "/KukaNode");
+        pNh.param<std::string>("PG70CmdServiceName", PG70Service, "/PG70/PG70");
 
         _serviceKukaSetConf = _nodeHandle->serviceClient<rc_hmi::setConfiguration>(kukaService + "/SetConfiguration");
         _serviceKukaGetConf = _nodeHandle->serviceClient<rc_hmi::getConfiguration>(kukaService + "/GetConfiguration");

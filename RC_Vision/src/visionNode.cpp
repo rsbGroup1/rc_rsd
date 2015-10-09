@@ -35,12 +35,12 @@ int main()
 
     // Init ROS Node
     ros::init(argc, argv, "RSD_Vision_Node");
-    ros::NodeHandle nh;
+    ros::NodeHandle nh, pNh("~");
 
     // Topic names
     std::string imageSub, anyBricksPub;
-    nh.param<std::string>("/RC_Vision/Vision/image_sub", imageSub, "/rcCamera/image");
-    nh.param<std::string>("/RC_Vision/Vision/any_brick_pub", anyBricksPub, "/rcVision/anyBricks");
+    pNh.param<std::string>("image_sub", imageSub, "/rcCamera/image_raw");
+    pNh.param<std::string>("any_brick_pub", anyBricksPub, "/rcVision/anyBricks");
 
     // Subscribers
     image_transport::ImageTransport itImg(nh);
