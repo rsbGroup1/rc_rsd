@@ -34,15 +34,14 @@
 #define CONNECT_KUKA                true
 #define CONNECT_PG70                false
 
-
 // Global variables
 ros::ServiceClient _serviceKukaSetConf, _serviceKukaStop, _serviceKukaGetConf, _serviceKukaGetQueueSize, _serviceKukaGetIsMoving;
 ros::ServiceClient _servicePG70Move, _servicePG70Stop, _servicePG70Open;
 rw::models::WorkCell::Ptr _workcell;
 rw::models::Device::Ptr _device;
 rw::kinematics::State _state;
-rw::invkin::JacobianIKSolver *_inverseKin;
-rw::kinematics::Frame *_brickFrame, *_toolFrame;
+rw::invkin::JacobianIKSolver *_inverseKinGripper, *_inverseKinCamera;
+rw::kinematics::Frame *_brickFrame, *_gripperFrame, *_cameraFrame;
 rw::math::Transform3D<> _w2brick;
 rw::math::Transform3D<> _w2base;
 double _idleQHeight;
@@ -88,7 +87,7 @@ rw::math::Q getQFromPinBrickFrame(rw::math::Vector3D<> p, double rotation)
     rw::math::Transform3D<> posOffset(p);
     rw::math::Transform3D<> w2brickOffset = _w2brick * posOffset;
     rw::math::Transform3D<> transform((inverse(_w2base)*w2brickOffset).P(), rw::math::RPY<>(M_PI, -18*DEGREETORAD, M_PI));
-    std::vector<rw::math::Q> qVec = _inverseKin->solve(transform, _state);
+    std::vector<rw::math::Q> qVec = _inverseKinGripper->solve(transform, _state);
     if(qVec.empty())
     {
         ROS_ERROR("Error in inverse kinematics!");
@@ -236,11 +235,19 @@ int main()
         return -1;
     }
 
-    // Find toolcenter Frame
-    _toolFrame = _workcell->findFrame("PG70.TCP");
-    if(!_toolFrame)
+    // Find Gripper Frame
+    _gripperFrame = _workcell->findFrame("PG70.TCP");
+    if(!_gripperFrame)
     {
         ROS_ERROR("Cannot find PG70.TCP frame in Scene file!");
+        return -1;
+    }
+
+    // Find Gripper Frame
+    _cameraFrame = _workcell->findFrame("Camera");
+    if(!_cameraFrame)
+    {
+        ROS_ERROR("Cannot find Camera frame in Scene file!");
         return -1;
     }
 
@@ -252,9 +259,13 @@ int main()
     _limits = _device->getBounds();
 
     // Make new invkin object here
-    _inverseKin = new rw::invkin::JacobianIKSolver(_device, _toolFrame, _state);
-    _inverseKin->setEnableInterpolation(true);
-    _inverseKin->setCheckJointLimits(true);
+    _inverseKinGripper = new rw::invkin::JacobianIKSolver(_device, _gripperFrame, _state);
+    _inverseKinGripper->setEnableInterpolation(true);
+    _inverseKinGripper->setCheckJointLimits(true);
+
+    _inverseKinCamera = new rw::invkin::JacobianIKSolver(_device, _cameraFrame, _state);
+    _inverseKinCamera->setEnableInterpolation(true);
+    _inverseKinCamera->setCheckJointLimits(true);
 
     // Load transformations
     _w2brick = rw::kinematics::Kinematics::worldTframe(_brickFrame, _state);
@@ -272,7 +283,7 @@ int main()
     }
     _idleQ = qVec[0];
 
-    // Calculate release brick Q// Find Brick Frame
+    // Calculate release brick Q
     rw::kinematics::Frame *mobileRobotFrame = _workcell->findFrame("MobileRobot");
     if(!mobileRobotFrame)
     {
@@ -281,7 +292,7 @@ int main()
     }
     rw::math::Transform3D<> w2mobilerobot = rw::kinematics::Kinematics::worldTframe(mobileRobotFrame, _state);
     transform = rw::math::Transform3D<>((inverse(_w2base)*w2mobilerobot).P(), rw::math::RPY<>(-M_PI/2.0, 0, M_PI));
-    qVec = _inverseKin->solve(transform, _state);
+    qVec = _inverseKinCamera->solve(transform, _state);
     if(qVec.empty())
     {
         ROS_ERROR("Error in inverse kinematics!");

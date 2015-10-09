@@ -36,7 +36,7 @@
 	</Frame>
 
 	<Frame name="Brick" refframe="conveyorBeltTilted">
-		<RPY>0 0 0</RPY><Pos>-0.3 0 0</Pos>
+		<RPY>0 0 0</RPY><Pos>-0.25 0 0</Pos>
 	</Frame>
 
 	<Frame name="MobileRobot" refframe="WORLD">
@@ -44,7 +44,7 @@
 	</Frame>
 
 	<Frame name="Camera" refframe="ToolMount">
-		<RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+		<RPY>-90 0 180</RPY><Pos>-0.07 0 0.105</Pos>
 	</Frame>
 
 	<Frame name="fence_right" refframe="WORLD">
