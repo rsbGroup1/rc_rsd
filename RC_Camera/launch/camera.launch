@@ -5,11 +5,13 @@
 		<!-- Camera node -->
 		<node pkg="rc_camera" name="rc_camera"  type="rc_camera">
 			<param name="image_pub" value="/rcCamera/image_raw"/> 
-			<param name="width" type="int" value="1920" />
-			<param name="height" type="int" value="1080" />
-			<param name="fps" type="int" value="5" />
-			<param name="auto_focus" type="bool" value="False" />
-			<param name="focus_absolute" type="int" value="0" />
+			<param name="width" type="int" value="2304" />
+			<param name="height" type="int" value="1536" />
+			<param name="fps" type="int" value="2" />
+			<param name="auto_focus" type="bool" value="false" />
+			<param name="focus_absolute" type="int" value="43" />
+			<param name="exposure_auto" type="int" value="1" />
+			<param name="exposure_absolute" type="int" value="150" />
 			<!-- Other supported params: auto_exposure, exposure_absolute, brightness, power_line_frequency -->
 
 			<param name="device" type="string" value="/dev/video0" />
