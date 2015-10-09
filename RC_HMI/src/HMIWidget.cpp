@@ -65,24 +65,39 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         int argc = 0;
 
         // Init ROS
-        ros::init(argc, argv, "RSD_HMI_Node");
-
-        // Setup ROS service clients and topic subscriptions
+        ros::init(argc, argv, "rc_hmi");
         _nodeHandle = new ros::NodeHandle;
-        ros::NodeHandle pNh("~");
+        ros::NodeHandle pNh(ros::this_node::getName() + "/");
 
         // Topic names
-        std::string imageSub, kukaService, PG70Service, consoleSub;
+        std::string imageSub, kukaService, PG70Service, consoleSub, convService, mesPub, mesSub, anyBricksSub, safetySub;
         pNh.param<std::string>("image_sub", imageSub, "/rcCamera/image_raw");
         pNh.param<std::string>("KukaCmdServiceName", kukaService, "/KukaNode");
         pNh.param<std::string>("PG70CmdServiceName", PG70Service, "/PG70/PG70");
-        pNh.param<std::string>("console_sub", consoleSub, "/mrHMI/console");
+        pNh.param<std::string>("console_sub", consoleSub, "/rcHMI/console");
+        pNh.param<std::string>("convServiceName", convService, "/rcPLC");
+        pNh.param<std::string>("anyBricks_sub", anyBricksSub, "/rcVision/anyBricks");
+        pNh.param<std::string>("safety_sub", safetySub, "/rcSafety/status");
+        pNh.param<std::string>("mesPub", mesPub, "/rcMESServer/msgToServer");
+        pNh.param<std::string>("mesSub", mesSub, "/rcMESServer/msgFromServer");
 
+        // Create service calls
         _serviceKukaSetConf = _nodeHandle->serviceClient<rc_hmi::setConfiguration>(kukaService + "/SetConfiguration");
         _serviceKukaGetConf = _nodeHandle->serviceClient<rc_hmi::getConfiguration>(kukaService + "/GetConfiguration");
         _serviceKukaStop = _nodeHandle->serviceClient<rc_hmi::stopRobot>(kukaService + "/StopRobot");
         _servicePG70Move = _nodeHandle->serviceClient<rc_hmi::Move>(PG70Service + "/Move");
         _servicePG70Stop = _nodeHandle->serviceClient<rc_hmi::Stop>(PG70Service + "/Stop");
+        _serviceConvMove = _nodeHandle->serviceClient<rc_hmi::MoveConv>(convService + "/MoveConv");
+        _serviceConvStop = _nodeHandle->serviceClient<rc_hmi::StopConv>(convService + "/StopConv");
+        _serviceConvStart = _nodeHandle->serviceClient<rc_hmi::StartConv>(convService + "/StartConv");
+
+        // Publishers
+        _mesMessagePub = _nodeHandle->advertise<std_msgs::String>(mesPub, 100);
+
+        // Subscribers
+        ros::Subscriber anyBrickSub = _nodeHandle->subscribe(anyBricksSub, 10, &HMIWidget::anyBrickCallback, this);
+        ros::Subscriber safetySubs = _nodeHandle->subscribe(safetySub, 10, &HMIWidget::safetyCallback, this);
+        ros::Subscriber mesMessageSub = _nodeHandle->subscribe(mesSub, 10, &HMIWidget::mesRecCallback, this);
 
         _consoleSub = _nodeHandle->subscribe(consoleSub, 100, &HMIWidget::consoleCallback, this);
         _itImg = new image_transport::ImageTransport(*_nodeHandle);

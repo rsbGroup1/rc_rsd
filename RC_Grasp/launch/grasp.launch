@@ -2,12 +2,11 @@
 
 <launch>
 	<group ns="RC_Grasp">
-		<node pkg="rc_grasp" name="Grasp" type="rc_grasp">
+		<node pkg="rc_grasp" name="rc_grasp" type="rc_grasp">
 			<param name="KukaCmdServiceName" value="/KukaNode"/>
 			<param name="PG70CmdServiceName" value="/PG70/PG70"/>
-			<param name="grabBrickServiceName" value="/mrGrasp/grabBrick"/>
 			<param name="scenePath" value="/home/student/catkin_ws/src/rc_rsd/RC_KukaScene/Scene.wc.xml"/>
-			<param name="hmiConsole" value="/mrHMI/console"/>
+			<param name="hmiConsole" value="/rcHMI/console"/>
 			<param name="idleHeight" value="0.3"/>
 			<param name="graspOffset" value="0.05"/>
 			<param name="graspLifted" value="0.1"/>

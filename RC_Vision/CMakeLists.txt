@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rc_vision)
 
-SET(OpenCV_DIR "/usr/local/share/OpenCV")
-
-## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs message_generation cv_bridge genmsg image_transport sensor_msgs OpenCV)
 
-#add_message_files(FILES getBricks.srv)
-add_service_files(FILES getBricks.srv)
+# Service files
+add_service_files(
+	FILES
+	getBricks.srv
+)
 
-#generate_messages(DEPENDENCIES std_msgs sensor_msgs)
+generate_messages(DEPENDENCIES std_msgs)
 
 catkin_package()
 

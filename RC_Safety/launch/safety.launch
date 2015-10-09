@@ -2,8 +2,9 @@
 
 <launch>
 	<group ns="RC_Safety">
-		<node pkg="rc_safety" name="Safety" type="rc_safety">
-			<param name="safety_pub" value="/rcSafety/safetyStatus"/>
+		<node pkg="rc_safety" name="rc_safety" type="rc_safety">
+			<param name="safety_pub" value="/rcSafety/status"/>
+			<param name="hmiConsole" value="/rcHMI/console"/>
 		</node>
 	</group>
 </launch>

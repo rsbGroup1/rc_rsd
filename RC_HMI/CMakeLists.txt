@@ -2,8 +2,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rc_hmi)
 
-SET(OpenCV_DIR "/usr/local/share/OpenCV")
-
 ## Find catkin and any catkin packages
 FIND_PACKAGE(catkin REQUIRED COMPONENTS roscpp rospy std_msgs message_generation cv_bridge genmsg image_transport sensor_msgs OpenCV)
 
@@ -16,6 +14,9 @@ add_service_files(
 	stopRobot.srv
 	Move.srv
 	Stop.srv
+	MoveConv.srv
+	StartConv.srv
+	StopConv.srv
 )
 
 generate_messages(DEPENDENCIES std_msgs)

@@ -2,11 +2,16 @@
 
 <launch>
 	<group ns="RC_HMI">
-		<node pkg="rc_hmi" name="HMI" type="rc_hmi">
+		<node pkg="rc_hmi" name="rc_hmi" type="rc_hmi">
 			<param name="image_sub" value="/rcCamera/image_raw"/> 
 			<param name="KukaCmdServiceName" value="/KukaNode"/> 
 			<param name="PG70CmdServiceName" value="/PG70/PG70"/> 
-			<param name="console_sub" value="/mrHMI/console"/> 
+			<param name="console_sub" value="/rcHMI/console"/> 
+			<param name="convServiceName" value="/rcPLC"/> 
+			<param name="anyBricks_sub" value="/rcVision/anyBricks"/>
+			<param name="safety_sub" value="/rcSafety/status"/>
+			<param name="mesPub" value="/rcMESServer/msgToServer"/>
+			<param name="mesSub" value="/rcMESServer/msgFromServer"/>
 		</node>
 	</group>
 </launch>

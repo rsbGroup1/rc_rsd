@@ -32,7 +32,7 @@
 #define DEGREETORAD                 (M_PI/180.0)
 #define RADTODEGREE                 (180.0/M_PI)
 #define ROBOT_NAME                  "KukaKR6R700"
-#define CONNECT_KUKA                true
+#define CONNECT_KUKA                false
 #define CONNECT_PG70                false
 #define PITCH_OFFSET                (-17.340*DEGREETORAD)
 
@@ -199,16 +199,16 @@ int main()
     int argc = 0;
 
     // Init ROS Node
-    ros::init(argc, argv, "RSD_Grasp_Node");
-    ros::NodeHandle nh, pNh("~");
+    ros::init(argc, argv, "rc_grasp");
+    ros::NodeHandle nh;
+    ros::NodeHandle pNh(ros::this_node::getName() + "/");
 
     // Topic names
-    std::string kukaService, PG70Service, grabBrickService, scenePath, hmiConsolePub;
+    std::string kukaService, PG70Service, scenePath, hmiConsolePub;
     pNh.param<std::string>("KukaCmdServiceName", kukaService, "/KukaNode");
     pNh.param<std::string>("PG70CmdServiceName", PG70Service, "/PG70/PG70");
-    pNh.param<std::string>("grabBrickServiceName", grabBrickService, "/mrGrasp/grabBrick");
     pNh.param<std::string>("scenePath", scenePath, "/home/student/catkin_ws/src/rc_rsd/RC_KukaScene/Scene.wc.xml");
-    pNh.param<std::string>("hmiConsole", hmiConsolePub, "/mrHMI/console");
+    pNh.param<std::string>("hmiConsole", hmiConsolePub, "/rcHMI/console");
     pNh.param<double>("idleHeight", _idleQHeight, 0.3);
     pNh.param<double>("graspOffset", _graspOffset, 0.0);
     pNh.param<double>("graspLifted", _graspLifted, 0.1);
@@ -224,7 +224,7 @@ int main()
     _servicePG70Move = nh.serviceClient<rc_grasp::Move>(PG70Service + "/move");
     _servicePG70Stop = nh.serviceClient<rc_grasp::Stop>(PG70Service + "/stop");
     _servicePG70Open = nh.serviceClient<rc_grasp::Open>(PG70Service + "/open");
-    ros::ServiceServer serviceGrabBrick = nh.advertiseService(grabBrickService, grabBrickCallback);
+    ros::ServiceServer serviceGrabBrick = nh.advertiseService("/rcGrasp/grabBrick", grabBrickCallback);
 
     // Create publisher
     _hmiConsolePub = nh.advertise<std_msgs::String>(hmiConsolePub, 100);

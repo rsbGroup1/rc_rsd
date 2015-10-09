@@ -284,8 +284,8 @@ namespace uvc_camera
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "RC_Camera_Node");
-    uvc_camera::Camera camera(ros::NodeHandle(), ros::NodeHandle("~"));
+    ros::init(argc, argv, "rc_camera");
+    uvc_camera::Camera camera(ros::NodeHandle(), ros::NodeHandle(ros::this_node::getName() + "/"));
     ros::spin();
     return 0;
 }

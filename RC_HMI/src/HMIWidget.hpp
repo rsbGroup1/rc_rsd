@@ -24,6 +24,9 @@
 #include <rc_hmi/stopRobot.h>
 #include <rc_hmi/Move.h>
 #include <rc_hmi/Stop.h>
+#include <rc_hmi/MoveConv.h>
+#include <rc_hmi/StartConv.h>
+#include <rc_hmi/StopConv.h>
 
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/TreeDevice.hpp>
@@ -36,6 +39,7 @@
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
 #include "std_msgs/String.h"
+#include "std_msgs/Bool.h"
 #include <image_transport/image_transport.h>
 
 // OpenCV
@@ -141,6 +145,9 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
     private:
         // Member functions
         void imageCallback(const sensor_msgs::ImageConstPtr& msg);
+	void anyBrickCallback(std_msgs::Bool msg);
+	void safetyCallback(std_msgs::Bool msg);
+	void mesRecCallback(std_msgs::String msg);
         void startROSThread();
         bool openWorkCell();
         bool msgBoxHelper(QString, QString);
@@ -160,7 +167,9 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
         image_transport::Subscriber _subImg;
         ros::ServiceClient _serviceKukaSetConf, _serviceKukaStop, _serviceKukaGetConf;
         ros::ServiceClient _servicePG70Move, _servicePG70Stop;
-        ros::Subscriber _consoleSub;
+        ros::ServiceClient _serviceConvMove, _serviceConvStop, _serviceConvStart;
+        ros::Subscriber _consoleSub, _mesMessageSub, _anyBrickSub, _safetySub;
+	ros::Publisher _mesMessagePub;
 
         // Image
         QTimer *_imageShowTimer;

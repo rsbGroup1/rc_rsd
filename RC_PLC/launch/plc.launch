@@ -2,8 +2,8 @@
 
 <launch>
 	<group ns="RC_PLC">
-		<node pkg="rc_plc" name="PLC" type="rc_plc">
-			<!--param name="image_pub" value="/rcCamera/image"/> -->
+		<node pkg="rc_plc" name="rc_plc" type="rc_plc">
+			<param name="hmiConsole" value="/rcHMI/console"/> 
 		</node>
 	</group>
 </launch>

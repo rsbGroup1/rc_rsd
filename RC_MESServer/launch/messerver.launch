@@ -2,9 +2,12 @@
 
 <launch>
 	<group ns="RC_MESServer">
-		<node pkg="rc_messerver" name="MESServer" type="rc_messerver">
+		<node pkg="rc_messerver" name="rc_messerver" type="rc_messerver">
 			<param name="server_ip" value="192.168.100.124"/>
 			<param name="server_port" value="14141"/> 
+			<param name="hmiConsole" value="/rcHMI/console"/> 
+			<param name="mesPub" value="/rcMESServer/msgFromServer"/>
+			<param name="mesSub" value="/rcMESServer/msgToServer"/>
 		</node>
 	</group>
 </launch>
