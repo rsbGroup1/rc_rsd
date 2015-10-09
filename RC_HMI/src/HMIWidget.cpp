@@ -217,8 +217,38 @@ void HMIWidget::eventBtn()
         writeToLog("Cell Error");
         if(msgBoxHelper("The robot will move.","Do you want to continue?"))
         {
-            rw::math::Q q(6,0,0,-90*DEGREETORAD,0,-90*DEGREETORAD,0);
+            /*rw::math::Q q(6,0,0,-90*DEGREETORAD,0,-90*DEGREETORAD,0);
             _deviceKuka->setQ(q, _state);
+            _rws->setState(_state);*/
+
+            // Find Brick Frame
+            rw::kinematics::Frame *brickFrame = _rwWorkCell->findFrame("Brick");
+
+            // Find toolcenter Frame
+            rw::kinematics::Frame *toolFrame = _rwWorkCell->findFrame("PG70.TCP");
+
+            // Make new invkin object here
+            rw::invkin::JacobianIKSolver inverseKin(_deviceKuka, toolFrame, _state);
+            inverseKin.setEnableInterpolation(true);
+            inverseKin.setCheckJointLimits(true);
+
+            // Load transformations
+            rw::math::Transform3D<> _w2brick = rw::kinematics::Kinematics::worldTframe(brickFrame, _state);
+            rw::math::Transform3D<> _w2base = _deviceKuka->worldTbase(_state);
+
+            // Calculate idle Q
+            rw::math::Transform3D<> posOffset(rw::math::Vector3D<>(0, 0, 0.3));
+            rw::math::Transform3D<> w2brickoffset = _w2brick * posOffset;
+            rw::math::Transform3D<> transform((inverse(_w2base)*w2brickoffset).P(), rw::math::RPY<>(M_PI, -18*DEGREETORAD, M_PI));
+
+            std::vector<rw::math::Q> qVec = inverseKin.solve(transform, _state);
+            if(qVec.empty())
+            {
+                ROS_ERROR("Error in inverse kinematics!");
+                return;
+            }
+
+            _deviceKuka->setQ(qVec[0], _state);
             _rws->setState(_state);
         }
     }

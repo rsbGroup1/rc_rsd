@@ -4,7 +4,7 @@
  <!-- We create this as a virtual joint, only used to control the two dependent joints -->
 
  <Frame name="TCP" refframe="ToolBase" type="EndEffector">
- <RPY> -90 0 0 </RPY> <Pos>0 0 0.23</Pos> <!--0.21-->
+ <RPY> -90 0 0 </RPY> <Pos>0 0 0.24</Pos> <!--0.21-->
  </Frame>
  
  <Joint name="RightFinger" refframe="ToolBase" type="Prismatic">

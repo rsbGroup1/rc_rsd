@@ -3,7 +3,7 @@
 	<!-- ROBOT -->
 	<Frame name="Foot" refframe="WORLD">
 		<RPY> 0 180 0 </RPY>
-		<Pos> 0 0.2 0.375 </Pos>
+		<Pos> 0 0.03 0.375 </Pos>
 		<Drawable name="foot_geo" refframe="Env">
 			<Polytope file="Geometry/foot" />
 		</Drawable>
@@ -25,14 +25,14 @@
 
 	<!-- Geometry -->
 	<Frame name="conveyorBelt" refframe="WORLD">
-		<RPY>0 0 0</RPY><Pos>0.2 -0.455 0.645</Pos>
+		<RPY>0 0 0</RPY><Pos>0.2 -0.52 0.645</Pos>
 		<Drawable name="conveyor_geo" refframe="Env">
 			<Polytope file="Geometry/conveyor" />
 		</Drawable>
 	</Frame>
 
 	<Frame name="conveyorBeltTilted" refframe="conveyorBelt">
-		<RPY>0 18 0</RPY><Pos>0 0 -0.03</Pos>
+		<RPY>0 17.34 0</RPY><Pos>0 0 -0.03</Pos>
 	</Frame>
 
 	<Frame name="Brick" refframe="conveyorBeltTilted">

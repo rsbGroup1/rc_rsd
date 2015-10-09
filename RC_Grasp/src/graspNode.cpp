@@ -79,6 +79,48 @@ void printT(rw::math::Transform3D<> T)
     std::cout << "P(" << T.P()[0] << "," << T.P()[1] << "," << T.P()[2] << "), RPY(" << rpy[0]*RADTODEGREE << "," << rpy[1]*RADTODEGREE << "," << rpy[2]*RADTODEGREE << ")" << std::endl;
 }
 
+rw::math::Q getQFromPinBrickFrame(rw::math::Vector3D<> p, double rotation)
+{
+    // Configuration for lego brick
+    rw::math::Q qRet(6,0,0,0,0,0,0);
+
+    // Inverse kin
+    rw::math::Transform3D<> posOffset(p);
+    rw::math::Transform3D<> w2brickOffset = _w2brick * posOffset;
+    rw::math::Transform3D<> transform((inverse(_w2base)*w2brickOffset).P(), rw::math::RPY<>(M_PI, -18*DEGREETORAD, M_PI));
+    std::vector<rw::math::Q> qVec = _inverseKin->solve(transform, _state);
+    if(qVec.empty())
+    {
+        ROS_ERROR("Error in inverse kinematics!");
+        return qRet;
+    }
+
+    qRet = qVec[0];
+
+    // Fix rotation
+    if(qRet[5] + rotation < _limits.first[5])
+        ROS_ERROR("Joint 5 reached its limit!");
+    else if(qRet[5] + rotation > _limits.second[5])
+        ROS_ERROR("Joint 5 reached its limit!");
+    else
+        qRet[5] += rotation;
+
+    return qRet;
+}
+
+bool checkQ(rw::math::Q q)
+{
+    unsigned int counter = 0;
+    for(unsigned int i=0; i<q.size(); i++)
+        if(q(i) <= 0.001 && q(i) >= -0.001)
+            counter++;
+
+    if(counter == q.size())
+        return false;
+    else
+        return true;
+}
+
 bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::Response &res)
 {
     /*req.x;
@@ -89,32 +131,24 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     // Default return message
     res.success = false;
 
-    // Inverse kin
-    rw::math::Transform3D<> posOffset(rw::math::Vector3D<>(req.x, req.y, 0.1));
-    rw::math::Transform3D<> w2brickOffset = _w2brick * posOffset;
-    rw::math::Transform3D<> transform((inverse(_w2base)*w2brickOffset).P(), rw::math::RPY<>(M_PI, -18*DEGREETORAD, M_PI));
-    std::vector<rw::math::Q> qVec = _inverseKin->solve(transform, _state);
-    if(qVec.empty())
+    // Configuration for lego brick
+    rw::math::Q qBrickLifted = getQFromPinBrickFrame(rw::math::Vector3D<>(req.x, req.y, 0.1), req.theta);
+    rw::math::Q qBrick = getQFromPinBrickFrame(rw::math::Vector3D<>(req.x, req.y, 0.0), req.theta);
+
+    if(checkQ(qBrickLifted) == false || checkQ(qBrick) == false)
     {
-        ROS_ERROR("Error in inverse kinematics!");
-        res.success = false;
+        ROS_ERROR("Error in inverse kinematic!");
         return false;
     }
 
-    // Configuration for lego brick
-    rw::math::Q qBrick = qVec[0];
-
-    // Fix rotation
-    if(qBrick[5] + req.theta < _limits.first[5])
-        ROS_ERROR("Joint 5 reached its limit!");
-    else if(qBrick[5] + req.theta > _limits.second[5])
-        ROS_ERROR("Joint 5 reached its limit!");
-    else
-        qBrick[5] += req.theta;
-
+    std::cout << qBrickLifted << std::endl;
     std::cout << qBrick << std::endl;
 
-    // 1. Move to brick (blocking call)
+    // 1a. Move to brick lifted (blocking call)
+    if(moveRobotWait(qBrickLifted) == false)
+        return false;
+
+    // 1b. Move to brick down (blocking call)
     if(moveRobotWait(qBrick) == false)
         return false;
 
@@ -123,9 +157,9 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     //const float SchunkPG70::HOMEPOS = 0.034f;
     //const float SchunkPG70::MAXPOS = 0.068f;
 
-    /*rw::math::Q qGripper(1, req.size);
+    rw::math::Q qGripper(1, req.size);
     if(PG70SetConf(qGripper) == false)
-        return false;*/
+        return false;
 
     // 3. Go to idle Q (when camera is taking pictures)
     if(moveRobotWait(_idleQ) == false)
@@ -138,7 +172,7 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
         return false;
 
     // 5. Open gripper
-    //PG70Open();
+    PG70Open();
 
     // 5b: TODO: Add between point
 
@@ -391,7 +425,7 @@ bool PG70SetConf(rw::math::Q q)
             return true;
     }
 
-    return false;
+    return true;
 }
 
 void PG70Stop()

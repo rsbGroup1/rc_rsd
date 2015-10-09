@@ -16,6 +16,8 @@
 #include <rw/kinematics.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/kinematics/State.hpp>
+#include <rw/invkin/IKMetaSolver.hpp>
+#include <rw/invkin/JacobianIKSolver.hpp>
 
 #include <rc_hmi/setConfiguration.h>
 #include <rc_hmi/getConfiguration.h>
