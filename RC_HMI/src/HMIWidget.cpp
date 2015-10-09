@@ -72,10 +72,11 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         ros::NodeHandle pNh("~");
 
         // Topic names
-        std::string imageSub, kukaService, PG70Service;
+        std::string imageSub, kukaService, PG70Service, consoleSub;
         pNh.param<std::string>("image_sub", imageSub, "/rcCamera/image_raw");
         pNh.param<std::string>("KukaCmdServiceName", kukaService, "/KukaNode");
         pNh.param<std::string>("PG70CmdServiceName", PG70Service, "/PG70/PG70");
+        pNh.param<std::string>("console_sub", consoleSub, "/mrHMI/console");
 
         _serviceKukaSetConf = _nodeHandle->serviceClient<rc_hmi::setConfiguration>(kukaService + "/SetConfiguration");
         _serviceKukaGetConf = _nodeHandle->serviceClient<rc_hmi::getConfiguration>(kukaService + "/GetConfiguration");
@@ -83,6 +84,7 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         _servicePG70Move = _nodeHandle->serviceClient<rc_hmi::Move>(PG70Service + "/Move");
         _servicePG70Stop = _nodeHandle->serviceClient<rc_hmi::Stop>(PG70Service + "/Stop");
 
+        _consoleSub = _nodeHandle->subscribe(consoleSub, 100, &HMIWidget::consoleCallback, this);
         _itImg = new image_transport::ImageTransport(*_nodeHandle);
         _subImg = _itImg->subscribe(imageSub, 1, &HMIWidget::imageCallback, this);
 
@@ -95,6 +97,11 @@ void HMIWidget::startROSThread()
 {
     // ROS Spin (handle callbacks etc)
     ros::spin();
+}
+
+void HMIWidget::consoleCallback(std_msgs::String msg)
+{
+    _consoleQueue.enqueue(QString::fromUtf8(msg.data.data(), msg.data.size()));
 }
 
 void HMIWidget::imageCallback(const sensor_msgs::ImageConstPtr& msg)
@@ -130,6 +137,9 @@ void HMIWidget::imageQueueHandler()
         QPixmap qPix = QPixmap::fromImage(qImg);
         _labelCameraView->setPixmap(qPix);
     }
+
+    if(_consoleQueue.size())
+        writeToLog(_consoleQueue.dequeue());
 }
 
 void HMIWidget::stateChangedListener(const rw::kinematics::State &state)
@@ -195,7 +205,7 @@ void HMIWidget::eventBtn()
 
     if(obj == _btnCellReady)
     {
-        writeToLog("Cell Ready");
+        _consoleQueue.enqueue("Cell Ready");
         if(msgBoxHelper("The robot will move.","Do you want to continue?"))
         {
             rw::math::Q q(6,0,0,0,0,0,0);
@@ -205,7 +215,7 @@ void HMIWidget::eventBtn()
     }
     if(obj == _btnCellBusy)
     {
-        writeToLog("Cell Busy");
+        _consoleQueue.enqueue("Cell Busy");
         if(msgBoxHelper("The robot will move.","Do you want to continue?"))
         {
             rw::math::Q q(6,0,0,-45*DEGREETORAD,0,-45*DEGREETORAD,0);
@@ -215,7 +225,7 @@ void HMIWidget::eventBtn()
     }
     else if(obj == _btnCellError)
     {
-        writeToLog("Cell Error");
+        _consoleQueue.enqueue("Cell Error");
         if(msgBoxHelper("The robot will move.","Do you want to continue?"))
         {
             /*rw::math::Q q(6,0,0,-90*DEGREETORAD,0,-90*DEGREETORAD,0);

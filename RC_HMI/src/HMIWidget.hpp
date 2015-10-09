@@ -35,6 +35,7 @@
 // ROS
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
+#include "std_msgs/String.h"
 #include <image_transport/image_transport.h>
 
 // OpenCV
@@ -144,6 +145,7 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
         bool openWorkCell();
         bool msgBoxHelper(QString, QString);
         void writeToLog(QString text);
+        void consoleCallback(std_msgs::String msg);
 
         // Variables
         rw::models::WorkCell::Ptr _rwWorkCell;
@@ -158,10 +160,12 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
         image_transport::Subscriber _subImg;
         ros::ServiceClient _serviceKukaSetConf, _serviceKukaStop, _serviceKukaGetConf;
         ros::ServiceClient _servicePG70Move, _servicePG70Stop;
+        ros::Subscriber _consoleSub;
 
         // Image
         QTimer *_imageShowTimer;
         SynchronisedQueue<sensor_msgs::ImageConstPtr> _imageQueue;
+        SynchronisedQueue<QString> _consoleQueue;
 };
 
 #endif // HMIWIDGET_HPP

@@ -6,6 +6,7 @@
 			<param name="image_sub" value="/rcCamera/image_raw"/> 
 			<param name="KukaCmdServiceName" value="/KukaNode"/> 
 			<param name="PG70CmdServiceName" value="/PG70/PG70"/> 
+			<param name="console_sub" value="/mrHMI/console"/> 
 		</node>
 	</group>
 </launch>
