@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 2.8.3)
 project(rc_hmi)
 
 ## Find catkin and any catkin packages
-FIND_PACKAGE(catkin REQUIRED COMPONENTS roscpp rospy std_msgs message_generation cv_bridge genmsg image_transport sensor_msgs OpenCV)
+FIND_PACKAGE(OpenCV REQUIRED)
+FIND_PACKAGE(catkin REQUIRED COMPONENTS roscpp rospy std_msgs message_generation cv_bridge genmsg image_transport sensor_msgs)
 
 ## Declare ROS messages and services
 # Service files
@@ -48,7 +49,7 @@ INCLUDE_DIRECTORIES(${ROBWORK_INCLUDE_DIRS} ${ROBWORKSTUDIO_INCLUDE_DIRS} ${catk
 LINK_DIRECTORIES(${ROBWORK_LIBRARY_DIRS} ${ROBWORKSTUDIO_LIBRARY_DIRS} ${catkin_LIBRARIES} ${OpenCV_LIB_DIR})
 
 # If we want to use ui files add them here
-SET(UIS_FILES src/HMIWidget.ui )
+SET(UIS_FILES src/HMIWidget.ui)
 SET(SrcFiles src/HMIPlugin.cpp src/HMIWidget.cpp ${UIS_OUT_H})
 SET(ROS_BUILD_STATIC_LIBS false)
 SET(ROS_BUILD_SHARED_LIBS true)

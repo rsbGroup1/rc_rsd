@@ -5,6 +5,7 @@
 #include <rc_plc/MoveConv.h>
 #include <rc_plc/StopConv.h>
 #include <rc_plc/StartConv.h>
+#include "serial/serial.h"
 
 // Global variables
 ros::Publisher _hmiConsolePub;
@@ -32,6 +33,97 @@ bool stopCallback(rc_plc::StopConv::Request &req, rc_plc::StopConv::Response &re
 {
     //
 }
+
+/*void writeSerialThread()
+{
+    while(true)
+    {
+        try
+        {
+            // Write
+            _serialConnection->write(_queue.dequeue());
+
+            // Signal interrupt point
+            boost::this_thread::interruption_point();
+        }
+        catch(const boost::thread_interrupted&)
+        {
+            break;
+        }
+    }
+}
+
+bool compareMsg(char* msg, char* command)
+{
+    int i = 0;
+    while(msg[i] != '\n' && command[i] != '\n')
+    {
+        if(tolower(msg[i]) != tolower(command[i]))
+            return false;
+
+        i++;
+    }
+
+    if(i == 0)
+        return false;
+
+    return true;
+}
+
+void readSerialThread()
+{
+    std::string tempString;
+    char msg[DATA_LENGTH+1];
+    msg[DATA_LENGTH] = '\n';
+    int i = 0;
+
+    while(true)
+    {
+        _serialMutex.lock();
+        tempString = _serialConnection->read(1);
+        _serialMutex.unlock();
+
+        if(tempString.size() == 1)
+        {
+            msg[i] = tempString[0];
+
+            if(msg[i] == '\n')
+            {
+                if(compareMsg(msg, "start\n") || compareMsg(msg, "stop\n"))
+                {
+                    std::string stringMsg(msg);
+                    stringMsg = stringMsg.substr(0, stringMsg.size()-1);
+                    std_msgs::String topicMsg;
+                    topicMsg.data = stringMsg;
+                    _publishMutex.lock();
+                    _missionPlannerPublisher.publish(topicMsg);
+                    _publishMutex.unlock();
+
+                    std::cout << "Publishing: " << stringMsg << std::endl;
+                }
+
+                // Clear data
+                i = 0;
+            }
+            else	// Wait for new character
+                i++;
+        }
+        else
+        {
+            // Clear if buffer is full without newline
+            if(i == DATA_LENGTH-1)
+            {
+                i = 0;
+                for(int k=0; k<DATA_LENGTH; k++)
+                    msg[k] = ' ';
+                msg[DATA_LENGTH] = '\n';
+            }
+        }
+    }
+
+    // Close connection
+    _serialConnection->close();
+}*/
 
 int main()
 {
