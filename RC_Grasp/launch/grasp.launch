@@ -8,10 +8,11 @@
 			<param name="scenePath" value="/home/student/catkin_ws/src/rc_rsd/RC_KukaScene/Scene.wc.xml"/>
 			<param name="hmiConsole" value="/rcHMI/console"/>
 			<param name="idleHeight" value="0.3"/>
-			<param name="graspOffset" value="0.05"/>
+			<param name="graspOffset" value="0.0"/>
 			<param name="graspLifted" value="0.1"/>
 			<param name="xMax" value="0.15"/>
 			<param name="yMax" value="0.08"/>
+			<param name="gripperOpenoffset" value="0.01"/>
 		</node>
 	</group>
 </launch>

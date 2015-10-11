@@ -32,7 +32,7 @@
 	</Frame>
 
 	<Frame name="conveyorBeltTilted" refframe="conveyorBelt">
-		<RPY>0 17.34 0</RPY><Pos>0 0 -0.03</Pos>
+		<RPY>0 18 0</RPY><Pos>0 0 -0.031</Pos> <!--17.34-->
 	</Frame>
 
 	<Frame name="Brick" refframe="conveyorBeltTilted">

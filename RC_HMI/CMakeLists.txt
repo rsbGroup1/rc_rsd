@@ -3,8 +3,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(rc_hmi)
 
 ## Find catkin and any catkin packages
-FIND_PACKAGE(OpenCV REQUIRED)
-FIND_PACKAGE(catkin REQUIRED COMPONENTS roscpp rospy std_msgs message_generation cv_bridge genmsg image_transport sensor_msgs)
+FIND_PACKAGE(catkin REQUIRED COMPONENTS roscpp rospy std_msgs message_generation cv_bridge genmsg image_transport sensor_msgs OpenCV)
 
 ## Declare ROS messages and services
 # Service files

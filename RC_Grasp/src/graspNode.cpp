@@ -32,9 +32,10 @@
 #define DEGREETORAD                 (M_PI/180.0)
 #define RADTODEGREE                 (180.0/M_PI)
 #define ROBOT_NAME                  "KukaKR6R700"
-#define CONNECT_KUKA                false
-#define CONNECT_PG70                false
-#define PITCH_OFFSET                (-17.340*DEGREETORAD)
+#define CONNECT_KUKA                true
+#define CONNECT_PG70                true
+#define PITCH_OFFSET                (-18*DEGREETORAD)
+#define GRIPPER_MAX                 0.034
 
 // Global variables
 ros::ServiceClient _serviceKukaSetConf, _serviceKukaStop, _serviceKukaGetConf, _serviceKukaGetQueueSize, _serviceKukaGetIsMoving;
@@ -45,7 +46,7 @@ rw::kinematics::State _state;
 rw::invkin::JacobianIKSolver *_inverseKinGripper, *_inverseKinCamera;
 rw::kinematics::Frame *_gripperFrame, *_cameraFrame, *_brickFrame;
 rw::math::Transform3D<> _w2base, _w2camera, _w2brick;
-double _idleQHeight, _xMax, _yMax, _graspOffset, _graspLifted;
+double _idleQHeight, _xMax, _yMax, _graspOffset, _graspLifted, _gripperOpenOffset;
 rw::math::Q _idleQ, _releaseBrickQ;
 rw::models::Device::QBox _limits;
 ros::Publisher _hmiConsolePub;
@@ -93,12 +94,6 @@ rw::math::Q getQFromPinBrickFrame(rw::math::Vector3D<> p, double rotation)
     // Configuration for lego brick
     rw::math::Q qRet(6,0,0,0,0,0,0);
 
-    if(p[0]>_xMax || p[0]<-_xMax || p[1]>_yMax || p[1]<-_yMax)
-    {
-        printConsole("Position larger than workspace!");
-        return qRet;
-    }
-
     // Inverse kin
     rw::math::Transform3D<> posOffset(p);
     rw::math::Transform3D<> w2brickOffset = _w2brick * posOffset;
@@ -139,10 +134,17 @@ bool checkQ(rw::math::Q q)
 
 bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::Response &res)
 {
-    /*req.x;
-    req.y;
-    req.theta;
-    req.size;*/
+    // Check limits
+    if(req.x>_xMax || req.x<-_xMax || req.y>_yMax || req.y<-_yMax)
+    {
+        printConsole("Position larger than workspace!");
+        return false;
+    }
+    if(req.size>GRIPPER_MAX)
+    {
+        printConsole("Lego size larger than workspace!");
+        return false;
+    }
 
     // Default return message
     res.success = false;
@@ -154,14 +156,18 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     if(checkQ(qBrickLifted) == false || checkQ(qBrick) == false)
         return false;
 
-    // 1. Move to brick lifted (blocking call)
-    if(moveRobotWait(qBrickLifted) == false)
+    // 1. Open gripper
+    // Gripper max cmd: 0.034m. Equals an opening of 0.068m. If 5cm opening is wanted: Send 0.025
+    rw::math::Q qGripperOpen(1);
+    if((req.size+_gripperOpenOffset)/2.0 > GRIPPER_MAX)
+        qGripperOpen(0) = GRIPPER_MAX;
+    else
+        qGripperOpen(0) = (req.size+_gripperOpenOffset)/2.0;
+    if(PG70SetConf(qGripperOpen) == false)
         return false;
 
-    // 2. Open gripper
-    // Gripper max cmd: 0.034m. Equals an opening of 0.068m. If 5cm opening is wanted: Send 0.025
-    rw::math::Q qGripperOpen(1, req.size);
-    if(PG70SetConf(qGripperOpen) == false)
+    // 2. Move to brick lifted (blocking call)
+    if(moveRobotWait(qBrickLifted) == false)
         return false;
 
     // 3. Move to brick down (blocking call)
@@ -172,6 +178,7 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     rw::math::Q qGripperClose(1, req.size/2.0);
     if(PG70SetConf(qGripperClose) == false)
         return false;
+    sleep(1);
 
     // 5. Go to idle Q (when camera is taking pictures)
     if(moveRobotWait(_idleQ) == false)
@@ -182,7 +189,9 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
         return false;
 
     // 7. Open gripper
-    PG70Open();
+    if(PG70SetConf(qGripperOpen) == false)
+        return false;
+    sleep(2);
 
     // 8. Go back to idle Q
     if(moveRobotWait(_idleQ) == false)
@@ -214,6 +223,7 @@ int main()
     pNh.param<double>("graspLifted", _graspLifted, 0.1);
     pNh.param<double>("xMax", _xMax, 0.15);
     pNh.param<double>("yMax", _yMax, 0.08);
+    pNh.param<double>("gripperOpenoffset", _gripperOpenOffset, 0.01);
 
     // Create service calls
     _serviceKukaSetConf = nh.serviceClient<rc_grasp::setConfiguration>(kukaService + "/SetConfiguration");
