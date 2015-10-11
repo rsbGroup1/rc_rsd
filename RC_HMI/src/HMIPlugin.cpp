@@ -6,7 +6,7 @@ void AddIPL98ErrorHistory(char const *)
 	//
 }
 
-HMIPlugin::HMIPlugin() : RobWorkStudioPlugin("HMI", QIcon("/home/student/catkin_ws/src/RSD_HMI/images/iconhmi2.png"))
+HMIPlugin::HMIPlugin() : RobWorkStudioPlugin("HMI", QIcon("/home/yonas/catkin_ws/src/rc_rsd/RC_HMI/images/iconhmi.png"))
 {
    	QWidget *widg = new QWidget(this);
 	QVBoxLayout *lay = new QVBoxLayout(widg);

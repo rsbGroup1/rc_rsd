@@ -7,6 +7,7 @@
 			<param name="KukaCmdServiceName" value="/KukaNode"/> 
 			<param name="PG70CmdServiceName" value="/PG70/PG70"/> 
 			<param name="console_sub" value="/rcHMI/console"/> 
+			<param name="status_pub" value="/rcHMI/status"/>
 			<param name="convServiceName" value="/rcPLC"/> 
 			<param name="anyBricks_sub" value="/rcVision/anyBricks"/>
 			<param name="safety_sub" value="/rcSafety/status"/>

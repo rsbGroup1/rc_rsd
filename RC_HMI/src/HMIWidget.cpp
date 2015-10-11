@@ -12,13 +12,22 @@ HMIWidget::HMIWidget(QWidget *parent): QWidget(parent)
     connect(_btnCellError, SIGNAL(released()), this, SLOT(eventBtn()));
     connect(_btnCellReady, SIGNAL(released()), this, SLOT(eventBtn()));
     connect(_btnEmStop, SIGNAL(released()), this, SLOT(eventBtn()));
+    connect(_btnMoveConv, SIGNAL(released()), this, SLOT(eventBtn()));
+    connect(_btnStartConv, SIGNAL(released()), this, SLOT(eventBtn()));
+    connect(_btnStopConv, SIGNAL(released()), this, SLOT(eventBtn()));
     connect(_cbAuto, SIGNAL(toggled(bool)), this, SLOT(eventCb(bool)));
     connect(_cbManual, SIGNAL(toggled(bool)), this, SLOT(eventCb(bool)));
 
     // Set default text etc.
     _txtBrowser->setText("");
     _labelOrderStatus->setText("Pending order..");
-    _cbAuto->setChecked(true);
+    _labelBricks->setText("None");
+    _labelBricks->setStyleSheet("QLabel {color : red; }");
+    _labelSafety->setText("Ok");
+    _labelSafety->setStyleSheet("QLabel {color : green }");
+    _cbManual->setChecked(true);
+    _safety = false;
+    _anyBricks = false;
 
     // Init camera timer
     _imageShowTimer = new QTimer(this);
@@ -70,11 +79,12 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         ros::NodeHandle pNh(ros::this_node::getName() + "/");
 
         // Topic names
-        std::string imageSub, kukaService, PG70Service, consoleSub, convService, mesPub, mesSub, anyBricksSub, safetySub;
+        std::string imageSub, kukaService, PG70Service, consoleSub, convService, mesPub, mesSub, anyBricksSub, safetySub, statusPub;
         pNh.param<std::string>("image_sub", imageSub, "/rcCamera/image_raw");
         pNh.param<std::string>("KukaCmdServiceName", kukaService, "/KukaNode");
         pNh.param<std::string>("PG70CmdServiceName", PG70Service, "/PG70/PG70");
         pNh.param<std::string>("console_sub", consoleSub, "/rcHMI/console");
+        pNh.param<std::string>("status_pub", statusPub, "/rcHMI/status");
         pNh.param<std::string>("convServiceName", convService, "/rcPLC");
         pNh.param<std::string>("anyBricks_sub", anyBricksSub, "/rcVision/anyBricks");
         pNh.param<std::string>("safety_sub", safetySub, "/rcSafety/status");
@@ -93,11 +103,12 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
 
         // Publishers
         _mesMessagePub = _nodeHandle->advertise<std_msgs::String>(mesPub, 100);
+        _hmiStatusPub = _nodeHandle->advertise<std_msgs::String>(statusPub, 100);
 
         // Subscribers
-        ros::Subscriber anyBrickSub = _nodeHandle->subscribe(anyBricksSub, 10, &HMIWidget::anyBrickCallback, this);
-        ros::Subscriber safetySubs = _nodeHandle->subscribe(safetySub, 10, &HMIWidget::safetyCallback, this);
-        ros::Subscriber mesMessageSub = _nodeHandle->subscribe(mesSub, 10, &HMIWidget::mesRecCallback, this);
+        _anyBrickSub = _nodeHandle->subscribe(anyBricksSub, 10, &HMIWidget::anyBrickCallback, this);
+        _safetySub = _nodeHandle->subscribe(safetySub, 10, &HMIWidget::safetyCallback, this);
+        _mesMessageSub = _nodeHandle->subscribe(mesSub, 10, &HMIWidget::mesRecCallback, this);
 
         _consoleSub = _nodeHandle->subscribe(consoleSub, 100, &HMIWidget::consoleCallback, this);
         _itImg = new image_transport::ImageTransport(*_nodeHandle);
@@ -153,8 +164,65 @@ void HMIWidget::imageQueueHandler()
         _labelCameraView->setPixmap(qPix);
     }
 
+    // Check if anything needs to be written to log
     if(_consoleQueue.size())
         writeToLog(_consoleQueue.dequeue());
+
+    static bool oldAnyBricks = false, oldSafety = false;
+
+    // Update labels
+    _labelBricksMutex.lock();
+    if(_anyBricks != oldAnyBricks)
+    {
+        if(_anyBricks)
+        {
+            _labelBricks->setText("Yes!");
+            _labelBricks->setStyleSheet("QLabel {color : green; }");
+        }
+        else
+        {
+            _labelBricks->setText("None!");
+            _labelBricks->setStyleSheet("QLabel {color : red; }");
+        }
+
+        oldAnyBricks = _anyBricks;
+    }
+    _labelBricksMutex.unlock();
+
+    _labelSafetyMutex.lock();
+    if(_safety != oldSafety)
+    {
+        if(_safety)
+        {
+            _labelSafety->setText("Not Ok!");
+            _labelSafety->setStyleSheet("QLabel {color : red; }");
+        }
+        else
+        {
+            _labelSafety->setText("Ok!");
+            _labelSafety->setStyleSheet("QLabel {color : green; }");
+        }
+
+        oldSafety = _safety;
+    }
+    _labelSafetyMutex.unlock();
+}
+
+void HMIWidget::anyBrickCallback(std_msgs::Bool msg)
+{
+    boost::unique_lock<boost::mutex> lock(_labelBricksMutex);
+    _anyBricks = msg.data;
+}
+
+void HMIWidget::safetyCallback(std_msgs::Bool msg)
+{
+    boost::unique_lock<boost::mutex> lock(_labelSafetyMutex);
+    _safety = msg.data;
+}
+
+void HMIWidget::mesRecCallback(std_msgs::String msg)
+{
+    _consoleQueue.enqueue(QString::fromStdString("MES: " + msg.data));
 }
 
 void HMIWidget::stateChangedListener(const rw::kinematics::State &state)
@@ -165,7 +233,7 @@ void HMIWidget::stateChangedListener(const rw::kinematics::State &state)
     _state = state;
 
     // Run once
-    if(runOnce)
+    if(runOnce && _cbManual->isChecked())
     {
         // Move robot
         // Get Q
@@ -180,7 +248,7 @@ void HMIWidget::stateChangedListener(const rw::kinematics::State &state)
 
         // Call service
         if(!_serviceKukaSetConf.call(setQObj))
-           ROS_ERROR("Failed to call the 'serviceKukaSetConfiguration'");
+           _consoleQueue.enqueue("Failed to call the 'serviceKukaSetConfiguration'");
 
 
         // Move gripper
@@ -189,7 +257,7 @@ void HMIWidget::stateChangedListener(const rw::kinematics::State &state)
         rc_hmi::Move moveObj;
         moveObj.request.pos = qGripper[0];
         if(!_servicePG70Move.call(moveObj))
-            ROS_ERROR("Failed to call the 'servicePG70Move'");*/
+            _consoleQueue.enqueue("Failed to call the 'servicePG70Move'");*/
     }
 
     runOnce = !runOnce;
@@ -201,14 +269,21 @@ void HMIWidget::eventCb(bool input)
 
     if(runOnce)
     {
+        std_msgs::String msg;
+
         if(_cbAuto->isChecked())
         {
             writeToLog("Switched to auto mode!");
+            msg.data = "start";
+
         }
         else if(_cbManual->isChecked())
         {
             writeToLog("Switched to manual mode!");
+            msg.data = "stop";
         }
+
+        _hmiStatusPub.publish(msg);
     }
 
     runOnce = !runOnce;
@@ -243,10 +318,6 @@ void HMIWidget::eventBtn()
         _consoleQueue.enqueue("Cell Error");
         if(msgBoxHelper("The robot will move.","Do you want to continue?"))
         {
-            /*rw::math::Q q(6,0,0,-90*DEGREETORAD,0,-90*DEGREETORAD,0);
-            _deviceKuka->setQ(q, _state);
-            _rws->setState(_state);*/
-
             // Find Brick Frame
             rw::kinematics::Frame *brickFrame = _rwWorkCell->findFrame("Brick");
 
@@ -270,7 +341,7 @@ void HMIWidget::eventBtn()
             std::vector<rw::math::Q> qVec = inverseKin.solve(transform, _state);
             if(qVec.empty())
             {
-                ROS_ERROR("Error in inverse kinematics!");
+                _consoleQueue.enqueue("Error in inverse kinematics!");
                 return;
             }
 
@@ -283,12 +354,37 @@ void HMIWidget::eventBtn()
         // Stop robot
         rc_hmi::stopRobot stopObj;
         if(!_serviceKukaStop.call(stopObj))
-            ROS_ERROR("Failed to call the 'serviceKukaStopRobot'");
+            _consoleQueue.enqueue("Failed to call the 'serviceKukaStopRobot'");
 
         // Stop gripper
-        /*rc_hmi::Stop stopObjPG70;
+        rc_hmi::Stop stopObjPG70;
         if(!_servicePG70Stop.call(stopObjPG70))
-            ROS_ERROR("Failed to call the 'servicePG70Stop'");*/
+            _consoleQueue.enqueue("Failed to call the 'servicePG70Stop'");
+
+        // Stop conveyer
+        rc_hmi::StopConv obj;
+        if(!_serviceConvMove.call(obj))
+            _consoleQueue.enqueue("Failed to call the 'serviceStopConveyer'");
+    }
+    else if(obj == _btnMoveConv)
+    {
+        rc_hmi::MoveConv obj;
+        if(!_serviceConvMove.call(obj))
+            _consoleQueue.enqueue("Failed to call the 'serviceMoveConveyer'");
+
+    }
+    else if(obj == _btnStartConv)
+    {
+        rc_hmi::StartConv obj;
+        if(!_serviceConvStart.call(obj))
+            _consoleQueue.enqueue("Failed to call the 'serviceStartConveyer'");
+
+    }
+    else if(obj == _btnStopConv)
+    {
+        rc_hmi::StopConv obj;
+        if(!_serviceConvStop.call(obj))
+            _consoleQueue.enqueue("Failed to call the 'serviceStopConveyer'");
     }
 }
 

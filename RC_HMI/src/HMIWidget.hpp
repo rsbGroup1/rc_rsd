@@ -145,9 +145,9 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
     private:
         // Member functions
         void imageCallback(const sensor_msgs::ImageConstPtr& msg);
-	void anyBrickCallback(std_msgs::Bool msg);
-	void safetyCallback(std_msgs::Bool msg);
-	void mesRecCallback(std_msgs::String msg);
+        void anyBrickCallback(std_msgs::Bool msg);
+        void safetyCallback(std_msgs::Bool msg);
+        void mesRecCallback(std_msgs::String msg);
         void startROSThread();
         bool openWorkCell();
         bool msgBoxHelper(QString, QString);
@@ -169,12 +169,16 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
         ros::ServiceClient _servicePG70Move, _servicePG70Stop;
         ros::ServiceClient _serviceConvMove, _serviceConvStop, _serviceConvStart;
         ros::Subscriber _consoleSub, _mesMessageSub, _anyBrickSub, _safetySub;
-	ros::Publisher _mesMessagePub;
+        ros::Publisher _mesMessagePub, _hmiStatusPub;
 
         // Image
         QTimer *_imageShowTimer;
         SynchronisedQueue<sensor_msgs::ImageConstPtr> _imageQueue;
         SynchronisedQueue<QString> _consoleQueue;
+
+        // UI
+        boost::mutex _labelBricksMutex, _labelSafetyMutex;
+        bool _anyBricks, _safety;
 };
 
 #endif // HMIWIDGET_HPP

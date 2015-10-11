@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(rc_hmi)
 
 ## Find catkin and any catkin packages
-FIND_PACKAGE(catkin REQUIRED COMPONENTS roscpp rospy std_msgs message_generation cv_bridge genmsg image_transport sensor_msgs OpenCV)
+FIND_PACKAGE(catkin REQUIRED COMPONENTS roscpp rospy std_msgs message_generation cv_bridge genmsg image_transport sensor_msgs)
 
 ## Declare ROS messages and services
 # Service files
@@ -19,9 +19,12 @@ add_service_files(
 	StopConv.srv
 )
 
+# Use OpenCV
+INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
+LINK_DIRECTORIES(${OpenCV_LIB_DIR})
+
 generate_messages(DEPENDENCIES std_msgs)
 
-#generate_messages(DEPENDENCIES sensor_msgs)
 catkin_package(CATKIN_DEPENDS message_runtime)
 
 # We use the settings that robwork studio uses

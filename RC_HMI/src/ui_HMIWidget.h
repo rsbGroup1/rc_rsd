@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'HMIWidget130463.ui'
+** Form generated from reading UI file 'HMIWidgetS40589.ui'
 **
 ** Created by: Qt User Interface Compiler version 4.8.6
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef HMIWIDGET130463_H
-#define HMIWIDGET130463_H
+#ifndef HMIWIDGETS40589_H
+#define HMIWIDGETS40589_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -54,6 +54,9 @@ public:
     QPushButton *_btnStartConv;
     QPushButton *_btnMoveConv;
     QPushButton *_btnStopConv;
+    QLabel *label_7;
+    QLabel *_labelSafety;
+    QLabel *_labelBricks;
     QLabel *label;
 
     void setupUi(QWidget *HMIWidgetClass)
@@ -98,7 +101,7 @@ public:
         label_15->setFont(font);
         _labelOrderStatus = new QLabel(groupBox_2);
         _labelOrderStatus->setObjectName(QString::fromUtf8("_labelOrderStatus"));
-        _labelOrderStatus->setGeometry(QRect(110, 170, 231, 17));
+        _labelOrderStatus->setGeometry(QRect(120, 170, 211, 17));
         line = new QFrame(groupBox_2);
         line->setObjectName(QString::fromUtf8("line"));
         line->setGeometry(QRect(10, 120, 331, 16));
@@ -106,9 +109,9 @@ public:
         line->setFrameShadow(QFrame::Sunken);
         label_5 = new QLabel(groupBox_2);
         label_5->setObjectName(QString::fromUtf8("label_5"));
-        label_5->setGeometry(QRect(10, 260, 331, 19));
+        label_5->setGeometry(QRect(10, 190, 101, 19));
         label_5->setFont(font);
-        label_5->setAlignment(Qt::AlignCenter);
+        label_5->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
         horizontalLayoutWidget_5 = new QWidget(groupBox_2);
         horizontalLayoutWidget_5->setObjectName(QString::fromUtf8("horizontalLayoutWidget_5"));
         horizontalLayoutWidget_5->setGeometry(QRect(10, 40, 331, 31));
@@ -196,7 +199,7 @@ public:
 
         _btnCellReady = new QPushButton(groupBox_2);
         _btnCellReady->setObjectName(QString::fromUtf8("_btnCellReady"));
-        _btnCellReady->setGeometry(QRect(50, 200, 92, 31));
+        _btnCellReady->setGeometry(QRect(50, 240, 92, 31));
         _btnCellReady->setMinimumSize(QSize(92, 0));
         _btnCellReady->setFocusPolicy(Qt::NoFocus);
         _btnCellReady->setStyleSheet(QString::fromUtf8("QPushButton {\n"
@@ -221,7 +224,7 @@ public:
 ""));
         _btnCellBusy = new QPushButton(groupBox_2);
         _btnCellBusy->setObjectName(QString::fromUtf8("_btnCellBusy"));
-        _btnCellBusy->setGeometry(QRect(150, 200, 92, 31));
+        _btnCellBusy->setGeometry(QRect(150, 240, 92, 31));
         _btnCellBusy->setMinimumSize(QSize(92, 0));
         _btnCellBusy->setFocusPolicy(Qt::NoFocus);
         _btnCellBusy->setStyleSheet(QString::fromUtf8("QPushButton {\n"
@@ -247,7 +250,7 @@ public:
 ""));
         _btnCellError = new QPushButton(groupBox_2);
         _btnCellError->setObjectName(QString::fromUtf8("_btnCellError"));
-        _btnCellError->setGeometry(QRect(250, 200, 92, 31));
+        _btnCellError->setGeometry(QRect(250, 240, 92, 31));
         _btnCellError->setMinimumSize(QSize(92, 0));
         _btnCellError->setFocusPolicy(Qt::NoFocus);
         _btnCellError->setStyleSheet(QString::fromUtf8("QPushButton {\n"
@@ -272,11 +275,11 @@ public:
 ""));
         label_17 = new QLabel(groupBox_2);
         label_17->setObjectName(QString::fromUtf8("label_17"));
-        label_17->setGeometry(QRect(10, 200, 61, 31));
+        label_17->setGeometry(QRect(10, 240, 61, 31));
         label_17->setFont(font);
         line_3 = new QFrame(groupBox_2);
         line_3->setObjectName(QString::fromUtf8("line_3"));
-        line_3->setGeometry(QRect(10, 240, 331, 16));
+        line_3->setGeometry(QRect(10, 280, 331, 16));
         line_3->setFrameShape(QFrame::HLine);
         line_3->setFrameShadow(QFrame::Sunken);
         LocalPlanner = new QLabel(groupBox_2);
@@ -372,6 +375,17 @@ public:
 "radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
 "}\n"
 ""));
+        label_7 = new QLabel(groupBox_2);
+        label_7->setObjectName(QString::fromUtf8("label_7"));
+        label_7->setGeometry(QRect(10, 210, 121, 19));
+        label_7->setFont(font);
+        label_7->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
+        _labelSafety = new QLabel(groupBox_2);
+        _labelSafety->setObjectName(QString::fromUtf8("_labelSafety"));
+        _labelSafety->setGeometry(QRect(120, 190, 211, 17));
+        _labelBricks = new QLabel(groupBox_2);
+        _labelBricks->setObjectName(QString::fromUtf8("_labelBricks"));
+        _labelBricks->setGeometry(QRect(120, 210, 211, 17));
         _btnCellReady->raise();
         label_14->raise();
         label_15->raise();
@@ -390,6 +404,9 @@ public:
         _btnStartConv->raise();
         _btnMoveConv->raise();
         _btnStopConv->raise();
+        label_7->raise();
+        _labelSafety->raise();
+        _labelBricks->raise();
         label = new QLabel(HMIWidgetClass);
         label->setObjectName(QString::fromUtf8("label"));
         label->setGeometry(QRect(10, 0, 351, 41));
@@ -415,10 +432,10 @@ public:
         _labelCameraView->setText(QApplication::translate("HMIWidgetClass", "CameraView", 0, QApplication::UnicodeUTF8));
         label_6->setText(QApplication::translate("HMIWidgetClass", "Camera", 0, QApplication::UnicodeUTF8));
         groupBox_2->setTitle(QString());
-        label_14->setText(QApplication::translate("HMIWidgetClass", "MES Server Communication", 0, QApplication::UnicodeUTF8));
+        label_14->setText(QApplication::translate("HMIWidgetClass", "Status", 0, QApplication::UnicodeUTF8));
         label_15->setText(QApplication::translate("HMIWidgetClass", "Order status", 0, QApplication::UnicodeUTF8));
         _labelOrderStatus->setText(QApplication::translate("HMIWidgetClass", "5 red, 4 black", 0, QApplication::UnicodeUTF8));
-        label_5->setText(QApplication::translate("HMIWidgetClass", "Parameter tweak", 0, QApplication::UnicodeUTF8));
+        label_5->setText(QApplication::translate("HMIWidgetClass", "Safety status", 0, QApplication::UnicodeUTF8));
         _cbAuto->setText(QApplication::translate("HMIWidgetClass", "Auto", 0, QApplication::UnicodeUTF8));
         _cbManual->setText(QApplication::translate("HMIWidgetClass", "Manual", 0, QApplication::UnicodeUTF8));
         _btnEmStop->setText(QApplication::translate("HMIWidgetClass", "EMER. STOP", 0, QApplication::UnicodeUTF8));
@@ -431,6 +448,9 @@ public:
         _btnStartConv->setText(QApplication::translate("HMIWidgetClass", "Start conv", 0, QApplication::UnicodeUTF8));
         _btnMoveConv->setText(QApplication::translate("HMIWidgetClass", "Move conv", 0, QApplication::UnicodeUTF8));
         _btnStopConv->setText(QApplication::translate("HMIWidgetClass", "Stop conv", 0, QApplication::UnicodeUTF8));
+        label_7->setText(QApplication::translate("HMIWidgetClass", "Bricks on conv", 0, QApplication::UnicodeUTF8));
+        _labelSafety->setText(QApplication::translate("HMIWidgetClass", "Ok", 0, QApplication::UnicodeUTF8));
+        _labelBricks->setText(QApplication::translate("HMIWidgetClass", "None", 0, QApplication::UnicodeUTF8));
         label->setText(QApplication::translate("HMIWidgetClass", "RSD HMI", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
@@ -442,5 +462,5 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // HMIWIDGET130463_H
+#endif // HMIWIDGETS40589_H
 

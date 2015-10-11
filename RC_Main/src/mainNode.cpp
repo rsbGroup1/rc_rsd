@@ -12,6 +12,7 @@
 // Global variables
 ros::Publisher _hmiConsolePub, _mesMessagePub;
 ros::ServiceClient _serviceGrabBrick, _serviceGetBricks, _serviceMove, _serviceStart, _serviceStop;
+bool _run = false;
 
 // Functions
 void printConsole(std::string msg)
@@ -88,6 +89,14 @@ void mesSend(std::string sendMsg)
     _mesMessagePub.publish(msg);
 }
 
+void hmiStatusCallback(std_msgs::String msg)
+{
+    if(msg.data == "start")
+        _run = true;
+    else if(msg.data == "stop")
+        _run = false;
+}
+
 int main()
 {
     // Setup ROS Arguments
@@ -100,13 +109,14 @@ int main()
     ros::NodeHandle pNh(ros::this_node::getName() + "/");
 
     // Topic names
-    std::string hmiConsolePub, grabService, getBricksService, plcService, anyBricksSub, safetySub, mesPub, mesSub;
+    std::string hmiConsolePub, grabService, getBricksService, plcService, anyBricksSub, safetySub, mesPub, mesSub, hmiStatusSub;
     pNh.param<std::string>("hmiConsole", hmiConsolePub, "/rcHMI/console");
     pNh.param<std::string>("grabService", grabService, "/rcGrasp/grabBrick");
     pNh.param<std::string>("getBricksService", getBricksService, "/rcVision/getBricks");
     pNh.param<std::string>("plcService", plcService, "/rcPLC");
     pNh.param<std::string>("anyBricks_sub", anyBricksSub, "/rcVision/anyBricks");
     pNh.param<std::string>("safety_sub", safetySub, "/rcSafety/status");
+    pNh.param<std::string>("hmi_status_sub", hmiStatusSub, "/rcHMI/status");
     pNh.param<std::string>("mesPub", mesPub, "/rcMESServer/msgToServer");
     pNh.param<std::string>("mesSub", mesSub, "/rcMESServer/msgFromServer");
 
@@ -125,6 +135,7 @@ int main()
     ros::Subscriber anyBrickSub = nh.subscribe(anyBricksSub, 10, anyBrickCallback);
     ros::Subscriber safetySubs = nh.subscribe(safetySub, 10, safetyCallback);
     ros::Subscriber mesMessageSub = nh.subscribe(mesSub, 10, mesRecCallback);
+    ros::Subscriber hmiStatusSubs = nh.subscribe(hmiStatusSub, 10, hmiStatusCallback);
 
     // Set loop rate
     ros::Rate loop_rate(10);

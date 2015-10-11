@@ -76,6 +76,8 @@ int main()
 
     while(nh.ok())
     {
+        std::cout << "OK" << std::endl;
+
         // Spin
         ros::spinOnce();
         loop_rate.sleep();
