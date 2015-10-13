@@ -1,4 +1,4 @@
-// Includes
+    // Includes
 #include <ros/ros.h>
 #include <ros/time.h>
 #include <boost/thread.hpp>
@@ -52,7 +52,7 @@ namespace uvc_camera
         else
             pubjpeg = node.advertise<CompressedImage>(image_raw_pub + "/compressed", 1);
 
-        info_pub = node.advertise<CameraInfo>("camera_info", 1);
+        info_pub = node.advertise<CameraInfo>("/rcCamera/camera_info", 1);
 
         // Initialize the cameras
         uvc_cam::Cam::mode_t mode = uvc_cam::Cam::MODE_RGB;
@@ -80,7 +80,7 @@ namespace uvc_camera
             else
                 val = V4L2_EXPOSURE_MANUAL;
 
-            cam->set_v4l2_control(V4L2_CID_EXPOSURE_AUTO, val, "auto_exposure");
+            cam->set_v4l2_control(V4L2_CID_EXPOSURE_AUTO, val, "exposure_auto");
         }
 
         int exposure_auto_priority;
