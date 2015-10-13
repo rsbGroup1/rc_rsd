@@ -1,2 +1,4 @@
 *~
 CATKIN_IGNORE
+*.tar.gz
+/RC_Camera/calibrationdata
