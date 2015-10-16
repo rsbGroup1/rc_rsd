@@ -12,11 +12,13 @@ add_service_files(
 	getConfiguration.srv
 	setConfiguration.srv		
 	stopRobot.srv
-	Move.srv
+	Open.srv
+	Close.srv
 	Stop.srv
 	MoveConv.srv
 	StartConv.srv
 	StopConv.srv
+	getBricks.srv
 )
 
 # Use OpenCV

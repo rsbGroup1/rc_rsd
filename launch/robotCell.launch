@@ -1,5 +1,59 @@
+<!-- Vision launch file -->
+
 <launch>
-	
+	<group ns="Kuka_RSI">
+		<node pkg="kuka_rsi" name="KukaRSI" type="kuka_rsi">
+			  <param name="IPServer" value="192.168.100.50"/>
+			  <param name="IPClient" value="192.168.100.100"/>
+			  <param name="PortServer" value="49000"/>
+			  <param name="PortClient" value="53453"/>
+			  <param name="Debug" value="false"/>
+			  <param name="CmdServiceName" value="/KukaNode/"/>
+		</node>
+	</group>
 
+	<group ns="PG70">
+		<node pkg="pg70" name="PG70" type="pg70">
+			  <param name="SerialName" value="/dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_D-if00-port0"/>
+		</node>
+	</group>
+
+	<group ns="RC_Vision">
+		<node pkg="rc_vision" name="rc_vision" type="rc_vision">
+			<param name="image_sub" value="/RC_Camera/image_rect_color"/> 
+			<param name="any_brick_pub" value="/rcVision/anyBricks"/> 
+			<param name="hmiConsole" value="/rcHMI/console"/> 
+			<param name="getBricks_service" value="/rcVision/getBricks"/> 
+			<param name="" value=""/> 
+		</node>
+	</group>
+
+	<group ns="RC_Grasp">
+		<node pkg="rc_grasp" name="rc_grasp" type="rc_grasp">
+			<param name="KukaCmdServiceName" value="/KukaNode"/>
+			<param name="PG70CmdServiceName" value="/PG70/PG70"/>
+			<param name="scenePath" value="/home/yonas/catkin_ws/src/rc_rsd/RC_KukaScene/Scene.wc.xml"/>
+			<param name="hmiConsole" value="/rcHMI/console"/>
+			<param name="idleHeight" value="0.3"/>
+			<param name="graspOffset" value="0.0"/>
+			<param name="graspLifted" value="0.1"/>
+			<param name="xMax" value="0.15"/>
+			<param name="yMax" value="0.08"/>
+			<param name="gripperOpenoffset" value="0.015"/>
+		</node>
+	</group>
+
+	<group ns="RC_Main">
+		<node pkg="rc_main" name="rc_main" type="rc_main">
+			<param name="hmiConsole" value="/rcHMI/console"/>
+			<param name="grabService" value="/rcGrasp/grabBrick"/>
+			<param name="getBricksService" value="/rcVision/getBricks"/>
+			<param name="plcService" value="/rcPLC"/>
+			<param name="anyBricks_sub" value="/rcVision/anyBricks"/>
+			<param name="safety_sub" value="/rcSafety/status"/>
+			<param name="hmi_status_sub" value="/rcHMI/status"/>
+			<param name="mesPub" value="/rcMESServer/msgToServer"/>
+			<param name="mesSub" value="/rcMESServer/msgFromServer"/>
+		</node>
+	</group>
 </launch>
-

@@ -3,10 +3,12 @@
 <launch>
 	<group ns="RC_Vision">
 		<node pkg="rc_vision" name="rc_vision" type="rc_vision">
-			<param name="image_sub" value="/rcCamera/image_raw"/> 
+			<param name="image_sub" value="/RC_Camera/image_rect_color"/> 
 			<param name="any_brick_pub" value="/rcVision/anyBricks"/> 
 			<param name="hmiConsole" value="/rcHMI/console"/> 
 			<param name="getBricks_service" value="/rcVision/getBricks"/> 
+			<param name="visionParamSub" value="/rcHMI/visionParam"/> 
+			<param name="visionImagePub" value="/rcVision/image"/> 
 		</node>
 	</group>
 </launch>

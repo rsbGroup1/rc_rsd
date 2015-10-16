@@ -9,10 +9,13 @@
 #include <rc_main/StartConv.h>
 #include <rc_main/StopConv.h>
 
+// Defines
+#define SSTR(x)                 dynamic_cast< std::ostringstream & >(( std::ostringstream() << std::dec << x )).str()
+
 // Global variables
 ros::Publisher _hmiConsolePub, _mesMessagePub;
 ros::ServiceClient _serviceGrabBrick, _serviceGetBricks, _serviceMove, _serviceStart, _serviceStop;
-bool _run = false;
+bool _run = false, _safety = false;
 
 // Functions
 void printConsole(std::string msg)
@@ -69,17 +72,34 @@ void stopConveyerBelt()
 
 void anyBrickCallback(std_msgs::Bool msg)
 {
-    //
+    static bool anyBricks = false;
+
+    if(anyBricks == false)
+    {
+        // Get positions etc.
+        rc_main::getBricks bricks;
+        if(!_serviceGetBricks.call(bricks))
+            printConsole("Failed to call the 'serviceGrabBricks'");
+
+        // Grab them
+        for(unsigned int i=0; i<1; i++) // bricks.response.color.size()
+        {
+            // x, y, theta, size
+            grabBrick(bricks.response.posX[i], bricks.response.posY[i], bricks.response.theta[i], 0.016);
+        }
+    }
+
+    //anyBricks = true;
 }
 
 void safetyCallback(std_msgs::Bool msg)
 {
-    //
+    _safety = msg.data;
 }
 
 void mesRecCallback(std_msgs::String msg)
 {
-
+    // Store order
 }
 
 void mesSend(std::string sendMsg)
@@ -140,9 +160,22 @@ int main()
     // Set loop rate
     ros::Rate loop_rate(10);
 
+    // Main loop
     while(nh.ok())
     {
-        std::cout << "Ok" << std::endl;
+        // If "HMI: Start", "Safety: False" and "MES: Order"
+        // Start conveyer
+        // If "anyBricks: True"
+        // Stop conveyer
+        // Move conveyer
+        // Call getBricks
+        // Look which bricks to pick up (compare to MES order)
+            // Grab one brick and if more bricks matched the order, call getBricks again in case of bricks that has moved
+        // Move conveyer
+        // If getBricks = 0, move more
+
+
+        //std::cout << "Ok" << std::endl;
 
         ros::spinOnce();
         loop_rate.sleep();
