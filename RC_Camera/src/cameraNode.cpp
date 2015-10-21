@@ -71,7 +71,7 @@ namespace uvc_camera
             cam->set_v4l2_control(V4L2_CID_FOCUS_ABSOLUTE, focus_absolute, "focus_absolute");
 
         bool auto_exposure;
-        if(pnode.getParam("auto_exposure", auto_exposure))
+        if(pnode.getParam("exposure_auto", auto_exposure))
         {
             int val;
 
