@@ -140,7 +140,7 @@ void anyBrickCallback(std_msgs::Bool msg)
     bool same = true;
     for(int i=0; i<6; i++)
     {
-        if(fabs(getQObj.response.q[i]*DEGREETORAD - _qIdle[i]) > 0.01)
+        if(fabs(getQObj.response.q[i]*DEGREETORAD - _qIdle[i]) > 0.1)
         {
             same = false;
             break;
@@ -185,6 +185,8 @@ void hmiStatusCallback(std_msgs::String msg)
 
 void mainHandlerThread()
 {
+    bool waitForBrick = false;
+    bool waitForIdle = false;
     bool conveyerRunning = false;
     bool run, anyBricks, safety, positionIdle;
 
@@ -207,6 +209,8 @@ void mainHandlerThread()
                 // Check if in idle position
                 if(positionIdle)
                 {
+                    waitForIdle == false;
+
                     // Get anyBricks
                     _anyBricksMutex.lock();
                     anyBricks = _anyBricks;
@@ -215,6 +219,8 @@ void mainHandlerThread()
                     // Check if bricks
                     if(anyBricks)
                     {
+                        waitForBrick = false;
+
                         // Stop conveyer belt
                         if(conveyerRunning)
                         {
@@ -265,19 +271,29 @@ void mainHandlerThread()
                     }
                     else
                     {
-                        std::cout << "Waiting for bricks.." << std::endl;
-
                         // Start conveyer if not already running
                         if(conveyerRunning == false)
                         {
                             startConveyerBelt();
                             conveyerRunning = true;
                         }
+
+                        // Inform user
+                        if(waitForBrick == false)
+                        {
+                            printConsole("Waiting for bricks!");
+                            waitForBrick = true;
+                        }
                     }
                 }
                 else
                 {
-                    std::cout << "Waiting for idle.." << std::endl;
+                    // Inform user
+                    if(waitForIdle == false)
+                    {
+                        printConsole("Waiting for idle position!");
+                        waitForIdle = true;
+                    }
                 }
             }
 

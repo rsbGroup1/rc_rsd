@@ -55,7 +55,7 @@
 		</node>
 	</group>
 
-	<!--<group ns="RC_Main">
+	<group ns="RC_Main">
 		<node pkg="rc_main" name="rc_main" type="rc_main">
 			<param name="hmiConsole" value="/rcHMI/console"/>
 			<param name="grabService" value="/rcGrasp/grabBrick"/>
@@ -67,5 +67,5 @@
 			<param name="mesPub" value="/rcMESServer/msgToServer"/>
 			<param name="mesSub" value="/rcMESServer/msgFromServer"/>
 		</node>
-	</group>-->
+	</group>
 </launch>
