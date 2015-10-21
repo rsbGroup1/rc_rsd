@@ -22,11 +22,13 @@
 #include <rc_hmi/setConfiguration.h>
 #include <rc_hmi/getConfiguration.h>
 #include <rc_hmi/stopRobot.h>
-#include <rc_hmi/Move.h>
+#include <rc_hmi/Open.h>
+#include <rc_hmi/Close.h>
 #include <rc_hmi/Stop.h>
 #include <rc_hmi/MoveConv.h>
 #include <rc_hmi/StartConv.h>
 #include <rc_hmi/StopConv.h>
+#include <rc_hmi/getBricks.h>
 
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/TreeDevice.hpp>
@@ -141,10 +143,12 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
         void eventBtn();
         void eventCb(bool);
         void imageQueueHandler();
+        void eventSlider();
 
     private:
         // Member functions
-        void imageCallback(const sensor_msgs::ImageConstPtr& msg);
+        void liveImageCallback(const sensor_msgs::ImageConstPtr& msg);
+        void visionImageCallback(const sensor_msgs::ImageConstPtr& msg);
         void anyBrickCallback(std_msgs::Bool msg);
         void safetyCallback(std_msgs::Bool msg);
         void mesRecCallback(std_msgs::String msg);
@@ -164,12 +168,13 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
 	    // ROS	
         ros::NodeHandle *_nodeHandle;
         image_transport::ImageTransport *_itImg;
-        image_transport::Subscriber _subImg;
+        image_transport::Subscriber _subLiveImg, _subVisionImg;
         ros::ServiceClient _serviceKukaSetConf, _serviceKukaStop, _serviceKukaGetConf;
-        ros::ServiceClient _servicePG70Move, _servicePG70Stop;
+        ros::ServiceClient _servicePG70Open, _servicePG70Stop, _servicePG70Close;
         ros::ServiceClient _serviceConvMove, _serviceConvStop, _serviceConvStart;
+        ros::ServiceClient _serviceGetBricks;
         ros::Subscriber _consoleSub, _mesMessageSub, _anyBrickSub, _safetySub;
-        ros::Publisher _mesMessagePub, _hmiStatusPub;
+        ros::Publisher _mesMessagePub, _hmiStatusPub, _visionParamPub;
 
         // Image
         QTimer *_imageShowTimer;
@@ -177,8 +182,12 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
         SynchronisedQueue<QString> _consoleQueue;
 
         // UI
-        boost::mutex _labelBricksMutex, _labelSafetyMutex;
+        boost::mutex _labelBricksMutex, _labelSafetyMutex, _liveFeedMutex;
         bool _anyBricks, _safety;
+
+        // Else
+        rw::math::Q _qIdle;
+        bool _liveFeed;
 };
 
 #endif // HMIWIDGET_HPP

@@ -7,8 +7,7 @@
 			<param name="any_brick_pub" value="/rcVision/anyBricks"/> 
 			<param name="hmiConsole" value="/rcHMI/console"/> 
 			<param name="getBricks_service" value="/rcVision/getBricks"/> 
-			<param name="visionParamSub" value="/rcHMI/visionParam"/> 
-			<param name="visionImagePub" value="/rcVision/image"/> 
+			<param name="" value=""/> 
 		</node>
 	</group>
 </launch>

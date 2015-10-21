@@ -1,0 +1,15 @@
+<!-- Kuka RSI Controller launch file -->
+
+<launch>
+	<group ns="Kuka_RSI">
+		<node pkg="kuka_rsi" name="KukaRSI" type="kuka_rsi">
+			  <param name="IPServer" value="192.168.100.50"/>
+			  <param name="IPClient" value="192.168.100.100"/>
+			  <param name="PortServer" value="49000"/>
+			  <param name="PortClient" value="53453"/>
+			  <param name="Debug" value="false"/>
+			  <param name="CmdServiceName" value="/KukaNode/"/>
+		</node>
+	</group>
+</launch>
+

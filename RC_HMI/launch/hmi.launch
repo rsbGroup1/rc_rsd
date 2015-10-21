@@ -3,7 +3,9 @@
 <launch>
 	<group ns="RC_HMI">
 		<node pkg="rc_hmi" name="rc_hmi" type="rc_hmi">
-			<param name="image_sub" value="/rcCamera/image_raw"/> 
+			<param name="live_image_sub" value="/RC_Camera/image_rect_color"/> 
+			<param name="vision_image_sub" value="/rcVision/image"/> 
+			<param name="visionParamPub" value="/rcHMI/visionParam"/> 
 			<param name="KukaCmdServiceName" value="/KukaNode"/> 
 			<param name="PG70CmdServiceName" value="/PG70/PG70"/> 
 			<param name="console_sub" value="/rcHMI/console"/> 
@@ -13,6 +15,9 @@
 			<param name="safety_sub" value="/rcSafety/status"/>
 			<param name="mesPub" value="/rcMESServer/msgToServer"/>
 			<param name="mesSub" value="/rcMESServer/msgFromServer"/>
+			<param name="getBricks_service" value="/rcVision/getBricks"/>
 		</node>
 	</group>
 </launch>
+
+

@@ -180,20 +180,24 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
         return false;
     sleep(1);
 
-    // 5. Go to idle Q (when camera is taking pictures)
+    // 5. Move to brick lifted (blocking call)
+    if(moveRobotWait(qBrickLifted) == false)
+        return false;
+
+    // 6. Go to idle Q (when camera is taking pictures)
     if(moveRobotWait(_idleQ) == false)
         return false;
 
-    // 6. Go to release-lego-to-mr Q
+    // 7. Go to release-lego-to-mr Q
     if(moveRobotWait(_releaseBrickQ) == false)
         return false;
 
-    // 7. Open gripper
+    // 8. Open gripper
     if(PG70SetConf(qGripperOpen) == false)
         return false;
     sleep(2);
 
-    // 8. Go back to idle Q
+    // 9. Go back to idle Q
     if(moveRobotWait(_idleQ) == false)
         return false;
 
@@ -216,14 +220,14 @@ int main()
     std::string kukaService, PG70Service, scenePath, hmiConsolePub;
     pNh.param<std::string>("KukaCmdServiceName", kukaService, "/KukaNode");
     pNh.param<std::string>("PG70CmdServiceName", PG70Service, "/PG70/PG70");
-    pNh.param<std::string>("scenePath", scenePath, "/home/student/catkin_ws/src/rc_rsd/RC_KukaScene/Scene.wc.xml");
+    pNh.param<std::string>("scenePath", scenePath, "/home/yonas/catkin_ws/src/rc_rsd/RC_KukaScene/Scene.wc.xml");
     pNh.param<std::string>("hmiConsole", hmiConsolePub, "/rcHMI/console");
     pNh.param<double>("idleHeight", _idleQHeight, 0.3);
     pNh.param<double>("graspOffset", _graspOffset, 0.0);
     pNh.param<double>("graspLifted", _graspLifted, 0.1);
     pNh.param<double>("xMax", _xMax, 0.15);
     pNh.param<double>("yMax", _yMax, 0.08);
-    pNh.param<double>("gripperOpenoffset", _gripperOpenOffset, 0.01);
+    pNh.param<double>("gripperOpenoffset", _gripperOpenOffset, 0.015);
 
     // Create service calls
     _serviceKukaSetConf = nh.serviceClient<rc_grasp::setConfiguration>(kukaService + "/SetConfiguration");

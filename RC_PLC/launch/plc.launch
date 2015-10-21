@@ -4,6 +4,8 @@
 	<group ns="RC_PLC">
 		<node pkg="rc_plc" name="rc_plc" type="rc_plc">
 			<param name="hmiConsole" value="/rcHMI/console"/> 
+			<param name="port" value="/dev/serial/by-id/usb-FTDI_USB-RS485_Cable_FTVFYA1U-if00-port0"/> 
+			<param name="baud_rate" value="19200"/>
 		</node>
 	</group>
 </launch>

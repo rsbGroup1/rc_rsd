@@ -5,9 +5,71 @@
 #include <rc_plc/MoveConv.h>
 #include <rc_plc/StopConv.h>
 #include <rc_plc/StartConv.h>
+#include <rc_plc/ChangeDirection.h>
 #include "serial/serial.h"
+#include <boost/thread/mutex.hpp>
+#include <boost/thread.hpp>
+#include <queue>
 
-// Global variables
+// Defines
+#define SSTR(x)                 dynamic_cast< std::ostringstream & >(( std::ostringstream() << std::dec << x )).str()
+#define DATA_LENGTH             10
+
+// Queue class
+template <typename T>
+class SynchronisedQueue
+{
+    private:
+        std::queue<T> m_queue;              // Use STL queue to store data
+        boost::mutex m_mutex;               // The mutex to synchronise on
+        boost::condition_variable m_cond;   // The condition to wait for
+
+    public:
+        // Add data to the queue and notify others
+        void enqueue(const T& data)
+        {
+            // Acquire lock on the queue
+            boost::unique_lock<boost::mutex> lock(m_mutex);
+
+            // Add the data to the queue
+            m_queue.push(data);
+
+            // Notify others that data is ready
+            m_cond.notify_one();
+        }
+
+        // Get data from the queue. Wait for data if not available
+        T dequeue()
+        {
+            // Acquire lock on the queue
+            boost::unique_lock<boost::mutex> lock(m_mutex);
+
+            // When there is no data, wait till someone fills it.
+            // Lock is automatically released in the wait and obtained
+            // again after the wait
+            while(m_queue.size()==0)
+                m_cond.wait(lock);
+
+            // Retrieve the data from the queue
+            T result = m_queue.front();
+            m_queue.pop();
+
+            return result;
+        }
+
+        int size()
+        {
+            // Acquire lock on the queue
+            boost::unique_lock<boost::mutex> lock(m_mutex);
+            return m_queue.size();
+        }
+};
+
+// Global var
+serial::Serial *_serialConnection;
+bool _debugMsg;
+SynchronisedQueue<std::string> _queue;
+boost::thread *_writeThread;
 ros::Publisher _hmiConsolePub;
 
 // Functions
@@ -19,22 +81,38 @@ void printConsole(std::string msg)
     _hmiConsolePub.publish(pubMsg);
 }
 
+bool changeDirectionCallback(rc_plc::ChangeDirection::Request &req, rc_plc::ChangeDirection::Response &res)
+{
+    //true = forward. false = reverse
+    if(req.direction)
+        _queue.enqueue("f");
+    else
+        _queue.enqueue("r");
+
+    return true;
+}
+
 bool moveCallback(rc_plc::MoveConv::Request &req, rc_plc::MoveConv::Response &res)
 {
-    //
+    _queue.enqueue("s");
+    sleep(req.duration);
+    _queue.enqueue("t");
+    return true;
 }
 
 bool startCallback(rc_plc::StartConv::Request &req, rc_plc::StartConv::Response &res)
 {
-    //
+    _queue.enqueue("s");
+    return true;
 }
 
 bool stopCallback(rc_plc::StopConv::Request &req, rc_plc::StopConv::Response &res)
 {
-    //
+    _queue.enqueue("t");
+    return true;
 }
 
-/*void writeSerialThread()
+void writeSerialThread()
 {
     while(true)
     {
@@ -53,7 +131,7 @@ bool stopCallback(rc_plc::StopConv::Request &req, rc_plc::StopConv::Response &re
     }
 }
 
-bool compareMsg(char* msg, char* command)
+/*bool compareMsg(char* msg, char* command)
 {
     int i = 0;
     while(msg[i] != '\n' && command[i] != '\n')
@@ -137,8 +215,11 @@ int main()
     ros::NodeHandle pNh(ros::this_node::getName() + "/");
 
     // Topic names
-    std::string hmiConsolePub;
+    std::string hmiConsolePub, port;
+    int baudRate;
     pNh.param<std::string>("hmiConsole", hmiConsolePub, "/rcHMI/console");
+    pNh.param<int>("baud_rate", baudRate, 19200);
+    pNh.param<std::string>("port", port, "/dev/serial/by-id/usb-FTDI_USB-RS485_Cable_FTVFYA1U-if00-port0");
 
     // Publishers
     _hmiConsolePub = nh.advertise<std_msgs::String>(hmiConsolePub, 100);
@@ -147,15 +228,29 @@ int main()
     ros::ServiceServer serviceMove = nh.advertiseService("/rcPLC/MoveConv", moveCallback);
     ros::ServiceServer serviceStart = nh.advertiseService("/rcPLC/StartConv", startCallback);
     ros::ServiceServer serviceStop = nh.advertiseService("/rcPLC/StopConv", stopCallback);
+    ros::ServiceServer serviceChange = nh.advertiseService("/rcPLC/ChangeDirection", changeDirectionCallback);
 
-    // Set loop rate
-    ros::Rate loop_rate(10);
+    // Open connection
+    _serialConnection = new serial::Serial(port.c_str(), baudRate, serial::Timeout::simpleTimeout(50));
 
-    while(nh.ok())
+    // Check if connection is ok
+    if(!_serialConnection->isOpen())
     {
-        ros::spinOnce();
-        loop_rate.sleep();
+        printConsole("Error opening connection!");
+        _serialConnection->close();
+        return 0;
     }
+
+    // Start serial read thread
+    _writeThread = new boost::thread(writeSerialThread);
+
+    // ROS Spin: Handle callbacks
+    while(ros::ok())
+    ros::spinOnce();
+
+    // Close connection
+    _writeThread->interrupt();
+    _serialConnection->close();
 
     // Return
     return 0;

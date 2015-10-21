@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'HMIWidgetS40589.ui'
+** Form generated from reading UI file 'HMIWidgetE43147.ui'
 **
 ** Created by: Qt User Interface Compiler version 4.8.6
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef HMIWIDGETS40589_H
-#define HMIWIDGETS40589_H
+#ifndef HMIWIDGETE43147_H
+#define HMIWIDGETE43147_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -20,6 +20,7 @@
 #include <QtGui/QLabel>
 #include <QtGui/QPushButton>
 #include <QtGui/QRadioButton>
+#include <QtGui/QSlider>
 #include <QtGui/QTextBrowser>
 #include <QtGui/QWidget>
 
@@ -31,49 +32,104 @@ public:
     QGroupBox *groupBox;
     QLabel *_labelCameraView;
     QLabel *label_6;
+    QWidget *horizontalLayoutWidget;
+    QHBoxLayout *horizontalLayout;
+    QLabel *label_2;
+    QSlider *_sliderSMin;
+    QLabel *_labelSMin;
+    QWidget *horizontalLayoutWidget_2;
+    QHBoxLayout *horizontalLayout_2;
+    QLabel *label_3;
+    QSlider *_sliderSMax;
+    QLabel *_labelSMax;
+    QWidget *horizontalLayoutWidget_3;
+    QHBoxLayout *horizontalLayout_3;
+    QLabel *label_4;
+    QSlider *_sliderHMin;
+    QLabel *_labelHMin;
+    QWidget *horizontalLayoutWidget_4;
+    QHBoxLayout *horizontalLayout_4;
+    QLabel *label_8;
+    QSlider *_sliderHMax;
+    QLabel *_labelHMax;
+    QWidget *horizontalLayoutWidget_6;
+    QHBoxLayout *horizontalLayout_6;
+    QLabel *label_9;
+    QSlider *_sliderColor;
+    QLabel *_labelColor;
+    QWidget *horizontalLayoutWidget_7;
+    QHBoxLayout *horizontalLayout_7;
+    QLabel *label_10;
+    QSlider *_sliderClose;
+    QLabel *_labelClose;
+    QWidget *horizontalLayoutWidget_8;
+    QHBoxLayout *horizontalLayout_8;
+    QLabel *label_11;
+    QSlider *_sliderArea;
+    QLabel *_labelArea;
+    QWidget *horizontalLayoutWidget_9;
+    QHBoxLayout *horizontalLayout_9;
+    QLabel *label_12;
+    QSlider *_sliderBlob;
+    QLabel *_labelBlob;
+    QFrame *line_2;
+    QPushButton *_btnEmStop;
+    QLabel *label_20;
+    QPushButton *_btnGripperOpen;
+    QPushButton *_btnGripperClose;
+    QFrame *line_7;
+    QWidget *horizontalLayoutWidget_10;
+    QHBoxLayout *horizontalLayout_10;
+    QRadioButton *_cbLive;
+    QRadioButton *_cbVision;
     QGroupBox *groupBox_2;
-    QLabel *label_14;
     QLabel *label_15;
     QLabel *_labelOrderStatus;
-    QFrame *line;
     QLabel *label_5;
     QWidget *horizontalLayoutWidget_5;
     QHBoxLayout *horizontalLayout_5;
     QRadioButton *_cbAuto;
     QRadioButton *_cbManual;
-    QPushButton *_btnEmStop;
     QPushButton *_btnCellReady;
     QPushButton *_btnCellBusy;
     QPushButton *_btnCellError;
-    QLabel *label_17;
     QFrame *line_3;
     QLabel *LocalPlanner;
     QFrame *line_4;
     QLabel *label_18;
     QTextBrowser *_txtBrowser;
-    QPushButton *_btnStartConv;
-    QPushButton *_btnMoveConv;
-    QPushButton *_btnStopConv;
     QLabel *label_7;
     QLabel *_labelSafety;
     QLabel *_labelBricks;
+    QPushButton *_btnClearLog;
+    QFrame *line_5;
+    QLabel *label_16;
+    QLabel *label_17;
+    QPushButton *_btnConvStart;
+    QPushButton *_btnConvStop;
+    QFrame *line_6;
+    QLabel *label_19;
+    QPushButton *_btnRobotHome;
+    QPushButton *_btnRobotReady;
+    QPushButton *_btnRobotStop;
+    QPushButton *_btnConvMove;
     QLabel *label;
 
     void setupUi(QWidget *HMIWidgetClass)
     {
         if (HMIWidgetClass->objectName().isEmpty())
             HMIWidgetClass->setObjectName(QString::fromUtf8("HMIWidgetClass"));
-        HMIWidgetClass->resize(373, 935);
+        HMIWidgetClass->resize(739, 791);
         groupBox = new QGroupBox(HMIWidgetClass);
         groupBox->setObjectName(QString::fromUtf8("groupBox"));
-        groupBox->setGeometry(QRect(10, 660, 351, 271));
+        groupBox->setGeometry(QRect(380, 60, 351, 721));
         groupBox->setStyleSheet(QString::fromUtf8("QGroupBox {\n"
 "    border: 2px solid #003399;\n"
 "    border-radius: 5px;\n"
 "}"));
         _labelCameraView = new QLabel(groupBox);
         _labelCameraView->setObjectName(QString::fromUtf8("_labelCameraView"));
-        _labelCameraView->setGeometry(QRect(10, 40, 331, 221));
+        _labelCameraView->setGeometry(QRect(10, 290, 331, 221));
         _labelCameraView->setAlignment(Qt::AlignCenter);
         label_6 = new QLabel(groupBox);
         label_6->setObjectName(QString::fromUtf8("label_6"));
@@ -83,33 +139,810 @@ public:
         font.setWeight(75);
         label_6->setFont(font);
         label_6->setAlignment(Qt::AlignCenter);
+        horizontalLayoutWidget = new QWidget(groupBox);
+        horizontalLayoutWidget->setObjectName(QString::fromUtf8("horizontalLayoutWidget"));
+        horizontalLayoutWidget->setGeometry(QRect(10, 40, 331, 31));
+        horizontalLayout = new QHBoxLayout(horizontalLayoutWidget);
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
+        horizontalLayout->setContentsMargins(0, 0, 0, 0);
+        label_2 = new QLabel(horizontalLayoutWidget);
+        label_2->setObjectName(QString::fromUtf8("label_2"));
+
+        horizontalLayout->addWidget(label_2);
+
+        _sliderSMin = new QSlider(horizontalLayoutWidget);
+        _sliderSMin->setObjectName(QString::fromUtf8("_sliderSMin"));
+        _sliderSMin->setEnabled(true);
+        _sliderSMin->setFocusPolicy(Qt::NoFocus);
+        _sliderSMin->setStyleSheet(QString::fromUtf8("QSlider::groove:horizontal {\n"
+"border: 1px solid #bbb;\n"
+"background: #003399;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::sub-page:horizontal {\n"
+"background: #003399;\n"
+"border: 1px solid #777;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::add-page:horizontal {\n"
+"background: #fff;\n"
+"border: 1px solid #777;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal {\n"
+"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
+"    stop:0 #eee, stop:1 #ccc);\n"
+"border: 1px solid #777;\n"
+"width: 13px;\n"
+"margin-top: -2px;\n"
+"margin-bottom: -2px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal:hover {\n"
+"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
+"    stop:0 #fff, stop:1 #ddd);\n"
+"border: 1px solid #444;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::sub-page:horizontal:disabled {\n"
+"background: #bbb;\n"
+"border-color: #999;\n"
+"}\n"
+"\n"
+"QSlider::add-page:horizontal:disabled {\n"
+"background: #eee;\n"
+""
+                        "border-color: #999;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal:disabled {\n"
+"background: #eee;\n"
+"border: 1px solid #aaa;\n"
+"border-radius: 4px;\n"
+"}"));
+        _sliderSMin->setMaximum(255);
+        _sliderSMin->setValue(150);
+        _sliderSMin->setOrientation(Qt::Horizontal);
+
+        horizontalLayout->addWidget(_sliderSMin);
+
+        _labelSMin = new QLabel(horizontalLayoutWidget);
+        _labelSMin->setObjectName(QString::fromUtf8("_labelSMin"));
+
+        horizontalLayout->addWidget(_labelSMin);
+
+        horizontalLayoutWidget_2 = new QWidget(groupBox);
+        horizontalLayoutWidget_2->setObjectName(QString::fromUtf8("horizontalLayoutWidget_2"));
+        horizontalLayoutWidget_2->setGeometry(QRect(10, 70, 331, 31));
+        horizontalLayout_2 = new QHBoxLayout(horizontalLayoutWidget_2);
+        horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
+        horizontalLayout_2->setContentsMargins(0, 0, 0, 0);
+        label_3 = new QLabel(horizontalLayoutWidget_2);
+        label_3->setObjectName(QString::fromUtf8("label_3"));
+
+        horizontalLayout_2->addWidget(label_3);
+
+        _sliderSMax = new QSlider(horizontalLayoutWidget_2);
+        _sliderSMax->setObjectName(QString::fromUtf8("_sliderSMax"));
+        _sliderSMax->setFocusPolicy(Qt::NoFocus);
+        _sliderSMax->setStyleSheet(QString::fromUtf8("QSlider::groove:horizontal {\n"
+"border: 1px solid #bbb;\n"
+"background: #003399;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::sub-page:horizontal {\n"
+"background: #003399;\n"
+"border: 1px solid #777;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::add-page:horizontal {\n"
+"background: #fff;\n"
+"border: 1px solid #777;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal {\n"
+"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
+"    stop:0 #eee, stop:1 #ccc);\n"
+"border: 1px solid #777;\n"
+"width: 13px;\n"
+"margin-top: -2px;\n"
+"margin-bottom: -2px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal:hover {\n"
+"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
+"    stop:0 #fff, stop:1 #ddd);\n"
+"border: 1px solid #444;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::sub-page:horizontal:disabled {\n"
+"background: #bbb;\n"
+"border-color: #999;\n"
+"}\n"
+"\n"
+"QSlider::add-page:horizontal:disabled {\n"
+"background: #eee;\n"
+""
+                        "border-color: #999;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal:disabled {\n"
+"background: #eee;\n"
+"border: 1px solid #aaa;\n"
+"border-radius: 4px;\n"
+"}"));
+        _sliderSMax->setMaximum(255);
+        _sliderSMax->setValue(255);
+        _sliderSMax->setOrientation(Qt::Horizontal);
+
+        horizontalLayout_2->addWidget(_sliderSMax);
+
+        _labelSMax = new QLabel(horizontalLayoutWidget_2);
+        _labelSMax->setObjectName(QString::fromUtf8("_labelSMax"));
+
+        horizontalLayout_2->addWidget(_labelSMax);
+
+        horizontalLayoutWidget_3 = new QWidget(groupBox);
+        horizontalLayoutWidget_3->setObjectName(QString::fromUtf8("horizontalLayoutWidget_3"));
+        horizontalLayoutWidget_3->setGeometry(QRect(10, 100, 331, 31));
+        horizontalLayout_3 = new QHBoxLayout(horizontalLayoutWidget_3);
+        horizontalLayout_3->setObjectName(QString::fromUtf8("horizontalLayout_3"));
+        horizontalLayout_3->setContentsMargins(0, 0, 0, 0);
+        label_4 = new QLabel(horizontalLayoutWidget_3);
+        label_4->setObjectName(QString::fromUtf8("label_4"));
+
+        horizontalLayout_3->addWidget(label_4);
+
+        _sliderHMin = new QSlider(horizontalLayoutWidget_3);
+        _sliderHMin->setObjectName(QString::fromUtf8("_sliderHMin"));
+        _sliderHMin->setFocusPolicy(Qt::NoFocus);
+        _sliderHMin->setStyleSheet(QString::fromUtf8("QSlider::groove:horizontal {\n"
+"border: 1px solid #bbb;\n"
+"background: #003399;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::sub-page:horizontal {\n"
+"background: #003399;\n"
+"border: 1px solid #777;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::add-page:horizontal {\n"
+"background: #fff;\n"
+"border: 1px solid #777;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal {\n"
+"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
+"    stop:0 #eee, stop:1 #ccc);\n"
+"border: 1px solid #777;\n"
+"width: 13px;\n"
+"margin-top: -2px;\n"
+"margin-bottom: -2px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal:hover {\n"
+"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
+"    stop:0 #fff, stop:1 #ddd);\n"
+"border: 1px solid #444;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::sub-page:horizontal:disabled {\n"
+"background: #bbb;\n"
+"border-color: #999;\n"
+"}\n"
+"\n"
+"QSlider::add-page:horizontal:disabled {\n"
+"background: #eee;\n"
+""
+                        "border-color: #999;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal:disabled {\n"
+"background: #eee;\n"
+"border: 1px solid #aaa;\n"
+"border-radius: 4px;\n"
+"}"));
+        _sliderHMin->setMaximum(255);
+        _sliderHMin->setOrientation(Qt::Horizontal);
+
+        horizontalLayout_3->addWidget(_sliderHMin);
+
+        _labelHMin = new QLabel(horizontalLayoutWidget_3);
+        _labelHMin->setObjectName(QString::fromUtf8("_labelHMin"));
+
+        horizontalLayout_3->addWidget(_labelHMin);
+
+        horizontalLayoutWidget_4 = new QWidget(groupBox);
+        horizontalLayoutWidget_4->setObjectName(QString::fromUtf8("horizontalLayoutWidget_4"));
+        horizontalLayoutWidget_4->setGeometry(QRect(10, 130, 331, 31));
+        horizontalLayout_4 = new QHBoxLayout(horizontalLayoutWidget_4);
+        horizontalLayout_4->setObjectName(QString::fromUtf8("horizontalLayout_4"));
+        horizontalLayout_4->setContentsMargins(0, 0, 0, 0);
+        label_8 = new QLabel(horizontalLayoutWidget_4);
+        label_8->setObjectName(QString::fromUtf8("label_8"));
+
+        horizontalLayout_4->addWidget(label_8);
+
+        _sliderHMax = new QSlider(horizontalLayoutWidget_4);
+        _sliderHMax->setObjectName(QString::fromUtf8("_sliderHMax"));
+        _sliderHMax->setFocusPolicy(Qt::NoFocus);
+        _sliderHMax->setStyleSheet(QString::fromUtf8("QSlider::groove:horizontal {\n"
+"border: 1px solid #bbb;\n"
+"background: #003399;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::sub-page:horizontal {\n"
+"background: #003399;\n"
+"border: 1px solid #777;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::add-page:horizontal {\n"
+"background: #fff;\n"
+"border: 1px solid #777;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal {\n"
+"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
+"    stop:0 #eee, stop:1 #ccc);\n"
+"border: 1px solid #777;\n"
+"width: 13px;\n"
+"margin-top: -2px;\n"
+"margin-bottom: -2px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal:hover {\n"
+"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
+"    stop:0 #fff, stop:1 #ddd);\n"
+"border: 1px solid #444;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::sub-page:horizontal:disabled {\n"
+"background: #bbb;\n"
+"border-color: #999;\n"
+"}\n"
+"\n"
+"QSlider::add-page:horizontal:disabled {\n"
+"background: #eee;\n"
+""
+                        "border-color: #999;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal:disabled {\n"
+"background: #eee;\n"
+"border: 1px solid #aaa;\n"
+"border-radius: 4px;\n"
+"}"));
+        _sliderHMax->setMaximum(255);
+        _sliderHMax->setValue(255);
+        _sliderHMax->setOrientation(Qt::Horizontal);
+
+        horizontalLayout_4->addWidget(_sliderHMax);
+
+        _labelHMax = new QLabel(horizontalLayoutWidget_4);
+        _labelHMax->setObjectName(QString::fromUtf8("_labelHMax"));
+
+        horizontalLayout_4->addWidget(_labelHMax);
+
+        horizontalLayoutWidget_6 = new QWidget(groupBox);
+        horizontalLayoutWidget_6->setObjectName(QString::fromUtf8("horizontalLayoutWidget_6"));
+        horizontalLayoutWidget_6->setGeometry(QRect(10, 220, 331, 31));
+        horizontalLayout_6 = new QHBoxLayout(horizontalLayoutWidget_6);
+        horizontalLayout_6->setObjectName(QString::fromUtf8("horizontalLayout_6"));
+        horizontalLayout_6->setContentsMargins(0, 0, 0, 0);
+        label_9 = new QLabel(horizontalLayoutWidget_6);
+        label_9->setObjectName(QString::fromUtf8("label_9"));
+
+        horizontalLayout_6->addWidget(label_9);
+
+        _sliderColor = new QSlider(horizontalLayoutWidget_6);
+        _sliderColor->setObjectName(QString::fromUtf8("_sliderColor"));
+        _sliderColor->setFocusPolicy(Qt::NoFocus);
+        _sliderColor->setStyleSheet(QString::fromUtf8("QSlider::groove:horizontal {\n"
+"border: 1px solid #bbb;\n"
+"background: #003399;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::sub-page:horizontal {\n"
+"background: #003399;\n"
+"border: 1px solid #777;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::add-page:horizontal {\n"
+"background: #fff;\n"
+"border: 1px solid #777;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal {\n"
+"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
+"    stop:0 #eee, stop:1 #ccc);\n"
+"border: 1px solid #777;\n"
+"width: 13px;\n"
+"margin-top: -2px;\n"
+"margin-bottom: -2px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal:hover {\n"
+"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
+"    stop:0 #fff, stop:1 #ddd);\n"
+"border: 1px solid #444;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::sub-page:horizontal:disabled {\n"
+"background: #bbb;\n"
+"border-color: #999;\n"
+"}\n"
+"\n"
+"QSlider::add-page:horizontal:disabled {\n"
+"background: #eee;\n"
+""
+                        "border-color: #999;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal:disabled {\n"
+"background: #eee;\n"
+"border: 1px solid #aaa;\n"
+"border-radius: 4px;\n"
+"}"));
+        _sliderColor->setMaximum(255);
+        _sliderColor->setValue(100);
+        _sliderColor->setOrientation(Qt::Horizontal);
+
+        horizontalLayout_6->addWidget(_sliderColor);
+
+        _labelColor = new QLabel(horizontalLayoutWidget_6);
+        _labelColor->setObjectName(QString::fromUtf8("_labelColor"));
+
+        horizontalLayout_6->addWidget(_labelColor);
+
+        horizontalLayoutWidget_7 = new QWidget(groupBox);
+        horizontalLayoutWidget_7->setObjectName(QString::fromUtf8("horizontalLayoutWidget_7"));
+        horizontalLayoutWidget_7->setGeometry(QRect(10, 190, 331, 31));
+        horizontalLayout_7 = new QHBoxLayout(horizontalLayoutWidget_7);
+        horizontalLayout_7->setObjectName(QString::fromUtf8("horizontalLayout_7"));
+        horizontalLayout_7->setContentsMargins(0, 0, 0, 0);
+        label_10 = new QLabel(horizontalLayoutWidget_7);
+        label_10->setObjectName(QString::fromUtf8("label_10"));
+
+        horizontalLayout_7->addWidget(label_10);
+
+        _sliderClose = new QSlider(horizontalLayoutWidget_7);
+        _sliderClose->setObjectName(QString::fromUtf8("_sliderClose"));
+        _sliderClose->setFocusPolicy(Qt::NoFocus);
+        _sliderClose->setStyleSheet(QString::fromUtf8("QSlider::groove:horizontal {\n"
+"border: 1px solid #bbb;\n"
+"background: #003399;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::sub-page:horizontal {\n"
+"background: #003399;\n"
+"border: 1px solid #777;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::add-page:horizontal {\n"
+"background: #fff;\n"
+"border: 1px solid #777;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal {\n"
+"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
+"    stop:0 #eee, stop:1 #ccc);\n"
+"border: 1px solid #777;\n"
+"width: 13px;\n"
+"margin-top: -2px;\n"
+"margin-bottom: -2px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal:hover {\n"
+"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
+"    stop:0 #fff, stop:1 #ddd);\n"
+"border: 1px solid #444;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::sub-page:horizontal:disabled {\n"
+"background: #bbb;\n"
+"border-color: #999;\n"
+"}\n"
+"\n"
+"QSlider::add-page:horizontal:disabled {\n"
+"background: #eee;\n"
+""
+                        "border-color: #999;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal:disabled {\n"
+"background: #eee;\n"
+"border: 1px solid #aaa;\n"
+"border-radius: 4px;\n"
+"}"));
+        _sliderClose->setMaximum(31);
+        _sliderClose->setSingleStep(2);
+        _sliderClose->setPageStep(4);
+        _sliderClose->setValue(9);
+        _sliderClose->setOrientation(Qt::Horizontal);
+
+        horizontalLayout_7->addWidget(_sliderClose);
+
+        _labelClose = new QLabel(horizontalLayoutWidget_7);
+        _labelClose->setObjectName(QString::fromUtf8("_labelClose"));
+
+        horizontalLayout_7->addWidget(_labelClose);
+
+        horizontalLayoutWidget_8 = new QWidget(groupBox);
+        horizontalLayoutWidget_8->setObjectName(QString::fromUtf8("horizontalLayoutWidget_8"));
+        horizontalLayoutWidget_8->setGeometry(QRect(10, 160, 331, 31));
+        horizontalLayout_8 = new QHBoxLayout(horizontalLayoutWidget_8);
+        horizontalLayout_8->setObjectName(QString::fromUtf8("horizontalLayout_8"));
+        horizontalLayout_8->setContentsMargins(0, 0, 0, 0);
+        label_11 = new QLabel(horizontalLayoutWidget_8);
+        label_11->setObjectName(QString::fromUtf8("label_11"));
+
+        horizontalLayout_8->addWidget(label_11);
+
+        _sliderArea = new QSlider(horizontalLayoutWidget_8);
+        _sliderArea->setObjectName(QString::fromUtf8("_sliderArea"));
+        _sliderArea->setFocusPolicy(Qt::NoFocus);
+        _sliderArea->setStyleSheet(QString::fromUtf8("QSlider::groove:horizontal {\n"
+"border: 1px solid #bbb;\n"
+"background: #003399;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::sub-page:horizontal {\n"
+"background: #003399;\n"
+"border: 1px solid #777;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::add-page:horizontal {\n"
+"background: #fff;\n"
+"border: 1px solid #777;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal {\n"
+"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
+"    stop:0 #eee, stop:1 #ccc);\n"
+"border: 1px solid #777;\n"
+"width: 13px;\n"
+"margin-top: -2px;\n"
+"margin-bottom: -2px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal:hover {\n"
+"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
+"    stop:0 #fff, stop:1 #ddd);\n"
+"border: 1px solid #444;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::sub-page:horizontal:disabled {\n"
+"background: #bbb;\n"
+"border-color: #999;\n"
+"}\n"
+"\n"
+"QSlider::add-page:horizontal:disabled {\n"
+"background: #eee;\n"
+""
+                        "border-color: #999;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal:disabled {\n"
+"background: #eee;\n"
+"border: 1px solid #aaa;\n"
+"border-radius: 4px;\n"
+"}"));
+        _sliderArea->setMaximum(30000);
+        _sliderArea->setSingleStep(100);
+        _sliderArea->setPageStep(1000);
+        _sliderArea->setValue(5000);
+        _sliderArea->setOrientation(Qt::Horizontal);
+
+        horizontalLayout_8->addWidget(_sliderArea);
+
+        _labelArea = new QLabel(horizontalLayoutWidget_8);
+        _labelArea->setObjectName(QString::fromUtf8("_labelArea"));
+
+        horizontalLayout_8->addWidget(_labelArea);
+
+        horizontalLayoutWidget_9 = new QWidget(groupBox);
+        horizontalLayoutWidget_9->setObjectName(QString::fromUtf8("horizontalLayoutWidget_9"));
+        horizontalLayoutWidget_9->setGeometry(QRect(10, 250, 331, 31));
+        horizontalLayout_9 = new QHBoxLayout(horizontalLayoutWidget_9);
+        horizontalLayout_9->setObjectName(QString::fromUtf8("horizontalLayout_9"));
+        horizontalLayout_9->setContentsMargins(0, 0, 0, 0);
+        label_12 = new QLabel(horizontalLayoutWidget_9);
+        label_12->setObjectName(QString::fromUtf8("label_12"));
+
+        horizontalLayout_9->addWidget(label_12);
+
+        _sliderBlob = new QSlider(horizontalLayoutWidget_9);
+        _sliderBlob->setObjectName(QString::fromUtf8("_sliderBlob"));
+        _sliderBlob->setFocusPolicy(Qt::NoFocus);
+        _sliderBlob->setStyleSheet(QString::fromUtf8("QSlider::groove:horizontal {\n"
+"border: 1px solid #bbb;\n"
+"background: #003399;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::sub-page:horizontal {\n"
+"background: #003399;\n"
+"border: 1px solid #777;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::add-page:horizontal {\n"
+"background: #fff;\n"
+"border: 1px solid #777;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal {\n"
+"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
+"    stop:0 #eee, stop:1 #ccc);\n"
+"border: 1px solid #777;\n"
+"width: 13px;\n"
+"margin-top: -2px;\n"
+"margin-bottom: -2px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal:hover {\n"
+"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
+"    stop:0 #fff, stop:1 #ddd);\n"
+"border: 1px solid #444;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::sub-page:horizontal:disabled {\n"
+"background: #bbb;\n"
+"border-color: #999;\n"
+"}\n"
+"\n"
+"QSlider::add-page:horizontal:disabled {\n"
+"background: #eee;\n"
+""
+                        "border-color: #999;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal:disabled {\n"
+"background: #eee;\n"
+"border: 1px solid #aaa;\n"
+"border-radius: 4px;\n"
+"}"));
+        _sliderBlob->setMaximum(20000);
+        _sliderBlob->setSingleStep(50);
+        _sliderBlob->setPageStep(100);
+        _sliderBlob->setValue(1000);
+        _sliderBlob->setOrientation(Qt::Horizontal);
+
+        horizontalLayout_9->addWidget(_sliderBlob);
+
+        _labelBlob = new QLabel(horizontalLayoutWidget_9);
+        _labelBlob->setObjectName(QString::fromUtf8("_labelBlob"));
+
+        horizontalLayout_9->addWidget(_labelBlob);
+
+        line_2 = new QFrame(groupBox);
+        line_2->setObjectName(QString::fromUtf8("line_2"));
+        line_2->setGeometry(QRect(10, 550, 331, 20));
+        line_2->setFrameShape(QFrame::HLine);
+        line_2->setFrameShadow(QFrame::Sunken);
+        _btnEmStop = new QPushButton(groupBox);
+        _btnEmStop->setObjectName(QString::fromUtf8("_btnEmStop"));
+        _btnEmStop->setGeometry(QRect(15, 668, 321, 41));
+        QFont font1;
+        font1.setPointSize(17);
+        font1.setBold(true);
+        font1.setWeight(75);
+        _btnEmStop->setFont(font1);
+        _btnEmStop->setFocusPolicy(Qt::NoFocus);
+        _btnEmStop->setStyleSheet(QString::fromUtf8("QPushButton {\n"
+"color: red;\n"
+"border: 1px solid #003399;\n"
+"border-radius: 5px;\n"
+"padding: 5px;\n"
+"min-width: 80px;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 10.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+""));
+        label_20 = new QLabel(groupBox);
+        label_20->setObjectName(QString::fromUtf8("label_20"));
+        label_20->setGeometry(QRect(10, 570, 331, 19));
+        label_20->setFont(font);
+        label_20->setAlignment(Qt::AlignCenter);
+        _btnGripperOpen = new QPushButton(groupBox);
+        _btnGripperOpen->setObjectName(QString::fromUtf8("_btnGripperOpen"));
+        _btnGripperOpen->setGeometry(QRect(20, 600, 141, 31));
+        _btnGripperOpen->setMinimumSize(QSize(92, 0));
+        _btnGripperOpen->setFocusPolicy(Qt::NoFocus);
+        _btnGripperOpen->setStyleSheet(QString::fromUtf8("QPushButton {\n"
+"color: #333;\n"
+"border: 1px solid #003399;\n"
+"border-radius: 5px;\n"
+"padding: 5px;\n"
+"min-width: 80px;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 10.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+""));
+        _btnGripperClose = new QPushButton(groupBox);
+        _btnGripperClose->setObjectName(QString::fromUtf8("_btnGripperClose"));
+        _btnGripperClose->setGeometry(QRect(190, 600, 141, 31));
+        _btnGripperClose->setMinimumSize(QSize(92, 0));
+        _btnGripperClose->setFocusPolicy(Qt::NoFocus);
+        _btnGripperClose->setStyleSheet(QString::fromUtf8("QPushButton {\n"
+"color: #333;\n"
+"border: 1px solid #003399;\n"
+"border-radius: 5px;\n"
+"padding: 5px;\n"
+"min-width: 80px;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 10.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+""));
+        line_7 = new QFrame(groupBox);
+        line_7->setObjectName(QString::fromUtf8("line_7"));
+        line_7->setGeometry(QRect(10, 640, 331, 20));
+        line_7->setFrameShape(QFrame::HLine);
+        line_7->setFrameShadow(QFrame::Sunken);
+        horizontalLayoutWidget_10 = new QWidget(groupBox);
+        horizontalLayoutWidget_10->setObjectName(QString::fromUtf8("horizontalLayoutWidget_10"));
+        horizontalLayoutWidget_10->setGeometry(QRect(10, 520, 331, 31));
+        horizontalLayout_10 = new QHBoxLayout(horizontalLayoutWidget_10);
+        horizontalLayout_10->setObjectName(QString::fromUtf8("horizontalLayout_10"));
+        horizontalLayout_10->setContentsMargins(0, 0, 0, 0);
+        _cbLive = new QRadioButton(horizontalLayoutWidget_10);
+        _cbLive->setObjectName(QString::fromUtf8("_cbLive"));
+        _cbLive->setFocusPolicy(Qt::NoFocus);
+        _cbLive->setStyleSheet(QString::fromUtf8("QRadioButton::indicator::unchecked { \n"
+"	border: 1px solid darkgray; \n"
+"	border-radius: 6px; \n"
+"	background-color: white; \n"
+"	width: 15px; \n"
+"	height: 15px; \n"
+"	margin-left: 5px;\n"
+"}\n"
+"\n"
+"QRadioButton::indicator::checked { \n"
+"	border: 1px solid darkgray; \n"
+"	border-radius: 6px; \n"
+"	background-color: #003399; \n"
+"	width: 15px; \n"
+"	height: 15px; \n"
+"	margin-left: 5px;\n"
+"}"));
+        _cbLive->setChecked(true);
+
+        horizontalLayout_10->addWidget(_cbLive);
+
+        _cbVision = new QRadioButton(horizontalLayoutWidget_10);
+        _cbVision->setObjectName(QString::fromUtf8("_cbVision"));
+        _cbVision->setEnabled(true);
+        _cbVision->setFocusPolicy(Qt::NoFocus);
+        _cbVision->setStyleSheet(QString::fromUtf8("QRadioButton::indicator::unchecked { \n"
+"	border: 1px solid darkgray; \n"
+"	border-radius: 6px; \n"
+"	background-color: white; \n"
+"	width: 15px; \n"
+"	height: 15px; \n"
+"	margin-left: 5px;\n"
+"}\n"
+"\n"
+"QRadioButton::indicator::checked { \n"
+"	border: 1px solid darkgray; \n"
+"	border-radius: 6px; \n"
+"	background-color: #003399; \n"
+"	width: 15px; \n"
+"	height: 15px; \n"
+"	margin-left: 5px;\n"
+"}"));
+        _cbVision->setChecked(false);
+
+        horizontalLayout_10->addWidget(_cbVision);
+
         groupBox_2 = new QGroupBox(HMIWidgetClass);
         groupBox_2->setObjectName(QString::fromUtf8("groupBox_2"));
-        groupBox_2->setGeometry(QRect(10, 40, 351, 601));
+        groupBox_2->setGeometry(QRect(10, 60, 351, 721));
         groupBox_2->setStyleSheet(QString::fromUtf8("QGroupBox {\n"
 "    border: 2px solid #003399;\n"
 "    border-radius: 5px;\n"
 "}"));
-        label_14 = new QLabel(groupBox_2);
-        label_14->setObjectName(QString::fromUtf8("label_14"));
-        label_14->setGeometry(QRect(10, 140, 331, 19));
-        label_14->setFont(font);
-        label_14->setAlignment(Qt::AlignCenter);
         label_15 = new QLabel(groupBox_2);
         label_15->setObjectName(QString::fromUtf8("label_15"));
-        label_15->setGeometry(QRect(10, 170, 101, 17));
+        label_15->setGeometry(QRect(10, 90, 101, 17));
         label_15->setFont(font);
         _labelOrderStatus = new QLabel(groupBox_2);
         _labelOrderStatus->setObjectName(QString::fromUtf8("_labelOrderStatus"));
-        _labelOrderStatus->setGeometry(QRect(120, 170, 211, 17));
-        line = new QFrame(groupBox_2);
-        line->setObjectName(QString::fromUtf8("line"));
-        line->setGeometry(QRect(10, 120, 331, 16));
-        line->setFrameShape(QFrame::HLine);
-        line->setFrameShadow(QFrame::Sunken);
+        _labelOrderStatus->setGeometry(QRect(120, 90, 211, 17));
         label_5 = new QLabel(groupBox_2);
         label_5->setObjectName(QString::fromUtf8("label_5"));
-        label_5->setGeometry(QRect(10, 190, 101, 19));
+        label_5->setGeometry(QRect(10, 110, 101, 19));
         label_5->setFont(font);
         label_5->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
         horizontalLayoutWidget_5 = new QWidget(groupBox_2);
@@ -167,39 +1000,9 @@ public:
 
         horizontalLayout_5->addWidget(_cbManual);
 
-        _btnEmStop = new QPushButton(horizontalLayoutWidget_5);
-        _btnEmStop->setObjectName(QString::fromUtf8("_btnEmStop"));
-        QFont font1;
-        font1.setBold(false);
-        font1.setWeight(50);
-        _btnEmStop->setFont(font1);
-        _btnEmStop->setFocusPolicy(Qt::NoFocus);
-        _btnEmStop->setStyleSheet(QString::fromUtf8("QPushButton {\n"
-"color: red;\n"
-"border: 1px solid #003399;\n"
-"border-radius: 5px;\n"
-"padding: 5px;\n"
-"min-width: 80px;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
-"fx: 0.9, fy: -0.1,\n"
-"radius: 10.35, stop: 0 #fff, stop: 1 #003399);\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
-"fx: 0.9, fy: -0.1,\n"
-"radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
-"}\n"
-""));
-
-        horizontalLayout_5->addWidget(_btnEmStop);
-
         _btnCellReady = new QPushButton(groupBox_2);
         _btnCellReady->setObjectName(QString::fromUtf8("_btnCellReady"));
-        _btnCellReady->setGeometry(QRect(50, 240, 92, 31));
+        _btnCellReady->setGeometry(QRect(10, 210, 101, 31));
         _btnCellReady->setMinimumSize(QSize(92, 0));
         _btnCellReady->setFocusPolicy(Qt::NoFocus);
         _btnCellReady->setStyleSheet(QString::fromUtf8("QPushButton {\n"
@@ -224,7 +1027,7 @@ public:
 ""));
         _btnCellBusy = new QPushButton(groupBox_2);
         _btnCellBusy->setObjectName(QString::fromUtf8("_btnCellBusy"));
-        _btnCellBusy->setGeometry(QRect(150, 240, 92, 31));
+        _btnCellBusy->setGeometry(QRect(120, 210, 111, 31));
         _btnCellBusy->setMinimumSize(QSize(92, 0));
         _btnCellBusy->setFocusPolicy(Qt::NoFocus);
         _btnCellBusy->setStyleSheet(QString::fromUtf8("QPushButton {\n"
@@ -250,7 +1053,7 @@ public:
 ""));
         _btnCellError = new QPushButton(groupBox_2);
         _btnCellError->setObjectName(QString::fromUtf8("_btnCellError"));
-        _btnCellError->setGeometry(QRect(250, 240, 92, 31));
+        _btnCellError->setGeometry(QRect(241, 210, 101, 31));
         _btnCellError->setMinimumSize(QSize(92, 0));
         _btnCellError->setFocusPolicy(Qt::NoFocus);
         _btnCellError->setStyleSheet(QString::fromUtf8("QPushButton {\n"
@@ -273,13 +1076,9 @@ public:
 "radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
 "}\n"
 ""));
-        label_17 = new QLabel(groupBox_2);
-        label_17->setObjectName(QString::fromUtf8("label_17"));
-        label_17->setGeometry(QRect(10, 240, 61, 31));
-        label_17->setFont(font);
         line_3 = new QFrame(groupBox_2);
         line_3->setObjectName(QString::fromUtf8("line_3"));
-        line_3->setGeometry(QRect(10, 280, 331, 16));
+        line_3->setGeometry(QRect(10, 160, 331, 16));
         line_3->setFrameShape(QFrame::HLine);
         line_3->setFrameShadow(QFrame::Sunken);
         LocalPlanner = new QLabel(groupBox_2);
@@ -289,127 +1088,258 @@ public:
         LocalPlanner->setAlignment(Qt::AlignCenter);
         line_4 = new QFrame(groupBox_2);
         line_4->setObjectName(QString::fromUtf8("line_4"));
-        line_4->setGeometry(QRect(10, 390, 331, 16));
+        line_4->setGeometry(QRect(10, 430, 331, 16));
         line_4->setFrameShape(QFrame::HLine);
         line_4->setFrameShadow(QFrame::Sunken);
         label_18 = new QLabel(groupBox_2);
         label_18->setObjectName(QString::fromUtf8("label_18"));
-        label_18->setGeometry(QRect(10, 410, 331, 19));
+        label_18->setGeometry(QRect(10, 450, 331, 31));
         label_18->setFont(font);
         label_18->setAlignment(Qt::AlignCenter);
         _txtBrowser = new QTextBrowser(groupBox_2);
         _txtBrowser->setObjectName(QString::fromUtf8("_txtBrowser"));
-        _txtBrowser->setGeometry(QRect(10, 440, 331, 151));
-        _btnStartConv = new QPushButton(groupBox_2);
-        _btnStartConv->setObjectName(QString::fromUtf8("_btnStartConv"));
-        _btnStartConv->setGeometry(QRect(10, 80, 101, 31));
-        _btnStartConv->setMinimumSize(QSize(92, 0));
-        _btnStartConv->setFocusPolicy(Qt::NoFocus);
-        _btnStartConv->setStyleSheet(QString::fromUtf8("QPushButton {\n"
-"color: #333;\n"
-"border: 1px solid #003399;\n"
-"border-radius: 5px;\n"
-"padding: 5px;\n"
-"min-width: 80px;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
-"fx: 0.9, fy: -0.1,\n"
-"radius: 10.35, stop: 0 #fff, stop: 1 #003399);\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
-"fx: 0.9, fy: -0.1,\n"
-"radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
-"}\n"
-""));
-        _btnMoveConv = new QPushButton(groupBox_2);
-        _btnMoveConv->setObjectName(QString::fromUtf8("_btnMoveConv"));
-        _btnMoveConv->setGeometry(QRect(240, 80, 101, 31));
-        _btnMoveConv->setMinimumSize(QSize(92, 0));
-        _btnMoveConv->setFocusPolicy(Qt::NoFocus);
-        _btnMoveConv->setStyleSheet(QString::fromUtf8("QPushButton {\n"
-"color: #333;\n"
-"border: 1px solid #003399;\n"
-"border-radius: 5px;\n"
-"padding: 5px;\n"
-"min-width: 80px;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
-"fx: 0.9, fy: -0.1,\n"
-"radius: 10.35, stop: 0 #fff, stop: 1 #003399);\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
-"fx: 0.9, fy: -0.1,\n"
-"radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
-"}\n"
-""));
-        _btnStopConv = new QPushButton(groupBox_2);
-        _btnStopConv->setObjectName(QString::fromUtf8("_btnStopConv"));
-        _btnStopConv->setGeometry(QRect(120, 80, 111, 31));
-        _btnStopConv->setMinimumSize(QSize(92, 0));
-        _btnStopConv->setFocusPolicy(Qt::NoFocus);
-        _btnStopConv->setStyleSheet(QString::fromUtf8("QPushButton {\n"
-"color: #333;\n"
-"border: 1px solid #003399;\n"
-"border-radius: 5px;\n"
-"padding: 5px;\n"
-"min-width: 80px;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
-"fx: 0.9, fy: -0.1,\n"
-"radius: 10.35, stop: 0 #fff, stop: 1 #003399);\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
-"fx: 0.9, fy: -0.1,\n"
-"radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
-"}\n"
-""));
+        _txtBrowser->setGeometry(QRect(10, 490, 331, 221));
         label_7 = new QLabel(groupBox_2);
         label_7->setObjectName(QString::fromUtf8("label_7"));
-        label_7->setGeometry(QRect(10, 210, 121, 19));
+        label_7->setGeometry(QRect(10, 130, 121, 19));
         label_7->setFont(font);
         label_7->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
         _labelSafety = new QLabel(groupBox_2);
         _labelSafety->setObjectName(QString::fromUtf8("_labelSafety"));
-        _labelSafety->setGeometry(QRect(120, 190, 211, 17));
+        _labelSafety->setGeometry(QRect(120, 110, 211, 17));
         _labelBricks = new QLabel(groupBox_2);
         _labelBricks->setObjectName(QString::fromUtf8("_labelBricks"));
-        _labelBricks->setGeometry(QRect(120, 210, 211, 17));
+        _labelBricks->setGeometry(QRect(120, 130, 211, 17));
+        _btnClearLog = new QPushButton(groupBox_2);
+        _btnClearLog->setObjectName(QString::fromUtf8("_btnClearLog"));
+        _btnClearLog->setGeometry(QRect(241, 450, 101, 31));
+        _btnClearLog->setMinimumSize(QSize(92, 0));
+        _btnClearLog->setFocusPolicy(Qt::NoFocus);
+        _btnClearLog->setStyleSheet(QString::fromUtf8("QPushButton {\n"
+"color: #333;\n"
+"border: 1px solid #003399;\n"
+"border-radius: 5px;\n"
+"padding: 5px;\n"
+"min-width: 80px;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 10.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+""));
+        line_5 = new QFrame(groupBox_2);
+        line_5->setObjectName(QString::fromUtf8("line_5"));
+        line_5->setGeometry(QRect(10, 250, 331, 16));
+        line_5->setFrameShape(QFrame::HLine);
+        line_5->setFrameShadow(QFrame::Sunken);
+        label_16 = new QLabel(groupBox_2);
+        label_16->setObjectName(QString::fromUtf8("label_16"));
+        label_16->setGeometry(QRect(10, 180, 331, 19));
+        label_16->setFont(font);
+        label_16->setAlignment(Qt::AlignCenter);
+        label_17 = new QLabel(groupBox_2);
+        label_17->setObjectName(QString::fromUtf8("label_17"));
+        label_17->setGeometry(QRect(10, 360, 331, 19));
+        label_17->setFont(font);
+        label_17->setAlignment(Qt::AlignCenter);
+        _btnConvStart = new QPushButton(groupBox_2);
+        _btnConvStart->setObjectName(QString::fromUtf8("_btnConvStart"));
+        _btnConvStart->setGeometry(QRect(120, 390, 111, 31));
+        _btnConvStart->setMinimumSize(QSize(92, 0));
+        _btnConvStart->setFocusPolicy(Qt::NoFocus);
+        _btnConvStart->setStyleSheet(QString::fromUtf8("QPushButton {\n"
+"color: #333;\n"
+"border: 1px solid #003399;\n"
+"border-radius: 5px;\n"
+"padding: 5px;\n"
+"min-width: 80px;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 10.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+""));
+        _btnConvStop = new QPushButton(groupBox_2);
+        _btnConvStop->setObjectName(QString::fromUtf8("_btnConvStop"));
+        _btnConvStop->setGeometry(QRect(240, 390, 101, 31));
+        _btnConvStop->setMinimumSize(QSize(92, 0));
+        _btnConvStop->setFocusPolicy(Qt::NoFocus);
+        _btnConvStop->setStyleSheet(QString::fromUtf8("QPushButton {\n"
+"color: #333;\n"
+"border: 1px solid #003399;\n"
+"border-radius: 5px;\n"
+"padding: 5px;\n"
+"min-width: 80px;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 10.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+""));
+        line_6 = new QFrame(groupBox_2);
+        line_6->setObjectName(QString::fromUtf8("line_6"));
+        line_6->setGeometry(QRect(10, 340, 331, 16));
+        line_6->setFrameShape(QFrame::HLine);
+        line_6->setFrameShadow(QFrame::Sunken);
+        label_19 = new QLabel(groupBox_2);
+        label_19->setObjectName(QString::fromUtf8("label_19"));
+        label_19->setGeometry(QRect(10, 270, 331, 19));
+        label_19->setFont(font);
+        label_19->setAlignment(Qt::AlignCenter);
+        _btnRobotHome = new QPushButton(groupBox_2);
+        _btnRobotHome->setObjectName(QString::fromUtf8("_btnRobotHome"));
+        _btnRobotHome->setGeometry(QRect(10, 300, 101, 31));
+        _btnRobotHome->setMinimumSize(QSize(92, 0));
+        _btnRobotHome->setFocusPolicy(Qt::NoFocus);
+        _btnRobotHome->setStyleSheet(QString::fromUtf8("QPushButton {\n"
+"color: #333;\n"
+"border: 1px solid #003399;\n"
+"border-radius: 5px;\n"
+"padding: 5px;\n"
+"min-width: 80px;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 10.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+""));
+        _btnRobotReady = new QPushButton(groupBox_2);
+        _btnRobotReady->setObjectName(QString::fromUtf8("_btnRobotReady"));
+        _btnRobotReady->setGeometry(QRect(120, 300, 111, 31));
+        _btnRobotReady->setMinimumSize(QSize(92, 0));
+        _btnRobotReady->setFocusPolicy(Qt::NoFocus);
+        _btnRobotReady->setStyleSheet(QString::fromUtf8("QPushButton {\n"
+"color: #333;\n"
+"border: 1px solid #003399;\n"
+"border-radius: 5px;\n"
+"padding: 5px;\n"
+"min-width: 80px;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 10.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+""));
+        _btnRobotStop = new QPushButton(groupBox_2);
+        _btnRobotStop->setObjectName(QString::fromUtf8("_btnRobotStop"));
+        _btnRobotStop->setGeometry(QRect(240, 300, 101, 31));
+        _btnRobotStop->setMinimumSize(QSize(92, 0));
+        _btnRobotStop->setFocusPolicy(Qt::NoFocus);
+        _btnRobotStop->setStyleSheet(QString::fromUtf8("QPushButton {\n"
+"color: #333;\n"
+"border: 1px solid #003399;\n"
+"border-radius: 5px;\n"
+"padding: 5px;\n"
+"min-width: 80px;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 10.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+""));
+        _btnConvMove = new QPushButton(groupBox_2);
+        _btnConvMove->setObjectName(QString::fromUtf8("_btnConvMove"));
+        _btnConvMove->setGeometry(QRect(10, 390, 101, 31));
+        _btnConvMove->setMinimumSize(QSize(92, 0));
+        _btnConvMove->setFocusPolicy(Qt::NoFocus);
+        _btnConvMove->setStyleSheet(QString::fromUtf8("QPushButton {\n"
+"color: #333;\n"
+"border: 1px solid #003399;\n"
+"border-radius: 5px;\n"
+"padding: 5px;\n"
+"min-width: 80px;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 10.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+""));
         _btnCellReady->raise();
-        label_14->raise();
         label_15->raise();
         _labelOrderStatus->raise();
-        line->raise();
         label_5->raise();
         horizontalLayoutWidget_5->raise();
         _btnCellBusy->raise();
         _btnCellError->raise();
-        label_17->raise();
         line_3->raise();
         LocalPlanner->raise();
         line_4->raise();
         label_18->raise();
         _txtBrowser->raise();
-        _btnStartConv->raise();
-        _btnMoveConv->raise();
-        _btnStopConv->raise();
         label_7->raise();
         _labelSafety->raise();
         _labelBricks->raise();
+        _btnClearLog->raise();
+        line_5->raise();
+        label_16->raise();
+        label_17->raise();
+        _btnConvStart->raise();
+        _btnConvStop->raise();
+        line_6->raise();
+        label_19->raise();
+        _btnRobotHome->raise();
+        _btnRobotReady->raise();
+        _btnRobotStop->raise();
+        _btnConvMove->raise();
         label = new QLabel(HMIWidgetClass);
         label->setObjectName(QString::fromUtf8("label"));
-        label->setGeometry(QRect(10, 0, 351, 41));
+        label->setGeometry(QRect(10, 10, 721, 41));
         QFont font2;
         font2.setFamily(QString::fromUtf8("Purisa"));
         font2.setPointSize(21);
@@ -431,26 +1361,52 @@ public:
         groupBox->setTitle(QString());
         _labelCameraView->setText(QApplication::translate("HMIWidgetClass", "CameraView", 0, QApplication::UnicodeUTF8));
         label_6->setText(QApplication::translate("HMIWidgetClass", "Camera", 0, QApplication::UnicodeUTF8));
+        label_2->setText(QApplication::translate("HMIWidgetClass", "Saturation min   ", 0, QApplication::UnicodeUTF8));
+        _labelSMin->setText(QApplication::translate("HMIWidgetClass", "1000", 0, QApplication::UnicodeUTF8));
+        label_3->setText(QApplication::translate("HMIWidgetClass", "Saturation max  ", 0, QApplication::UnicodeUTF8));
+        _labelSMax->setText(QApplication::translate("HMIWidgetClass", "1000", 0, QApplication::UnicodeUTF8));
+        label_4->setText(QApplication::translate("HMIWidgetClass", "Hue min                ", 0, QApplication::UnicodeUTF8));
+        _labelHMin->setText(QApplication::translate("HMIWidgetClass", "1000", 0, QApplication::UnicodeUTF8));
+        label_8->setText(QApplication::translate("HMIWidgetClass", "Hue max               ", 0, QApplication::UnicodeUTF8));
+        _labelHMax->setText(QApplication::translate("HMIWidgetClass", "1000", 0, QApplication::UnicodeUTF8));
+        label_9->setText(QApplication::translate("HMIWidgetClass", "Color threshold   ", 0, QApplication::UnicodeUTF8));
+        _labelColor->setText(QApplication::translate("HMIWidgetClass", "1000", 0, QApplication::UnicodeUTF8));
+        label_10->setText(QApplication::translate("HMIWidgetClass", "Close kernel size", 0, QApplication::UnicodeUTF8));
+        _labelClose->setText(QApplication::translate("HMIWidgetClass", "1000", 0, QApplication::UnicodeUTF8));
+        label_11->setText(QApplication::translate("HMIWidgetClass", "Min brick area     ", 0, QApplication::UnicodeUTF8));
+        _labelArea->setText(QApplication::translate("HMIWidgetClass", "1000", 0, QApplication::UnicodeUTF8));
+        label_12->setText(QApplication::translate("HMIWidgetClass", "Min blob size        ", 0, QApplication::UnicodeUTF8));
+        _labelBlob->setText(QApplication::translate("HMIWidgetClass", "1000", 0, QApplication::UnicodeUTF8));
+        _btnEmStop->setText(QApplication::translate("HMIWidgetClass", "EMERGENCY STOP", 0, QApplication::UnicodeUTF8));
+        label_20->setText(QApplication::translate("HMIWidgetClass", "Gripper control", 0, QApplication::UnicodeUTF8));
+        _btnGripperOpen->setText(QApplication::translate("HMIWidgetClass", "Open gripper", 0, QApplication::UnicodeUTF8));
+        _btnGripperClose->setText(QApplication::translate("HMIWidgetClass", "Close gripper", 0, QApplication::UnicodeUTF8));
+        _cbLive->setText(QApplication::translate("HMIWidgetClass", "Live feed ", 0, QApplication::UnicodeUTF8));
+        _cbVision->setText(QApplication::translate("HMIWidgetClass", "Vision feed", 0, QApplication::UnicodeUTF8));
         groupBox_2->setTitle(QString());
-        label_14->setText(QApplication::translate("HMIWidgetClass", "Status", 0, QApplication::UnicodeUTF8));
         label_15->setText(QApplication::translate("HMIWidgetClass", "Order status", 0, QApplication::UnicodeUTF8));
         _labelOrderStatus->setText(QApplication::translate("HMIWidgetClass", "5 red, 4 black", 0, QApplication::UnicodeUTF8));
         label_5->setText(QApplication::translate("HMIWidgetClass", "Safety status", 0, QApplication::UnicodeUTF8));
         _cbAuto->setText(QApplication::translate("HMIWidgetClass", "Auto", 0, QApplication::UnicodeUTF8));
         _cbManual->setText(QApplication::translate("HMIWidgetClass", "Manual", 0, QApplication::UnicodeUTF8));
-        _btnEmStop->setText(QApplication::translate("HMIWidgetClass", "EMER. STOP", 0, QApplication::UnicodeUTF8));
         _btnCellReady->setText(QApplication::translate("HMIWidgetClass", "Cell Ready", 0, QApplication::UnicodeUTF8));
         _btnCellBusy->setText(QApplication::translate("HMIWidgetClass", "Cell Busy", 0, QApplication::UnicodeUTF8));
         _btnCellError->setText(QApplication::translate("HMIWidgetClass", "Cell Error", 0, QApplication::UnicodeUTF8));
-        label_17->setText(QApplication::translate("HMIWidgetClass", "MES", 0, QApplication::UnicodeUTF8));
-        LocalPlanner->setText(QApplication::translate("HMIWidgetClass", "Control Mode", 0, QApplication::UnicodeUTF8));
+        LocalPlanner->setText(QApplication::translate("HMIWidgetClass", "Control mode and status", 0, QApplication::UnicodeUTF8));
         label_18->setText(QApplication::translate("HMIWidgetClass", "Log messages", 0, QApplication::UnicodeUTF8));
-        _btnStartConv->setText(QApplication::translate("HMIWidgetClass", "Start conv", 0, QApplication::UnicodeUTF8));
-        _btnMoveConv->setText(QApplication::translate("HMIWidgetClass", "Move conv", 0, QApplication::UnicodeUTF8));
-        _btnStopConv->setText(QApplication::translate("HMIWidgetClass", "Stop conv", 0, QApplication::UnicodeUTF8));
         label_7->setText(QApplication::translate("HMIWidgetClass", "Bricks on conv", 0, QApplication::UnicodeUTF8));
         _labelSafety->setText(QApplication::translate("HMIWidgetClass", "Ok", 0, QApplication::UnicodeUTF8));
         _labelBricks->setText(QApplication::translate("HMIWidgetClass", "None", 0, QApplication::UnicodeUTF8));
+        _btnClearLog->setText(QApplication::translate("HMIWidgetClass", "Clear", 0, QApplication::UnicodeUTF8));
+        label_16->setText(QApplication::translate("HMIWidgetClass", "MES Server feedback", 0, QApplication::UnicodeUTF8));
+        label_17->setText(QApplication::translate("HMIWidgetClass", "Conveyer control", 0, QApplication::UnicodeUTF8));
+        _btnConvStart->setText(QApplication::translate("HMIWidgetClass", "Start conv", 0, QApplication::UnicodeUTF8));
+        _btnConvStop->setText(QApplication::translate("HMIWidgetClass", "Stop conv", 0, QApplication::UnicodeUTF8));
+        label_19->setText(QApplication::translate("HMIWidgetClass", "Robot control", 0, QApplication::UnicodeUTF8));
+        _btnRobotHome->setText(QApplication::translate("HMIWidgetClass", "Home robot", 0, QApplication::UnicodeUTF8));
+        _btnRobotReady->setText(QApplication::translate("HMIWidgetClass", "Ready robot", 0, QApplication::UnicodeUTF8));
+        _btnRobotStop->setText(QApplication::translate("HMIWidgetClass", "Stop robot", 0, QApplication::UnicodeUTF8));
+        _btnConvMove->setText(QApplication::translate("HMIWidgetClass", "Move conv", 0, QApplication::UnicodeUTF8));
         label->setText(QApplication::translate("HMIWidgetClass", "RSD HMI", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
@@ -462,5 +1418,5 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // HMIWIDGETS40589_H
+#endif // HMIWIDGETE43147_H
 
