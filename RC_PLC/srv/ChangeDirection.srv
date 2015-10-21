@@ -1,2 +1,2 @@
-bool direction # true = forward. false = reverse
+bool direction # false = forward. true = reverse
 ---

@@ -83,18 +83,21 @@ void printConsole(std::string msg)
 
 bool changeDirectionCallback(rc_plc::ChangeDirection::Request &req, rc_plc::ChangeDirection::Response &res)
 {
-    //true = forward. false = reverse
+    //true = reverse. false = forward.
     if(req.direction)
-        _queue.enqueue("f");
-    else
         _queue.enqueue("r");
+    else
+        _queue.enqueue("s");
 
     return true;
 }
 
 bool moveCallback(rc_plc::MoveConv::Request &req, rc_plc::MoveConv::Response &res)
 {
-    _queue.enqueue("s");
+    if(req.direction)
+        _queue.enqueue("r");
+    else
+        _queue.enqueue("s");
     sleep(req.duration);
     _queue.enqueue("t");
     return true;
@@ -102,7 +105,10 @@ bool moveCallback(rc_plc::MoveConv::Request &req, rc_plc::MoveConv::Response &re
 
 bool startCallback(rc_plc::StartConv::Request &req, rc_plc::StartConv::Response &res)
 {
-    _queue.enqueue("s");
+    if(req.direction)
+        _queue.enqueue("r");
+    else
+        _queue.enqueue("s");
     return true;
 }
 

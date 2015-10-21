@@ -19,6 +19,7 @@ add_service_files(
 	StartConv.srv
 	StopConv.srv
 	getBricks.srv
+	ChangeDirection.srv
 )
 
 # Use OpenCV

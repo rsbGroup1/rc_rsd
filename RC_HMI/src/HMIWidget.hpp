@@ -25,7 +25,7 @@
 #include <rc_hmi/Open.h>
 #include <rc_hmi/Close.h>
 #include <rc_hmi/Stop.h>
-#include <rc_hmi/MoveConv.h>
+#include <rc_hmi/ChangeDirection.h>
 #include <rc_hmi/StartConv.h>
 #include <rc_hmi/StopConv.h>
 #include <rc_hmi/getBricks.h>
@@ -171,7 +171,7 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
         image_transport::Subscriber _subLiveImg, _subVisionImg;
         ros::ServiceClient _serviceKukaSetConf, _serviceKukaStop, _serviceKukaGetConf;
         ros::ServiceClient _servicePG70Open, _servicePG70Stop, _servicePG70Close;
-        ros::ServiceClient _serviceConvMove, _serviceConvStop, _serviceConvStart;
+        ros::ServiceClient _serviceConvChange, _serviceConvStop, _serviceConvStart;
         ros::ServiceClient _serviceGetBricks;
         ros::Subscriber _consoleSub, _mesMessageSub, _anyBrickSub, _safetySub;
         ros::Publisher _mesMessagePub, _hmiStatusPub, _visionParamPub;
@@ -188,6 +188,7 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
         // Else
         rw::math::Q _qIdle;
         bool _liveFeed;
+        bool _manualJog;
 };
 
 #endif // HMIWIDGET_HPP

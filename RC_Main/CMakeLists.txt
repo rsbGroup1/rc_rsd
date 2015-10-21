@@ -12,6 +12,9 @@ add_service_files(
 	StopConv.srv
 	StartConv.srv
 	MoveConv.srv
+	ChangeDirection.srv
+	getIsMoving.srv
+	getConfiguration.srv
 )
 
 generate_messages(DEPENDENCIES std_msgs)

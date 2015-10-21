@@ -35,7 +35,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>290</y>
+      <y>270</y>
       <width>331</width>
       <height>221</height>
      </rect>
@@ -153,7 +153,7 @@ border-radius: 4px;
         <number>255</number>
        </property>
        <property name="value">
-        <number>150</number>
+        <number>80</number>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -279,12 +279,12 @@ border-radius: 4px;
      <item>
       <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>Hue min                </string>
+        <string>Value min             </string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QSlider" name="_sliderHMin">
+      <widget class="QSlider" name="_sliderVMin">
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
@@ -346,13 +346,16 @@ border-radius: 4px;
        <property name="maximum">
         <number>255</number>
        </property>
+       <property name="value">
+        <number>50</number>
+       </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="_labelHMin">
+      <widget class="QLabel" name="_labelVMin">
        <property name="text">
         <string>1000</string>
        </property>
@@ -373,12 +376,12 @@ border-radius: 4px;
      <item>
       <widget class="QLabel" name="label_8">
        <property name="text">
-        <string>Hue max               </string>
+        <string>Value max            </string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QSlider" name="_sliderHMax">
+      <widget class="QSlider" name="_sliderVMax">
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
@@ -449,104 +452,7 @@ border-radius: 4px;
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="_labelHMax">
-       <property name="text">
-        <string>1000</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="horizontalLayoutWidget_6">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>220</y>
-      <width>331</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_6">
-     <item>
-      <widget class="QLabel" name="label_9">
-       <property name="text">
-        <string>Color threshold   </string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSlider" name="_sliderColor">
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QSlider::groove:horizontal {
-border: 1px solid #bbb;
-background: #003399;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::sub-page:horizontal {
-background: #003399;
-border: 1px solid #777;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::add-page:horizontal {
-background: #fff;
-border: 1px solid #777;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::handle:horizontal {
-background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-    stop:0 #eee, stop:1 #ccc);
-border: 1px solid #777;
-width: 13px;
-margin-top: -2px;
-margin-bottom: -2px;
-border-radius: 4px;
-}
-
-QSlider::handle:horizontal:hover {
-background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-    stop:0 #fff, stop:1 #ddd);
-border: 1px solid #444;
-border-radius: 4px;
-}
-
-QSlider::sub-page:horizontal:disabled {
-background: #bbb;
-border-color: #999;
-}
-
-QSlider::add-page:horizontal:disabled {
-background: #eee;
-border-color: #999;
-}
-
-QSlider::handle:horizontal:disabled {
-background: #eee;
-border: 1px solid #aaa;
-border-radius: 4px;
-}</string>
-       </property>
-       <property name="maximum">
-        <number>255</number>
-       </property>
-       <property name="value">
-        <number>100</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="_labelColor">
+      <widget class="QLabel" name="_labelVMax">
        <property name="text">
         <string>1000</string>
        </property>
@@ -558,7 +464,7 @@ border-radius: 4px;
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>190</y>
+      <y>220</y>
       <width>331</width>
       <height>31</height>
      </rect>
@@ -641,7 +547,7 @@ border-radius: 4px;
         <number>4</number>
        </property>
        <property name="value">
-        <number>9</number>
+        <number>5</number>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -744,7 +650,7 @@ border-radius: 4px;
         <number>1000</number>
        </property>
        <property name="value">
-        <number>5000</number>
+        <number>4000</number>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -764,7 +670,7 @@ border-radius: 4px;
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>250</y>
+      <y>190</y>
       <width>331</width>
       <height>31</height>
      </rect>
@@ -847,7 +753,7 @@ border-radius: 4px;
         <number>100</number>
        </property>
        <property name="value">
-        <number>1000</number>
+        <number>2500</number>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -1637,12 +1543,12 @@ radius: 5.35, stop: 0 #fff, stop: 1 #003399);
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="_btnConvStart">
+   <widget class="QPushButton" name="_btnConvStartF">
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>10</x>
       <y>390</y>
-      <width>111</width>
+      <width>101</width>
       <height>31</height>
      </rect>
     </property>
@@ -1678,7 +1584,7 @@ radius: 5.35, stop: 0 #fff, stop: 1 #003399);
 </string>
     </property>
     <property name="text">
-     <string>Start conv</string>
+     <string>Start conv (f)</string>
     </property>
    </widget>
    <widget class="QPushButton" name="_btnConvStop">
@@ -1892,12 +1798,12 @@ radius: 5.35, stop: 0 #fff, stop: 1 #003399);
      <string>Stop robot</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="_btnConvMove">
+   <widget class="QPushButton" name="_btnConvStartR">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>120</x>
       <y>390</y>
-      <width>101</width>
+      <width>111</width>
       <height>31</height>
      </rect>
     </property>
@@ -1933,7 +1839,7 @@ radius: 5.35, stop: 0 #fff, stop: 1 #003399);
 </string>
     </property>
     <property name="text">
-     <string>Move conv</string>
+     <string>Start conv (r)</string>
     </property>
    </widget>
    <zorder>_btnCellReady</zorder>
@@ -1955,14 +1861,14 @@ radius: 5.35, stop: 0 #fff, stop: 1 #003399);
    <zorder>line_5</zorder>
    <zorder>label_16</zorder>
    <zorder>label_17</zorder>
-   <zorder>_btnConvStart</zorder>
+   <zorder>_btnConvStartF</zorder>
    <zorder>_btnConvStop</zorder>
    <zorder>line_6</zorder>
    <zorder>label_19</zorder>
    <zorder>_btnRobotHome</zorder>
    <zorder>_btnRobotReady</zorder>
    <zorder>_btnRobotStop</zorder>
-   <zorder>_btnConvMove</zorder>
+   <zorder>_btnConvStartR</zorder>
   </widget>
   <widget class="QLabel" name="label">
    <property name="geometry">

@@ -25,6 +25,7 @@
 #include <rc_grasp/Stop.h>
 #include <rc_grasp/Open.h>
 #include <rc_grasp/grabBrick.h>
+#include <boost/thread/mutex.hpp>
 
 #include <iostream>
 
@@ -50,6 +51,8 @@ double _idleQHeight, _xMax, _yMax, _graspOffset, _graspLifted, _gripperOpenOffse
 rw::math::Q _idleQ, _releaseBrickQ;
 rw::models::Device::QBox _limits;
 ros::Publisher _hmiConsolePub;
+boost::mutex _runMutex;
+bool _run;
 
 // Prototypes
 void KukaStopRobot();
@@ -132,6 +135,22 @@ bool checkQ(rw::math::Q q)
         return true;
 }
 
+bool getStatus(void)
+{
+    ros::spinOnce();
+    boost::unique_lock<boost::mutex> lock(_runMutex);
+    return _run;
+}
+
+void hmiStatusCallback(std_msgs::String msg)
+{
+    boost::unique_lock<boost::mutex> lock(_runMutex);
+    if(msg.data == "start")
+        _run = true;
+    else if(msg.data == "stop")
+        _run = false;
+}
+
 bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::Response &res)
 {
     // Check limits
@@ -158,6 +177,8 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
 
     // 1. Open gripper
     // Gripper max cmd: 0.034m. Equals an opening of 0.068m. If 5cm opening is wanted: Send 0.025
+    if(!getStatus())
+        return false;
     rw::math::Q qGripperOpen(1);
     if((req.size+_gripperOpenOffset)/2.0 > GRIPPER_MAX)
         qGripperOpen(0) = GRIPPER_MAX;
@@ -167,37 +188,53 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
         return false;
 
     // 2. Move to brick lifted (blocking call)
+    if(!getStatus())
+        return false;
     if(moveRobotWait(qBrickLifted) == false)
         return false;
 
     // 3. Move to brick down (blocking call)
+    if(!getStatus())
+        return false;
     if(moveRobotWait(qBrick) == false)
         return false;
 
     // 4. Close gripper to req.size
+    if(!getStatus())
+        return false;
     rw::math::Q qGripperClose(1, req.size/2.0);
     if(PG70SetConf(qGripperClose) == false)
         return false;
     sleep(1);
 
     // 5. Move to brick lifted (blocking call)
+    if(!getStatus())
+        return false;
     if(moveRobotWait(qBrickLifted) == false)
         return false;
 
     // 6. Go to idle Q (when camera is taking pictures)
+    if(!getStatus())
+        return false;
     if(moveRobotWait(_idleQ) == false)
         return false;
 
     // 7. Go to release-lego-to-mr Q
+    if(!getStatus())
+        return false;
     if(moveRobotWait(_releaseBrickQ) == false)
         return false;
 
     // 8. Open gripper
+    if(!getStatus())
+        return false;
     if(PG70SetConf(qGripperOpen) == false)
         return false;
     sleep(2);
 
     // 9. Go back to idle Q
+    if(!getStatus())
+        return false;
     if(moveRobotWait(_idleQ) == false)
         return false;
 
@@ -217,13 +254,14 @@ int main()
     ros::NodeHandle pNh(ros::this_node::getName() + "/");
 
     // Topic names
-    std::string kukaService, PG70Service, scenePath, hmiConsolePub;
+    std::string kukaService, PG70Service, scenePath, hmiConsolePub, hmiStatusSub;
     pNh.param<std::string>("KukaCmdServiceName", kukaService, "/KukaNode");
     pNh.param<std::string>("PG70CmdServiceName", PG70Service, "/PG70/PG70");
     pNh.param<std::string>("scenePath", scenePath, "/home/yonas/catkin_ws/src/rc_rsd/RC_KukaScene/Scene.wc.xml");
     pNh.param<std::string>("hmiConsole", hmiConsolePub, "/rcHMI/console");
+    pNh.param<std::string>("hmi_status_sub", hmiStatusSub, "/rcHMI/status");
     pNh.param<double>("idleHeight", _idleQHeight, 0.3);
-    pNh.param<double>("graspOffset", _graspOffset, 0.0);
+    pNh.param<double>("graspOffset", _graspOffset, 0.015);
     pNh.param<double>("graspLifted", _graspLifted, 0.1);
     pNh.param<double>("xMax", _xMax, 0.15);
     pNh.param<double>("yMax", _yMax, 0.08);
@@ -239,6 +277,9 @@ int main()
     _servicePG70Stop = nh.serviceClient<rc_grasp::Stop>(PG70Service + "/stop");
     _servicePG70Open = nh.serviceClient<rc_grasp::Open>(PG70Service + "/open");
     ros::ServiceServer serviceGrabBrick = nh.advertiseService("/rcGrasp/grabBrick", grabBrickCallback);
+
+    // Subscribe
+    ros::Subscriber hmiStatusSubs = nh.subscribe(hmiStatusSub, 10, hmiStatusCallback);
 
     // Create publisher
     _hmiConsolePub = nh.advertise<std_msgs::String>(hmiConsolePub, 100);
