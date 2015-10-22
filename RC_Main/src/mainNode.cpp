@@ -258,6 +258,7 @@ void mainHandlerThread()
                             }
                             else // Bricks are to far from robot, move forward
                             {
+                                startConveyerBelt();
                                 conveyerRunning = true;
                             }
                         }
@@ -295,6 +296,15 @@ void mainHandlerThread()
                         waitForIdle = true;
                     }
                 }
+            }
+            else
+            {
+                // Not running
+
+                // Set run
+                conveyerRunning = false;
+                waitForBrick = false;
+                waitForIdle = false;
             }
 
             // Signal interrupt point and sleep

@@ -57,7 +57,7 @@ bool _run;
 // Prototypes
 void KukaStopRobot();
 bool KukaIsMoving();
-bool KukaSetConf(rw::math::Q q);
+bool KukaSetConf(rw::math::Q q, rw::math::Q speed = rw::math::Q(6,0,0,0,0,0,0));
 int KukaGetQueueSize();
 rw::math::Q KukaGetConf();
 bool PG70SetConf(rw::math::Q q);
@@ -65,9 +65,9 @@ void PG70Stop();
 void PG70Open();
 
 // Functions
-bool moveRobotWait(rw::math::Q q)
+bool moveRobotWait(rw::math::Q q, rw::math::Q speed = rw::math::Q(6,0,0,0,0,0,0))
 {
-    if(KukaSetConf(q))
+    if(KukaSetConf(q, speed))
     {
         while(KukaIsMoving())
             usleep(100);
@@ -151,6 +151,16 @@ void hmiStatusCallback(std_msgs::String msg)
         _run = false;
 }
 
+rw::math::Q getSpeed(double speed)
+{
+    rw::math::Q q(6);
+
+    for(unsigned int i=0; i<q.size(); i++)
+        q(i) = speed;
+
+    return q;
+}
+
 bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::Response &res)
 {
     // Check limits
@@ -196,7 +206,8 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     // 3. Move to brick down (blocking call)
     if(!getStatus())
         return false;
-    if(moveRobotWait(qBrick) == false)
+    rw::math::Q downSpeed = getSpeed(5);
+    if(moveRobotWait(qBrick, downSpeed) == false)
         return false;
 
     // 4. Close gripper to req.size
@@ -208,21 +219,24 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     sleep(1);
 
     // 5. Move to brick lifted (blocking call)
-    if(!getStatus())
+    /*if(!getStatus())
         return false;
-    if(moveRobotWait(qBrickLifted) == false)
-        return false;
+    rw::math::Q liftedSpeed = getSpeed(35);
+    if(moveRobotWait(qBrickLifted, liftedSpeed) == false)
+        return false;*/
 
     // 6. Go to idle Q (when camera is taking pictures)
     if(!getStatus())
         return false;
-    if(moveRobotWait(_idleQ) == false)
+    rw::math::Q liftedSpeed = getSpeed(35);
+    if(moveRobotWait(_idleQ, liftedSpeed) == false)
         return false;
 
     // 7. Go to release-lego-to-mr Q
     if(!getStatus())
         return false;
-    if(moveRobotWait(_releaseBrickQ) == false)
+    rw::math::Q releaseSpeed = getSpeed(45);
+    if(moveRobotWait(_releaseBrickQ, releaseSpeed) == false)
         return false;
 
     // 8. Open gripper
@@ -235,7 +249,8 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     // 9. Go back to idle Q
     if(!getStatus())
         return false;
-    if(moveRobotWait(_idleQ) == false)
+    rw::math::Q backSpeed = getSpeed(45);
+    if(moveRobotWait(_idleQ, backSpeed) == false)
         return false;
 
     res.success = true;
@@ -417,7 +432,7 @@ bool KukaIsMoving()
     return false;
 }
 
-bool KukaSetConf(rw::math::Q q)
+bool KukaSetConf(rw::math::Q q, rw::math::Q speed)
 {
     if(CONNECT_KUKA)
     {
@@ -429,7 +444,10 @@ bool KukaSetConf(rw::math::Q q)
 
         // Fill out information
         for(unsigned int i = 0; i<q.size(); i++)
+        {
             config.request.q[i] = q(i);
+            config.request.speed[i] = speed(i);
+        }
 
         // Call service
         if(!_serviceKukaSetConf.call(config))

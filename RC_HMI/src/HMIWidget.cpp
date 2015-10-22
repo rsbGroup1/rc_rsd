@@ -449,6 +449,22 @@ void HMIWidget::eventCb(bool input)
                 _btnRobotStop->setEnabled(true);
                 _btnGripperClose->setEnabled(true);
                 _btnGripperOpen->setEnabled(true);
+
+
+                // Stop robot
+                rc_hmi::stopRobot stopObj;
+                if(!_serviceKukaStop.call(stopObj))
+                    _consoleQueue.enqueue("Failed to call the 'serviceKukaStopRobot'");
+
+                // Stop gripper
+                rc_hmi::Stop stopObjPG70;
+                if(!_servicePG70Stop.call(stopObjPG70))
+                    _consoleQueue.enqueue("Failed to call the 'servicePG70Stop'");
+
+                // Stop conveyer
+                rc_hmi::StopConv obj;
+                if(!_serviceConvStop.call(obj))
+                    _consoleQueue.enqueue("Failed to call the 'serviceStopConveyer'");
             }
 
             _hmiStatusPub.publish(msg);
