@@ -8,14 +8,34 @@
 #include <rc_main/MoveConv.h>
 #include <rc_main/StartConv.h>
 #include <rc_main/StopConv.h>
+#include <rc_main/ChangeDirection.h>
+#include <rc_main/getIsMoving.h>
+#include <rc_main/getConfiguration.h>
+#include <boost/thread/mutex.hpp>
+#include <boost/thread.hpp>
 
 // Defines
+#define DEGREETORAD             (M_PI/180.0)
+#define RADTODEGREE             (180.0/M_PI)
 #define SSTR(x)                 dynamic_cast< std::ostringstream & >(( std::ostringstream() << std::dec << x )).str()
+
+// Brick struct
+struct Brick
+{
+    std::string color;
+    float size;
+    float posX;
+    float posY;
+    float theta;
+};
 
 // Global variables
 ros::Publisher _hmiConsolePub, _mesMessagePub;
-ros::ServiceClient _serviceGrabBrick, _serviceGetBricks, _serviceMove, _serviceStart, _serviceStop;
-bool _run = false, _safety = false;
+ros::ServiceClient _serviceGrabBrick, _serviceGetBricks, _serviceMove, _serviceStart, _serviceStop, _serviceChangeDir, _serviceGetIsMoving, _serviceGetConf;
+bool _run = false, _safety = false, _anyBricks = false;
+boost::mutex _runMutex, _safetyMutex, _anyBricksMutex, _qMutex;
+double _qIdle[6] = {1.34037, 0.696857, 0.158417, 0.418082, -0.736247, -0.531764};
+bool _positionQIdle = false;
 
 // Functions
 void printConsole(std::string msg)
@@ -26,13 +46,13 @@ void printConsole(std::string msg)
     _hmiConsolePub.publish(pubMsg);
 }
 
-bool grabBrick(double x, double y, double theta, double size)
+bool grabBrick(Brick brick)
 {
     rc_main::grabBrick obj;
-    obj.request.x = x;
-    obj.request.y = y;
-    obj.request.theta = theta;
-    obj.request.size = size;
+    obj.request.x = brick.posX;
+    obj.request.y = brick.posY;
+    obj.request.theta = brick.theta;
+    obj.request.size = brick.size;
 
     if(!_serviceGrabBrick.call(obj))
         printConsole("Failed to call the 'serviceGrabBrick'");
@@ -40,25 +60,45 @@ bool grabBrick(double x, double y, double theta, double size)
     return obj.response.success;
 }
 
-rc_main::getBricks getBricks()
+std::vector<Brick> getBricks()
 {
+    std::vector<Brick> retVec;
     rc_main::getBricks obj;
-    if(!_serviceGetBricks.call(obj))
-        printConsole("Failed to call the 'serviceGetBricks'");
 
-    return obj;
+    if(!_serviceGetBricks.call(obj))
+    {
+        printConsole("Failed to call the 'serviceGetBricks'");
+    }
+    else
+    {
+        for(unsigned int i=0; i<obj.response.size.size(); i++)
+        {
+            Brick brick;
+            brick.color = obj.response.color[i];
+            brick.posX = obj.response.posX[i];
+            brick.posY = obj.response.posY[i];
+            brick.size = obj.response.size[i];
+            brick.theta = obj.response.theta[i];
+            retVec.push_back(brick);
+        }
+    }
+
+    return retVec;
 }
 
-void moveCoveyerBelt()
+void moveCoveyerBelt(double duration, bool dir = false)
 {
     rc_main::MoveConv obj;
+    obj.request.duration = duration;
+    obj.request.direction = dir;
     if(!_serviceMove.call(obj))
         printConsole("Failed to call the 'serviceMoveConveyer'");
 }
 
-void startConveyerBelt()
+void startConveyerBelt(bool dir = false)
 {
     rc_main::StartConv obj;
+    obj.request.direction = dir;
     if(!_serviceStart.call(obj))
         printConsole("Failed to call the 'serviceStartConveyer'");
 }
@@ -70,30 +110,55 @@ void stopConveyerBelt()
         printConsole("Failed to call the 'serviceStopConveyer'");
 }
 
+void changeDirConveyerBelt(bool dir) // true = reverse
+{
+    rc_main::ChangeDirection obj;
+    obj.request.direction = dir;
+    if(!_serviceChangeDir.call(obj))
+        printConsole("Failed to call the 'serviceChangeDirConveyer'");
+}
+
+bool isRobotMoving()
+{
+    rc_main::getIsMoving obj;
+    if(!_serviceGetIsMoving.call(obj))
+        printConsole("Failed to call the 'serviceIsRobotMoving'");
+
+    return obj.response.isMoving;
+}
+
 void anyBrickCallback(std_msgs::Bool msg)
 {
-    static bool anyBricks = false;
+    // Fetch robot position
+    rc_main::getConfiguration getQObj;
 
-    if(anyBricks == false)
+    // Call service
+    if(!_serviceGetConf.call(getQObj))
+       printConsole("Failed to call the 'serviceKukaGetConfiguration'");
+
+    // Get information
+    bool same = true;
+    for(int i=0; i<6; i++)
     {
-        // Get positions etc.
-        rc_main::getBricks bricks;
-        if(!_serviceGetBricks.call(bricks))
-            printConsole("Failed to call the 'serviceGrabBricks'");
-
-        // Grab them
-        for(unsigned int i=0; i<1; i++) // bricks.response.color.size()
+        if(fabs(getQObj.response.q[i]*DEGREETORAD - _qIdle[i]) > 0.1)
         {
-            // x, y, theta, size
-            grabBrick(bricks.response.posX[i], bricks.response.posY[i], bricks.response.theta[i], 0.016);
+            same = false;
+            break;
         }
     }
 
-    //anyBricks = true;
+    _anyBricksMutex.lock();
+    _anyBricks = msg.data;
+    _anyBricksMutex.unlock();
+
+    _qMutex.lock();
+    _positionQIdle = same;
+    _qMutex.unlock();
 }
 
 void safetyCallback(std_msgs::Bool msg)
 {
+    boost::unique_lock<boost::mutex> lock(_safetyMutex);
     _safety = msg.data;
 }
 
@@ -111,10 +176,146 @@ void mesSend(std::string sendMsg)
 
 void hmiStatusCallback(std_msgs::String msg)
 {
+    boost::unique_lock<boost::mutex> lock(_runMutex);
     if(msg.data == "start")
         _run = true;
     else if(msg.data == "stop")
         _run = false;
+}
+
+void mainHandlerThread()
+{
+    bool waitForBrick = false;
+    bool waitForIdle = false;
+    bool conveyerRunning = false;
+    bool run, anyBricks, safety, positionIdle;
+
+    while(true)
+    {
+        try
+        {
+            // Get run
+            _runMutex.lock();
+            run = _run;
+            _runMutex.unlock();
+
+            if(run)
+            {
+                // Get position
+                _qMutex.lock();
+                positionIdle = _positionQIdle;
+                _qMutex.unlock();
+
+                // Check if in idle position
+                if(positionIdle)
+                {
+                    waitForIdle == false;
+
+                    // Get anyBricks
+                    _anyBricksMutex.lock();
+                    anyBricks = _anyBricks;
+                    _anyBricksMutex.unlock();
+
+                    // Check if bricks
+                    if(anyBricks)
+                    {
+                        waitForBrick = false;
+
+                        // Stop conveyer belt
+                        if(conveyerRunning)
+                        {
+                            // Move slightly more forward and stop
+                            moveCoveyerBelt(1);
+                            //stopConveyerBelt();
+                            conveyerRunning = false;
+                        }
+
+                        // Wait til robot is not moving
+                        if(isRobotMoving())
+                            continue;
+
+                        // Sleep in order for image to settle
+                        sleep(3);
+
+                        // Get bricks
+                        std::vector<Brick> bricks = getBricks();
+
+                        // Filter and choose the correct bricks
+                        // ..
+
+                        // Check safety
+                        _safetyMutex.lock();
+                        safety = _safety;
+                        _safetyMutex.unlock();
+
+                        if(safety == false)
+                        {
+                            if(bricks.size())
+                            {
+                                // Grab first brick for now
+                                bricks.front().size = 0.015; // Default size of standard LEGO width
+                                grabBrick(bricks.front());
+                            }
+                            else // Bricks are to far from robot, move forward
+                            {
+                                startConveyerBelt();
+                                conveyerRunning = true;
+                            }
+                        }
+                        else
+                        {
+                            // Get run
+                            _runMutex.lock();
+                            _run = false;
+                            _runMutex.unlock();
+                        }
+                    }
+                    else
+                    {
+                        // Start conveyer if not already running
+                        if(conveyerRunning == false)
+                        {
+                            startConveyerBelt();
+                            conveyerRunning = true;
+                        }
+
+                        // Inform user
+                        if(waitForBrick == false)
+                        {
+                            printConsole("Waiting for bricks!");
+                            waitForBrick = true;
+                        }
+                    }
+                }
+                else
+                {
+                    // Inform user
+                    if(waitForIdle == false)
+                    {
+                        printConsole("Waiting for idle position!");
+                        waitForIdle = true;
+                    }
+                }
+            }
+            else
+            {
+                // Not running
+
+                // Set run
+                conveyerRunning = false;
+                waitForBrick = false;
+                waitForIdle = false;
+            }
+
+            // Signal interrupt point and sleep
+            boost::this_thread::interruption_point();
+            boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+        }
+        catch(const boost::thread_interrupted&)
+        {
+            break;
+        }
+    }
 }
 
 int main()
@@ -146,6 +347,9 @@ int main()
     _serviceMove = nh.serviceClient<rc_main::MoveConv>(plcService + "/MoveConv");
     _serviceStart = nh.serviceClient<rc_main::StartConv>(plcService + "/StartConv");
     _serviceStop = nh.serviceClient<rc_main::StopConv>(plcService + "/StopConv");
+    _serviceChangeDir = nh.serviceClient<rc_main::ChangeDirection>(plcService + "/ChangeDirection");
+    _serviceGetIsMoving = nh.serviceClient<rc_main::getIsMoving>("/KukaNode/IsMoving");
+    _serviceGetConf = nh.serviceClient<rc_main::getConfiguration>("/KukaNode/GetConfiguration");
 
     // Publishers
     _hmiConsolePub = nh.advertise<std_msgs::String>(hmiConsolePub, 100);
@@ -157,30 +361,13 @@ int main()
     ros::Subscriber mesMessageSub = nh.subscribe(mesSub, 10, mesRecCallback);
     ros::Subscriber hmiStatusSubs = nh.subscribe(hmiStatusSub, 10, hmiStatusCallback);
 
-    // Set loop rate
-    ros::Rate loop_rate(10);
+    // Main handler thread
+    boost::thread mainThread(mainHandlerThread);
 
-    // Main loop
-    while(nh.ok())
-    {
-        // If "HMI: Start", "Safety: False" and "MES: Order"
-        // Start conveyer
-        // If "anyBricks: True"
-        // Stop conveyer
-        // Move conveyer
-        // Call getBricks
-        // Look which bricks to pick up (compare to MES order)
-            // Grab one brick and if more bricks matched the order, call getBricks again in case of bricks that has moved
-        // Move conveyer
-        // If getBricks = 0, move more
-
-
-        //std::cout << "Ok" << std::endl;
-
-        ros::spinOnce();
-        loop_rate.sleep();
-    }
+    // Spin
+   ros::spin();
 
     // Return
+   mainThread.interrupt();
     return 0;
 }

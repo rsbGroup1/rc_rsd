@@ -12,8 +12,8 @@ HMIWidget::HMIWidget(QWidget *parent): QWidget(parent)
     connect(_btnCellError, SIGNAL(released()), this, SLOT(eventBtn()));
     connect(_btnCellReady, SIGNAL(released()), this, SLOT(eventBtn()));
     connect(_btnEmStop, SIGNAL(released()), this, SLOT(eventBtn()));
-    connect(_btnConvMove, SIGNAL(released()), this, SLOT(eventBtn()));
-    connect(_btnConvStart, SIGNAL(released()), this, SLOT(eventBtn()));
+    connect(_btnConvStartR, SIGNAL(released()), this, SLOT(eventBtn()));
+    connect(_btnConvStartF, SIGNAL(released()), this, SLOT(eventBtn()));
     connect(_btnConvStop, SIGNAL(released()), this, SLOT(eventBtn()));
     connect(_btnRobotHome, SIGNAL(released()), this, SLOT(eventBtn()));
     connect(_btnRobotReady, SIGNAL(released()), this, SLOT(eventBtn()));
@@ -28,9 +28,8 @@ HMIWidget::HMIWidget(QWidget *parent): QWidget(parent)
     connect(_sliderArea, SIGNAL(sliderReleased()), this, SLOT(eventSlider()));
     connect(_sliderBlob, SIGNAL(sliderReleased()), this, SLOT(eventSlider()));
     connect(_sliderClose, SIGNAL(sliderReleased()), this, SLOT(eventSlider()));
-    connect(_sliderColor, SIGNAL(sliderReleased()), this, SLOT(eventSlider()));
-    connect(_sliderHMax, SIGNAL(sliderReleased()), this, SLOT(eventSlider()));
-    connect(_sliderHMin, SIGNAL(sliderReleased()), this, SLOT(eventSlider()));
+    connect(_sliderVMax, SIGNAL(sliderReleased()), this, SLOT(eventSlider()));
+    connect(_sliderVMin, SIGNAL(sliderReleased()), this, SLOT(eventSlider()));
     connect(_sliderSMax, SIGNAL(sliderReleased()), this, SLOT(eventSlider()));
     connect(_sliderSMin, SIGNAL(sliderReleased()), this, SLOT(eventSlider()));
 
@@ -45,14 +44,14 @@ HMIWidget::HMIWidget(QWidget *parent): QWidget(parent)
     _safety = false;
     _anyBricks = false;
     _liveFeed = true;
+    _manualJog = false;
 
     // Update labels
     _labelArea->setText(QString::number(_sliderArea->value()));
     _labelBlob->setText(QString::number(_sliderBlob->value()));
     _labelClose->setText(QString::number(_sliderClose->value()));
-    _labelColor->setText(QString::number(_sliderColor->value()));
-    _labelHMax->setText(QString::number(_sliderHMax->value()));
-    _labelHMin->setText(QString::number(_sliderHMin->value()));
+    _labelVMax->setText(QString::number(_sliderVMax->value()));
+    _labelVMin->setText(QString::number(_sliderVMin->value()));
     _labelSMax->setText(QString::number(_sliderSMax->value()));
     _labelSMin->setText(QString::number(_sliderSMin->value()));
 
@@ -141,7 +140,7 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         pNh.param<std::string>("live_image_sub", liveImageSub, "/RC_Camera/image_rect_color");
         pNh.param<std::string>("vision_image_sub", visionImageSub, "/rcVision/image");
         pNh.param<std::string>("KukaCmdServiceName", kukaService, "/KukaNode");
-        pNh.param<std::string>("PG70CmdServiceName", PG70Service, "/PG70");
+        pNh.param<std::string>("PG70CmdServiceName", PG70Service, "/PG70/PG70");
         pNh.param<std::string>("console_sub", consoleSub, "/rcHMI/console");
         pNh.param<std::string>("status_pub", statusPub, "/rcHMI/status");
         pNh.param<std::string>("convServiceName", convService, "/rcPLC");
@@ -156,10 +155,10 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         _serviceKukaSetConf = _nodeHandle->serviceClient<rc_hmi::setConfiguration>(kukaService + "/SetConfiguration");
         _serviceKukaGetConf = _nodeHandle->serviceClient<rc_hmi::getConfiguration>(kukaService + "/GetConfiguration");
         _serviceKukaStop = _nodeHandle->serviceClient<rc_hmi::stopRobot>(kukaService + "/StopRobot");
-        _servicePG70Close = _nodeHandle->serviceClient<rc_hmi::Close>(PG70Service + "/Close");
-        _servicePG70Stop = _nodeHandle->serviceClient<rc_hmi::Stop>(PG70Service + "/Stop");
-        _servicePG70Open = _nodeHandle->serviceClient<rc_hmi::Open>(PG70Service + "/Open");
-        _serviceConvMove = _nodeHandle->serviceClient<rc_hmi::MoveConv>(convService + "/MoveConv");
+        _servicePG70Close = _nodeHandle->serviceClient<rc_hmi::Close>(PG70Service + "/close");
+        _servicePG70Stop = _nodeHandle->serviceClient<rc_hmi::Stop>(PG70Service + "/stop");
+        _servicePG70Open = _nodeHandle->serviceClient<rc_hmi::Open>(PG70Service + "/open");
+        _serviceConvChange = _nodeHandle->serviceClient<rc_hmi::ChangeDirection>(convService + "/ChangeDirection");
         _serviceConvStop = _nodeHandle->serviceClient<rc_hmi::StopConv>(convService + "/StopConv");
         _serviceConvStart = _nodeHandle->serviceClient<rc_hmi::StartConv>(convService + "/StartConv");
         _serviceGetBricks = _nodeHandle->serviceClient<rc_hmi::getBricks>(getBricksService);
@@ -285,23 +284,21 @@ void HMIWidget::imageQueueHandler()
     _labelSafetyMutex.unlock();
 
     // Fetch robot position and update HMI
-    if(_cbAuto->isChecked())
-    {
-        // Create setConfiguration service
-        rc_hmi::getConfiguration getQObj;
+    // Create setConfiguration service
+    rc_hmi::getConfiguration getQObj;
 
-        // Call service
-        if(!_serviceKukaGetConf.call(getQObj))
-           _consoleQueue.enqueue("Failed to call the 'serviceKukaGetConfiguration'");
+    // Call service
+    if(!_serviceKukaGetConf.call(getQObj))
+       _consoleQueue.enqueue("Failed to call the 'serviceKukaGetConfiguration'");
 
-        // Get information
-        rw::math::Q q(6);
-        for(unsigned int i=0; i<6; i++)
-           q(i) = getQObj.response.q[i]*DEGREETORAD;
+    // Get information
+    rw::math::Q q(6);
+    for(unsigned int i=0; i<6; i++)
+       q(i) = getQObj.response.q[i]*DEGREETORAD;
 
-        _deviceKuka->setQ(q, _state);
-        _rws->setState(_state);
-    }
+    _manualJog = false;
+    _deviceKuka->setQ(q, _state);
+    _rws->setState(_state);
 
     // Get vision
     boost::unique_lock<boost::mutex> lock(_liveFeedMutex);
@@ -342,7 +339,7 @@ void HMIWidget::stateChangedListener(const rw::kinematics::State &state)
     _state = state;
 
     // Run once
-    if(runOnce && _cbManual->isChecked())
+    if(runOnce && _manualJog)
     {
         // Move robot
         // Get Q
@@ -358,6 +355,8 @@ void HMIWidget::stateChangedListener(const rw::kinematics::State &state)
         // Call service
         if(!_serviceKukaSetConf.call(setQObj))
            _consoleQueue.enqueue("Failed to call the 'serviceKukaSetConfiguration'");
+
+        _manualJog = false;
     }
 
     runOnce = !runOnce;
@@ -384,20 +383,15 @@ void HMIWidget::eventSlider()
         _labelClose->setText(QString::number(_sliderClose->value()));
         msg.data = "close|" + SSTR(_sliderClose->value());
     }
-    else if(obj == _sliderColor)
+    else if(obj == _sliderVMax)
     {
-        _labelColor->setText(QString::number(_sliderColor->value()));
-        msg.data = "color|" + SSTR(_sliderColor->value());
+        _labelVMax->setText(QString::number(_sliderVMax->value()));
+        msg.data = "vmax|" + SSTR(_sliderVMax->value());
     }
-    else if(obj == _sliderHMax)
+    else if(obj == _sliderVMin)
     {
-        _labelHMax->setText(QString::number(_sliderHMax->value()));
-        msg.data = "area|" + SSTR(_sliderHMax->value());
-    }
-    else if(obj == _sliderHMin)
-    {
-        _labelHMin->setText(QString::number(_sliderHMin->value()));
-        msg.data = "hmin|" + SSTR(_sliderHMin->value());
+        _labelVMin->setText(QString::number(_sliderVMin->value()));
+        msg.data = "vmin|" + SSTR(_sliderVMin->value());
     }
     else if(obj == _sliderSMax)
     {
@@ -427,10 +421,15 @@ void HMIWidget::eventCb(bool input)
 
             if(_cbAuto->isChecked())
             {
+                // Ready robot
+                _manualJog = true;
+                _deviceKuka->setQ(_qIdle, _state);
+                _rws->setState(_state);
+
                 msg.data = "start";
 
-                _btnConvMove->setEnabled(false);
-                _btnConvStart->setEnabled(false);
+                _btnConvStartR->setEnabled(false);
+                _btnConvStartF->setEnabled(false);
                 _btnConvStop->setEnabled(false);
                 _btnRobotHome->setEnabled(false);
                 _btnRobotReady->setEnabled(false);
@@ -442,14 +441,30 @@ void HMIWidget::eventCb(bool input)
             {
                 msg.data = "stop";
 
-                _btnConvMove->setEnabled(true);
-                _btnConvStart->setEnabled(true);
+                _btnConvStartF->setEnabled(true);
+                _btnConvStartR->setEnabled(true);
                 _btnConvStop->setEnabled(true);
                 _btnRobotHome->setEnabled(true);
                 _btnRobotReady->setEnabled(true);
                 _btnRobotStop->setEnabled(true);
                 _btnGripperClose->setEnabled(true);
                 _btnGripperOpen->setEnabled(true);
+
+
+                // Stop robot
+                rc_hmi::stopRobot stopObj;
+                if(!_serviceKukaStop.call(stopObj))
+                    _consoleQueue.enqueue("Failed to call the 'serviceKukaStopRobot'");
+
+                // Stop gripper
+                rc_hmi::Stop stopObjPG70;
+                if(!_servicePG70Stop.call(stopObjPG70))
+                    _consoleQueue.enqueue("Failed to call the 'servicePG70Stop'");
+
+                // Stop conveyer
+                rc_hmi::StopConv obj;
+                if(!_serviceConvStop.call(obj))
+                    _consoleQueue.enqueue("Failed to call the 'serviceStopConveyer'");
             }
 
             _hmiStatusPub.publish(msg);
@@ -507,8 +522,11 @@ void HMIWidget::eventBtn()
 
         // Stop conveyer
         rc_hmi::StopConv obj;
-        if(!_serviceConvMove.call(obj))
+        if(!_serviceConvStop.call(obj))
             _consoleQueue.enqueue("Failed to call the 'serviceStopConveyer'");
+
+        _cbAuto->setChecked(false);
+        _cbManual->setChecked(true);
     }
     else if(obj == _btnClearLog)
     {
@@ -517,18 +535,20 @@ void HMIWidget::eventBtn()
 
     if(_cbManual->isChecked())
     {
-        if(obj == _btnConvMove)
+        if(obj == _btnConvStartR)
         {
             // Move conveyer 1 step forward
-            rc_hmi::MoveConv obj;
-            if(!_serviceConvMove.call(obj))
-                _consoleQueue.enqueue("Failed to call the 'serviceMoveConveyer'");
+            rc_hmi::StartConv obj;
+            obj.request.direction = true;
+            if(!_serviceConvStart.call(obj))
+                _consoleQueue.enqueue("Failed to call the 'serviceStartConveyer'");
 
         }
-        else if(obj == _btnConvStart)
+        else if(obj == _btnConvStartF)
         {
             // Start conveyer
             rc_hmi::StartConv obj;
+            obj.request.direction = false;
             if(!_serviceConvStart.call(obj))
                 _consoleQueue.enqueue("Failed to call the 'serviceStartConveyer'");
 
@@ -544,6 +564,7 @@ void HMIWidget::eventBtn()
         else if(obj == _btnRobotHome)
         {
             // Home robot
+            _manualJog = true;
             rw::math::Q q(6,0,0,0,0,0,0);
             _deviceKuka->setQ(q, _state);
             _rws->setState(_state);
@@ -551,6 +572,7 @@ void HMIWidget::eventBtn()
         else if(obj == _btnRobotReady)
         {
             // Ready robot
+            _manualJog = true;
             _deviceKuka->setQ(_qIdle, _state);
             _rws->setState(_state);
         }

@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'HMIWidgetE43147.ui'
+** Form generated from reading UI file 'HMIWidgetV23942.ui'
 **
 ** Created by: Qt User Interface Compiler version 4.8.6
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef HMIWIDGETE43147_H
-#define HMIWIDGETE43147_H
+#ifndef HMIWIDGETV23942_H
+#define HMIWIDGETV23942_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -45,18 +45,13 @@ public:
     QWidget *horizontalLayoutWidget_3;
     QHBoxLayout *horizontalLayout_3;
     QLabel *label_4;
-    QSlider *_sliderHMin;
-    QLabel *_labelHMin;
+    QSlider *_sliderVMin;
+    QLabel *_labelVMin;
     QWidget *horizontalLayoutWidget_4;
     QHBoxLayout *horizontalLayout_4;
     QLabel *label_8;
-    QSlider *_sliderHMax;
-    QLabel *_labelHMax;
-    QWidget *horizontalLayoutWidget_6;
-    QHBoxLayout *horizontalLayout_6;
-    QLabel *label_9;
-    QSlider *_sliderColor;
-    QLabel *_labelColor;
+    QSlider *_sliderVMax;
+    QLabel *_labelVMax;
     QWidget *horizontalLayoutWidget_7;
     QHBoxLayout *horizontalLayout_7;
     QLabel *label_10;
@@ -105,14 +100,14 @@ public:
     QFrame *line_5;
     QLabel *label_16;
     QLabel *label_17;
-    QPushButton *_btnConvStart;
+    QPushButton *_btnConvStartF;
     QPushButton *_btnConvStop;
     QFrame *line_6;
     QLabel *label_19;
     QPushButton *_btnRobotHome;
     QPushButton *_btnRobotReady;
     QPushButton *_btnRobotStop;
-    QPushButton *_btnConvMove;
+    QPushButton *_btnConvStartR;
     QLabel *label;
 
     void setupUi(QWidget *HMIWidgetClass)
@@ -129,7 +124,7 @@ public:
 "}"));
         _labelCameraView = new QLabel(groupBox);
         _labelCameraView->setObjectName(QString::fromUtf8("_labelCameraView"));
-        _labelCameraView->setGeometry(QRect(10, 290, 331, 221));
+        _labelCameraView->setGeometry(QRect(10, 270, 331, 221));
         _labelCameraView->setAlignment(Qt::AlignCenter);
         label_6 = new QLabel(groupBox);
         label_6->setObjectName(QString::fromUtf8("label_6"));
@@ -209,7 +204,7 @@ public:
 "border-radius: 4px;\n"
 "}"));
         _sliderSMin->setMaximum(255);
-        _sliderSMin->setValue(150);
+        _sliderSMin->setValue(80);
         _sliderSMin->setOrientation(Qt::Horizontal);
 
         horizontalLayout->addWidget(_sliderSMin);
@@ -309,10 +304,10 @@ public:
 
         horizontalLayout_3->addWidget(label_4);
 
-        _sliderHMin = new QSlider(horizontalLayoutWidget_3);
-        _sliderHMin->setObjectName(QString::fromUtf8("_sliderHMin"));
-        _sliderHMin->setFocusPolicy(Qt::NoFocus);
-        _sliderHMin->setStyleSheet(QString::fromUtf8("QSlider::groove:horizontal {\n"
+        _sliderVMin = new QSlider(horizontalLayoutWidget_3);
+        _sliderVMin->setObjectName(QString::fromUtf8("_sliderVMin"));
+        _sliderVMin->setFocusPolicy(Qt::NoFocus);
+        _sliderVMin->setStyleSheet(QString::fromUtf8("QSlider::groove:horizontal {\n"
 "border: 1px solid #bbb;\n"
 "background: #003399;\n"
 "height: 10px;\n"
@@ -366,15 +361,16 @@ public:
 "border: 1px solid #aaa;\n"
 "border-radius: 4px;\n"
 "}"));
-        _sliderHMin->setMaximum(255);
-        _sliderHMin->setOrientation(Qt::Horizontal);
+        _sliderVMin->setMaximum(255);
+        _sliderVMin->setValue(50);
+        _sliderVMin->setOrientation(Qt::Horizontal);
 
-        horizontalLayout_3->addWidget(_sliderHMin);
+        horizontalLayout_3->addWidget(_sliderVMin);
 
-        _labelHMin = new QLabel(horizontalLayoutWidget_3);
-        _labelHMin->setObjectName(QString::fromUtf8("_labelHMin"));
+        _labelVMin = new QLabel(horizontalLayoutWidget_3);
+        _labelVMin->setObjectName(QString::fromUtf8("_labelVMin"));
 
-        horizontalLayout_3->addWidget(_labelHMin);
+        horizontalLayout_3->addWidget(_labelVMin);
 
         horizontalLayoutWidget_4 = new QWidget(groupBox);
         horizontalLayoutWidget_4->setObjectName(QString::fromUtf8("horizontalLayoutWidget_4"));
@@ -387,10 +383,10 @@ public:
 
         horizontalLayout_4->addWidget(label_8);
 
-        _sliderHMax = new QSlider(horizontalLayoutWidget_4);
-        _sliderHMax->setObjectName(QString::fromUtf8("_sliderHMax"));
-        _sliderHMax->setFocusPolicy(Qt::NoFocus);
-        _sliderHMax->setStyleSheet(QString::fromUtf8("QSlider::groove:horizontal {\n"
+        _sliderVMax = new QSlider(horizontalLayoutWidget_4);
+        _sliderVMax->setObjectName(QString::fromUtf8("_sliderVMax"));
+        _sliderVMax->setFocusPolicy(Qt::NoFocus);
+        _sliderVMax->setStyleSheet(QString::fromUtf8("QSlider::groove:horizontal {\n"
 "border: 1px solid #bbb;\n"
 "background: #003399;\n"
 "height: 10px;\n"
@@ -444,99 +440,20 @@ public:
 "border: 1px solid #aaa;\n"
 "border-radius: 4px;\n"
 "}"));
-        _sliderHMax->setMaximum(255);
-        _sliderHMax->setValue(255);
-        _sliderHMax->setOrientation(Qt::Horizontal);
+        _sliderVMax->setMaximum(255);
+        _sliderVMax->setValue(255);
+        _sliderVMax->setOrientation(Qt::Horizontal);
 
-        horizontalLayout_4->addWidget(_sliderHMax);
+        horizontalLayout_4->addWidget(_sliderVMax);
 
-        _labelHMax = new QLabel(horizontalLayoutWidget_4);
-        _labelHMax->setObjectName(QString::fromUtf8("_labelHMax"));
+        _labelVMax = new QLabel(horizontalLayoutWidget_4);
+        _labelVMax->setObjectName(QString::fromUtf8("_labelVMax"));
 
-        horizontalLayout_4->addWidget(_labelHMax);
-
-        horizontalLayoutWidget_6 = new QWidget(groupBox);
-        horizontalLayoutWidget_6->setObjectName(QString::fromUtf8("horizontalLayoutWidget_6"));
-        horizontalLayoutWidget_6->setGeometry(QRect(10, 220, 331, 31));
-        horizontalLayout_6 = new QHBoxLayout(horizontalLayoutWidget_6);
-        horizontalLayout_6->setObjectName(QString::fromUtf8("horizontalLayout_6"));
-        horizontalLayout_6->setContentsMargins(0, 0, 0, 0);
-        label_9 = new QLabel(horizontalLayoutWidget_6);
-        label_9->setObjectName(QString::fromUtf8("label_9"));
-
-        horizontalLayout_6->addWidget(label_9);
-
-        _sliderColor = new QSlider(horizontalLayoutWidget_6);
-        _sliderColor->setObjectName(QString::fromUtf8("_sliderColor"));
-        _sliderColor->setFocusPolicy(Qt::NoFocus);
-        _sliderColor->setStyleSheet(QString::fromUtf8("QSlider::groove:horizontal {\n"
-"border: 1px solid #bbb;\n"
-"background: #003399;\n"
-"height: 10px;\n"
-"border-radius: 4px;\n"
-"}\n"
-"\n"
-"QSlider::sub-page:horizontal {\n"
-"background: #003399;\n"
-"border: 1px solid #777;\n"
-"height: 10px;\n"
-"border-radius: 4px;\n"
-"}\n"
-"\n"
-"QSlider::add-page:horizontal {\n"
-"background: #fff;\n"
-"border: 1px solid #777;\n"
-"height: 10px;\n"
-"border-radius: 4px;\n"
-"}\n"
-"\n"
-"QSlider::handle:horizontal {\n"
-"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
-"    stop:0 #eee, stop:1 #ccc);\n"
-"border: 1px solid #777;\n"
-"width: 13px;\n"
-"margin-top: -2px;\n"
-"margin-bottom: -2px;\n"
-"border-radius: 4px;\n"
-"}\n"
-"\n"
-"QSlider::handle:horizontal:hover {\n"
-"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
-"    stop:0 #fff, stop:1 #ddd);\n"
-"border: 1px solid #444;\n"
-"border-radius: 4px;\n"
-"}\n"
-"\n"
-"QSlider::sub-page:horizontal:disabled {\n"
-"background: #bbb;\n"
-"border-color: #999;\n"
-"}\n"
-"\n"
-"QSlider::add-page:horizontal:disabled {\n"
-"background: #eee;\n"
-""
-                        "border-color: #999;\n"
-"}\n"
-"\n"
-"QSlider::handle:horizontal:disabled {\n"
-"background: #eee;\n"
-"border: 1px solid #aaa;\n"
-"border-radius: 4px;\n"
-"}"));
-        _sliderColor->setMaximum(255);
-        _sliderColor->setValue(100);
-        _sliderColor->setOrientation(Qt::Horizontal);
-
-        horizontalLayout_6->addWidget(_sliderColor);
-
-        _labelColor = new QLabel(horizontalLayoutWidget_6);
-        _labelColor->setObjectName(QString::fromUtf8("_labelColor"));
-
-        horizontalLayout_6->addWidget(_labelColor);
+        horizontalLayout_4->addWidget(_labelVMax);
 
         horizontalLayoutWidget_7 = new QWidget(groupBox);
         horizontalLayoutWidget_7->setObjectName(QString::fromUtf8("horizontalLayoutWidget_7"));
-        horizontalLayoutWidget_7->setGeometry(QRect(10, 190, 331, 31));
+        horizontalLayoutWidget_7->setGeometry(QRect(10, 220, 331, 31));
         horizontalLayout_7 = new QHBoxLayout(horizontalLayoutWidget_7);
         horizontalLayout_7->setObjectName(QString::fromUtf8("horizontalLayout_7"));
         horizontalLayout_7->setContentsMargins(0, 0, 0, 0);
@@ -605,7 +522,7 @@ public:
         _sliderClose->setMaximum(31);
         _sliderClose->setSingleStep(2);
         _sliderClose->setPageStep(4);
-        _sliderClose->setValue(9);
+        _sliderClose->setValue(5);
         _sliderClose->setOrientation(Qt::Horizontal);
 
         horizontalLayout_7->addWidget(_sliderClose);
@@ -686,7 +603,7 @@ public:
         _sliderArea->setMaximum(30000);
         _sliderArea->setSingleStep(100);
         _sliderArea->setPageStep(1000);
-        _sliderArea->setValue(5000);
+        _sliderArea->setValue(4000);
         _sliderArea->setOrientation(Qt::Horizontal);
 
         horizontalLayout_8->addWidget(_sliderArea);
@@ -698,7 +615,7 @@ public:
 
         horizontalLayoutWidget_9 = new QWidget(groupBox);
         horizontalLayoutWidget_9->setObjectName(QString::fromUtf8("horizontalLayoutWidget_9"));
-        horizontalLayoutWidget_9->setGeometry(QRect(10, 250, 331, 31));
+        horizontalLayoutWidget_9->setGeometry(QRect(10, 190, 331, 31));
         horizontalLayout_9 = new QHBoxLayout(horizontalLayoutWidget_9);
         horizontalLayout_9->setObjectName(QString::fromUtf8("horizontalLayout_9"));
         horizontalLayout_9->setContentsMargins(0, 0, 0, 0);
@@ -767,7 +684,7 @@ public:
         _sliderBlob->setMaximum(20000);
         _sliderBlob->setSingleStep(50);
         _sliderBlob->setPageStep(100);
-        _sliderBlob->setValue(1000);
+        _sliderBlob->setValue(2500);
         _sliderBlob->setOrientation(Qt::Horizontal);
 
         horizontalLayout_9->addWidget(_sliderBlob);
@@ -1150,12 +1067,12 @@ public:
         label_17->setGeometry(QRect(10, 360, 331, 19));
         label_17->setFont(font);
         label_17->setAlignment(Qt::AlignCenter);
-        _btnConvStart = new QPushButton(groupBox_2);
-        _btnConvStart->setObjectName(QString::fromUtf8("_btnConvStart"));
-        _btnConvStart->setGeometry(QRect(120, 390, 111, 31));
-        _btnConvStart->setMinimumSize(QSize(92, 0));
-        _btnConvStart->setFocusPolicy(Qt::NoFocus);
-        _btnConvStart->setStyleSheet(QString::fromUtf8("QPushButton {\n"
+        _btnConvStartF = new QPushButton(groupBox_2);
+        _btnConvStartF->setObjectName(QString::fromUtf8("_btnConvStartF"));
+        _btnConvStartF->setGeometry(QRect(10, 390, 101, 31));
+        _btnConvStartF->setMinimumSize(QSize(92, 0));
+        _btnConvStartF->setFocusPolicy(Qt::NoFocus);
+        _btnConvStartF->setStyleSheet(QString::fromUtf8("QPushButton {\n"
 "color: #333;\n"
 "border: 1px solid #003399;\n"
 "border-radius: 5px;\n"
@@ -1285,12 +1202,12 @@ public:
 "radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
 "}\n"
 ""));
-        _btnConvMove = new QPushButton(groupBox_2);
-        _btnConvMove->setObjectName(QString::fromUtf8("_btnConvMove"));
-        _btnConvMove->setGeometry(QRect(10, 390, 101, 31));
-        _btnConvMove->setMinimumSize(QSize(92, 0));
-        _btnConvMove->setFocusPolicy(Qt::NoFocus);
-        _btnConvMove->setStyleSheet(QString::fromUtf8("QPushButton {\n"
+        _btnConvStartR = new QPushButton(groupBox_2);
+        _btnConvStartR->setObjectName(QString::fromUtf8("_btnConvStartR"));
+        _btnConvStartR->setGeometry(QRect(120, 390, 111, 31));
+        _btnConvStartR->setMinimumSize(QSize(92, 0));
+        _btnConvStartR->setFocusPolicy(Qt::NoFocus);
+        _btnConvStartR->setStyleSheet(QString::fromUtf8("QPushButton {\n"
 "color: #333;\n"
 "border: 1px solid #003399;\n"
 "border-radius: 5px;\n"
@@ -1329,14 +1246,14 @@ public:
         line_5->raise();
         label_16->raise();
         label_17->raise();
-        _btnConvStart->raise();
+        _btnConvStartF->raise();
         _btnConvStop->raise();
         line_6->raise();
         label_19->raise();
         _btnRobotHome->raise();
         _btnRobotReady->raise();
         _btnRobotStop->raise();
-        _btnConvMove->raise();
+        _btnConvStartR->raise();
         label = new QLabel(HMIWidgetClass);
         label->setObjectName(QString::fromUtf8("label"));
         label->setGeometry(QRect(10, 10, 721, 41));
@@ -1365,12 +1282,10 @@ public:
         _labelSMin->setText(QApplication::translate("HMIWidgetClass", "1000", 0, QApplication::UnicodeUTF8));
         label_3->setText(QApplication::translate("HMIWidgetClass", "Saturation max  ", 0, QApplication::UnicodeUTF8));
         _labelSMax->setText(QApplication::translate("HMIWidgetClass", "1000", 0, QApplication::UnicodeUTF8));
-        label_4->setText(QApplication::translate("HMIWidgetClass", "Hue min                ", 0, QApplication::UnicodeUTF8));
-        _labelHMin->setText(QApplication::translate("HMIWidgetClass", "1000", 0, QApplication::UnicodeUTF8));
-        label_8->setText(QApplication::translate("HMIWidgetClass", "Hue max               ", 0, QApplication::UnicodeUTF8));
-        _labelHMax->setText(QApplication::translate("HMIWidgetClass", "1000", 0, QApplication::UnicodeUTF8));
-        label_9->setText(QApplication::translate("HMIWidgetClass", "Color threshold   ", 0, QApplication::UnicodeUTF8));
-        _labelColor->setText(QApplication::translate("HMIWidgetClass", "1000", 0, QApplication::UnicodeUTF8));
+        label_4->setText(QApplication::translate("HMIWidgetClass", "Value min             ", 0, QApplication::UnicodeUTF8));
+        _labelVMin->setText(QApplication::translate("HMIWidgetClass", "1000", 0, QApplication::UnicodeUTF8));
+        label_8->setText(QApplication::translate("HMIWidgetClass", "Value max            ", 0, QApplication::UnicodeUTF8));
+        _labelVMax->setText(QApplication::translate("HMIWidgetClass", "1000", 0, QApplication::UnicodeUTF8));
         label_10->setText(QApplication::translate("HMIWidgetClass", "Close kernel size", 0, QApplication::UnicodeUTF8));
         _labelClose->setText(QApplication::translate("HMIWidgetClass", "1000", 0, QApplication::UnicodeUTF8));
         label_11->setText(QApplication::translate("HMIWidgetClass", "Min brick area     ", 0, QApplication::UnicodeUTF8));
@@ -1400,13 +1315,13 @@ public:
         _btnClearLog->setText(QApplication::translate("HMIWidgetClass", "Clear", 0, QApplication::UnicodeUTF8));
         label_16->setText(QApplication::translate("HMIWidgetClass", "MES Server feedback", 0, QApplication::UnicodeUTF8));
         label_17->setText(QApplication::translate("HMIWidgetClass", "Conveyer control", 0, QApplication::UnicodeUTF8));
-        _btnConvStart->setText(QApplication::translate("HMIWidgetClass", "Start conv", 0, QApplication::UnicodeUTF8));
+        _btnConvStartF->setText(QApplication::translate("HMIWidgetClass", "Start conv (f)", 0, QApplication::UnicodeUTF8));
         _btnConvStop->setText(QApplication::translate("HMIWidgetClass", "Stop conv", 0, QApplication::UnicodeUTF8));
         label_19->setText(QApplication::translate("HMIWidgetClass", "Robot control", 0, QApplication::UnicodeUTF8));
         _btnRobotHome->setText(QApplication::translate("HMIWidgetClass", "Home robot", 0, QApplication::UnicodeUTF8));
         _btnRobotReady->setText(QApplication::translate("HMIWidgetClass", "Ready robot", 0, QApplication::UnicodeUTF8));
         _btnRobotStop->setText(QApplication::translate("HMIWidgetClass", "Stop robot", 0, QApplication::UnicodeUTF8));
-        _btnConvMove->setText(QApplication::translate("HMIWidgetClass", "Move conv", 0, QApplication::UnicodeUTF8));
+        _btnConvStartR->setText(QApplication::translate("HMIWidgetClass", "Start conv (r)", 0, QApplication::UnicodeUTF8));
         label->setText(QApplication::translate("HMIWidgetClass", "RSD HMI", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
@@ -1418,5 +1333,5 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // HMIWIDGETE43147_H
+#endif // HMIWIDGETV23942_H
 

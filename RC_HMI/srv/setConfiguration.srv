@@ -1,2 +1,4 @@
 float32[6] q
+float32[6] speed # 1-40
+float32[6] acc	 # not implemented yet
 ---

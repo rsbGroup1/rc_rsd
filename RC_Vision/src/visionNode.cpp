@@ -106,18 +106,22 @@ struct BlobColor
 SynchronisedQueue<cv::Mat> _queueImage;
 ros::Publisher _anyBricksPub, _hmiConsolePub;
 image_transport::Publisher _imagePub;
-int _sMin = 150, _sMax = 255;
 int _hMin = 0, _hMax = 255;
-int _minBlobSize = 500;
-int _minLegoArea = 5000, _maxLegoArea = 20000;
-int _closeKernelSize = 9;
-int _colorUpperThres = 100;
+int _sMin = 80, _sMax = 255;
+int _vMin = 50, _vMax = 255;
+int _minBlobSize = 500; // 500
+int _minLegoArea = 0, _maxLegoArea = 50000; // 5000, 20000
+int _closeKernelSize = 5;
 int _pixelToM = 3070;   // Pixels per meter
 int _baseLegoSize = 50; // Half the width of all bricks: 1 tap on lego brick
+double _xMax, _yMax;
 cv::Size2i _imageSize(1280,720);
 boost::mutex _blobMutex, _paramMutex;
 std::vector<BlobColor> _blobs;
 cv::Mat _blobImage;
+int xPoint = ((double)_imageSize.width/_pixelToM-0.3)*_pixelToM/2.0;
+cv::Point2f _tl(0, 90);
+cv::Point2f _br(_imageSize.width-0, 590);
 
 // Functions
 void printConsole(std::string msg)
@@ -176,29 +180,33 @@ void printImageType(int number)
 
 std::string determineColor(cv::Point3d point)
 {
-    bool red = (point.z>_colorUpperThres)?(true):(false);
-    bool green = (point.y>_colorUpperThres)?(true):(false);
-    bool blue = (point.x>_colorUpperThres)?(true):(false);
+    std::string retString;
+    double sum = point.x+point.y+point.z;
+    double redAmount = point.z/sum;
+    double greenAmount = point.y/sum;
+    double blueAmount = point.x/sum;
 
-    if(red == true && green == false && blue == false)
-        return "red";
-    else if(red == false && green == true && blue == false)
-        return "green";
-    else if(red == false && green == false && blue == true)
-        return "blue";
-    else if(red == true && green == true && blue == false)
-        return "yellow";
-    else if(red == false && green == false && blue == false)
-        return "black";
-    else if(red == true && green == true && blue == true)
-        return "white";
+    //std::cout << redAmount << " " << greenAmount << " " << blueAmount << " ";
+
+    if(redAmount > 0.3 && greenAmount < 0.3 && blueAmount < 0.3)
+        retString = "red";
+    else if(redAmount < 0.3 && greenAmount > 0.3 && blueAmount < 0.3)
+        retString = "green";
+    else if(redAmount < 0.5 && greenAmount < 0.5 && blueAmount > 0.3)
+        retString = "blue";
+    else if(redAmount > 0.3 && greenAmount > 0.3 && blueAmount < 0.3)
+        retString = "yellow";
     else
-        return "undefined";
+        retString = "undefined";
+
+    //std::cout << retString << std::endl;
+
+    return retString;
 }
 
-std::vector<std::vector<cv::Point2i> > findBlobs(const cv::Mat &binary)
+std::vector<BlobColor> findBlobs(const cv::Mat &binary)
 {
-    std::vector<std::vector<cv::Point2i> > blobs;
+    std::vector<BlobColor> blobs;
 
     // Fill the label_image with the blobs
     // 0  - background
@@ -220,7 +228,7 @@ std::vector<std::vector<cv::Point2i> > findBlobs(const cv::Mat &binary)
             cv::Rect rect;
             cv::floodFill(label_image, cv::Point(x,y), label_count, &rect, 0, 0, 4);
 
-            std::vector <cv::Point2i> blob;
+            BlobColor blob;
 
             for(int i=rect.y; i < (rect.y+rect.height); i++)
             {
@@ -230,7 +238,7 @@ std::vector<std::vector<cv::Point2i> > findBlobs(const cv::Mat &binary)
                     if(row2[j] != label_count)
                         continue;
 
-                    blob.push_back(cv::Point2i(j,i));
+                    blob.blob.push_back(cv::Point2i(j,i));
                 }
             }
 
@@ -242,50 +250,25 @@ std::vector<std::vector<cv::Point2i> > findBlobs(const cv::Mat &binary)
     return blobs;
 }
 
-void showBlobs(std::vector<std::vector<cv::Point2i> > blobs, cv::Size2i imageSize)
-{
-    // Show all blobs
-    cv::Mat blobImg = cv::Mat::zeros(imageSize, CV_8UC3);
-    for(unsigned int i=0; i<blobs.size(); i++)
-    {
-        unsigned char r = 255 * (rand()/(1.0 + RAND_MAX));
-        unsigned char g = 255 * (rand()/(1.0 + RAND_MAX));
-        unsigned char b = 255 * (rand()/(1.0 + RAND_MAX));
-
-        for(unsigned int  j=0; j<blobs[i].size(); j++)
-        {
-            int x = blobs[i][j].x;
-            int y = blobs[i][j].y;
-
-            blobImg.at<cv::Vec3b>(y,x)[0] = b;
-            blobImg.at<cv::Vec3b>(y,x)[1] = g;
-            blobImg.at<cv::Vec3b>(y,x)[2] = r;
-        }
-    }
-
-    cv::namedWindow("Blobs", CV_WINDOW_KEEPRATIO);
-    cv::imshow("Blobs", blobImg);
-    cv::waitKey(0);
-}
-
 std::vector<BlobColor> filterAndFindBlobs(const cv::Mat &image)
 {
     _paramMutex.lock();
     int hMax = _hMax, hMin = _hMin;
     int sMax = _sMax, sMin = _sMin;
+    int vMax = _vMax, vMin = _vMin;
     int closeKernelSize = _closeKernelSize;
     int minBlobSize = _minBlobSize;
     _paramMutex.unlock();
 
     // Return vector
-    std::vector<BlobColor> blobColorVec;
+    std::vector<BlobColor> blobColorVec, blobColorFilteredVec;
 
     // Convert to HSV
     cv::Mat hsv, binary;
     cv::cvtColor(image, hsv, cv::COLOR_BGR2HSV);
 
     // Filter in HSV space
-    cv::inRange(hsv, cv::Scalar(hMin, sMin, 0), cv::Scalar(hMax, sMax, 255), hsv);
+    cv::inRange(hsv, cv::Scalar(hMin, sMin, vMin), cv::Scalar(hMax, sMax, vMax), hsv);
 
     // Close image (erode -> dilate)
     cv::Mat element = getStructuringElement(cv::MORPH_RECT, cv::Size(2*closeKernelSize + 1, 2*closeKernelSize+1), cv::Point(closeKernelSize, closeKernelSize));
@@ -295,48 +278,36 @@ std::vector<BlobColor> filterAndFindBlobs(const cv::Mat &image)
     cv::threshold(hsv, binary, 128, 1, 0);
 
     // Blob detection
-    std::vector<std::vector<cv::Point2i> > blobs = findBlobs(binary), blobsFiltered;
+    blobColorVec = findBlobs(binary);
 
-    // Filter blobs by pixel size
-    for(unsigned int i=0; i<blobs.size(); i++)
-        if(blobs[i].size() > minBlobSize)
-            blobsFiltered.push_back(blobs[i]);
+    // Filter blobs by number of pixels
+    for(unsigned int i=0; i<blobColorVec.size(); i++)
+        if(blobColorVec[i].blob.size() > minBlobSize)
+            blobColorFilteredVec.push_back(blobColorVec[i]);
 
     // Filter blobs by color
     // Determine color by getting average pixel value of blobs
     std::vector<cv::Point3d> points;
-    points.resize(blobsFiltered.size());
-    for(unsigned int i=0; i<blobsFiltered.size(); i++)
+    points.resize(blobColorFilteredVec.size());
+    for(unsigned int i=0; i<blobColorFilteredVec.size(); i++)
     {
-        for(unsigned int j=0; j<blobsFiltered[i].size(); j++)
+        for(unsigned int j=0; j<blobColorFilteredVec[i].blob.size(); j++)
         {
-            int x = blobsFiltered[i][j].x;
-            int y = blobsFiltered[i][j].y;
-            double blobSize = blobsFiltered[i].size();
+            int x = blobColorFilteredVec[i].blob[j].x;
+            int y = blobColorFilteredVec[i].blob[j].y;
+            double blobSize = blobColorFilteredVec[i].blob.size();
             points[i].x += image.at<cv::Vec3b>(y,x)[0] / blobSize;
             points[i].y += image.at<cv::Vec3b>(y,x)[1] / blobSize;
             points[i].z += image.at<cv::Vec3b>(y,x)[2] / blobSize;
         }
-    }
 
-    for(unsigned int i=0; i<blobsFiltered.size(); i++)
-    {
+        // Determine color and add
         std::string color = determineColor(points[i]);
-        if(color == "red" || color == "yellow" || color == "blue")
-        {
-            BlobColor blobColorElement;
-            blobColorElement.blob = blobsFiltered[i];
-            blobColorElement.color = color;
-            blobColorVec.push_back(blobColorElement);
-        }
+        blobColorFilteredVec[i].color = color;
     }
-
-    // Show
-    //cv::namedWindow("HSV", CV_WINDOW_KEEPRATIO);
-    //cv::imshow("HSV", hsv);
 
     // Return
-    return blobColorVec;
+    return blobColorFilteredVec;
 }
 
 void setBlobs(std::vector<BlobColor>  blobColor)
@@ -360,9 +331,13 @@ void detectBricksThread()
         {
             // Get image from queue
             cv::Mat image = _queueImage.dequeue();
+            //cv::imwrite("/home/yonas/Desktop/image.jpg", image);
+
+            // Test call
+            cv::Mat croppedImage = image(cv::Rect(_tl.x, _tl.y, _br.x-_tl.x, _br.y-_tl.y));
 
             // Detect blobs
-            std::vector<BlobColor> blob = filterAndFindBlobs(image);
+            std::vector<BlobColor> blob = filterAndFindBlobs(croppedImage);
 
             // Filter by color, size etc
             // TODO:
@@ -399,14 +374,15 @@ double lengthOfPoint(cv::Point2f point)
     return sqrt(point.x*point.x + point.y*point.y);
 }
 
-cv::Point2f convertPixelToM(cv::Point2f pointPixel)
+cv::Point2f convertPixelToM(cv::Point2f pointPixel, const cv::Mat &image)
 {
     // Return val
-    cv::Point2d pointM;
+    cv::Point2f pointM;
 
     // Offset pixels
-    pointPixel.x -= _imageSize.width/2.0;
-    pointPixel.y -= _imageSize.height/2.0;
+    pointPixel += _tl;
+    pointPixel.x -= image.cols/2.0;
+    pointPixel.y -= image.rows/2.0;
     pointPixel.y *= -1.0;
 
     // Convert
@@ -432,9 +408,6 @@ std::vector<Brick> findBricks()
     // If any blobs
     if(blobColorVec.size() > 0)
     {
-        // Show blobs
-        //showBlobs(blobs, image.size());
-
         // Get image
         _blobMutex.lock();
         cv::Mat image;
@@ -470,7 +443,7 @@ std::vector<Brick> findBricks()
                 Brick brick;
                 brick.color = blobColorVec[k].color;
                 brick.theta = angle;
-                box.center = convertPixelToM(box.center);
+                box.center = convertPixelToM(box.center, image);
                 brick.posX = box.center.x;
                 brick.posY = box.center.y;
                 brick.size = (box.size.height>box.size.width?box.size.height:box.size.width);
@@ -485,11 +458,12 @@ std::vector<Brick> findBricks()
                         brick.theta += M_PI/2.0;
                 }
 
-                // Add to vector
-                brickVec.push_back(brick);
-
-                // Print to screen
-                //std::cout << "Box " << k << ": Area: " << box.boundingRect().area() <<  " Blob: " << blobColorVec[k].blob.size() << " Angle: " << brick.theta*RADTODEGREE << " Center: " << box.center << " Size: " << box.size << " Color: " << blobColorVec[k].color << " " << std::endl;
+                // Add to vector if in robot reach
+                int lineThickness = 5;
+                if(-_xMax < brick.posX && brick.posX < _xMax && -_yMax < brick.posY && brick.posY < _yMax )
+                    brickVec.push_back(brick);
+                else
+                    lineThickness = 2;
 
                 // Show correspondant color on image
                 cv::Scalar color;
@@ -506,13 +480,9 @@ std::vector<Brick> findBricks()
 
                 // Draw box in image
                 for(int i=0; i<4; ++i)
-                    cv::line(img, vertices[i], vertices[(i + 1) % 4], color, 5, CV_AA);
+                    cv::line(img, vertices[i]+_tl, vertices[(i + 1) % 4]+_tl, color, lineThickness, CV_AA);
             }
         }
-
-        // Show
-        //cv::namedWindow("OBB", CV_WINDOW_KEEPRATIO);
-        //cv::imshow("OBB", img);
 
         // Convert to ROS format
         sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img).toImageMsg();
@@ -564,24 +534,17 @@ void paramCallback(std_msgs::String msg)
         _sMin = value;
     else if(func == "smax")
         _sMax = value;
-    else if(func == "hmin")
-        _hMin = value;
-    else if(func == "hmax")
-        _hMax = value;
+    else if(func == "vmin")
+        _vMin = value;
+    else if(func == "vmax")
+        _vMax = value;
     else if(func == "area")
         _minLegoArea = value;
-    else if(func == "color")
-        _colorUpperThres = value;
     else if(func == "blob")
         _minBlobSize = value;
     else if(func == "close")
         _closeKernelSize = value;
 }
-
-/*void trackbar(int, void*)
-{
-    filterAndFindBlobs(_image);
-}*/
 
 int main()
 {
@@ -602,6 +565,8 @@ int main()
     pNh.param<std::string>("getBricks_service", analyzeService, "/rcVision/getBricks");
     pNh.param<std::string>("visionParamSub", visionParamSub, "/rcHMI/visionParam");
     pNh.param<std::string>("visionImagePub", imagePub, "/rcVision/image");
+    pNh.param<double>("xMax", _xMax, 0.15);
+    pNh.param<double>("yMax", _yMax, 0.08);
 
     // Service
     ros::ServiceServer analyzeFrameService = nh.advertiseService(analyzeService, analyzeFrameCallback);
@@ -619,38 +584,8 @@ int main()
     // Brick detection thread
     boost::thread detectionThread(detectBricksThread);
 
-    // Set loop rate
-    ros::Rate loop_rate(10);
-
-    while(nh.ok())
-    {
-        // Spin
-        ros::spinOnce();
-        loop_rate.sleep();
-    }
-
-    // Load image
-    /*cv::Mat image = cv::imread("/home/yonas/Desktop/Lego/16.jpg", CV_LOAD_IMAGE_UNCHANGED);
-
-    // Check if picture is loaded successfully
-    if(!image.data)
-    {
-       printf("No image \n");
-       return 0;
-    }
-
-    // Test call
-    findBricks(image);
-    cv::waitKey(0);
-
-    /*image.copyTo(_image);
-    cv::namedWindow("Control", CV_WINDOW_AUTOSIZE);
-    cv::createTrackbar("Hue min: ", "Control", &_hMin, 255, trackbar);
-    cv::createTrackbar("Hue max: ", "Control", &_hMax, 255, trackbar);
-    cv::createTrackbar("Sat min: ", "Control", &_sMin, 255, trackbar);
-    cv::createTrackbar("Sat max: ", "Control", &_sMax, 255, trackbar);
-    trackbar(0, 0);
-    cv::waitKey(0);*/
+    // Loop
+    ros::spin();
 
     // Interrupt thread
     detectionThread.interrupt();
