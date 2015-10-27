@@ -63,7 +63,7 @@ namespace uvc_camera
         cam->set_motion_thresholds(100, -1);
 
         bool auto_focus;
-        if(pnode.getParam("auto_focus", auto_focus))
+        if(pnode.getParam("focus_auto", auto_focus))
             cam->set_v4l2_control(V4L2_CID_FOCUS_AUTO, auto_focus, "auto_focus");
 
         int focus_absolute;
