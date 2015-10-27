@@ -487,6 +487,15 @@ std::vector<Brick> findBricks()
             }
         }
 
+        // Draw center of image
+        cv::Point2i center(img.cols/2, img.rows/2);
+        cv::circle(img, center, 3, cv::Scalar(255,255,255), 5);
+
+        // Draw workspace box
+        cv::Point2i tl(center.x - _xMax * _pixelToM, center.y -_yMax * _pixelToM);
+        cv::Point2i br(center.x + _xMax * _pixelToM, center.y +_yMax * _pixelToM);
+        cv::rectangle(img, tl, br, cv::Scalar(255,255,255), 5);
+
         // Convert to ROS format
         sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img).toImageMsg();
 
