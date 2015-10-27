@@ -101,7 +101,6 @@ rw::math::Q getQFromPinBrickFrame(rw::math::Vector3D<> p, double rotation)
     rw::math::Transform3D<> posOffset(p);
     rw::math::Transform3D<> w2brickOffset = _w2brick * posOffset;
     rw::math::Transform3D<> transform((inverse(_w2base)*w2brickOffset).P(), rw::math::RPY<>(M_PI, PITCH_OFFSET, M_PI));
-    std::cout << transform << std::endl;
     std::vector<rw::math::Q> qVec = _inverseKinGripper->solve(transform, _state);
     if(qVec.empty())
     {
@@ -140,6 +139,7 @@ bool getStatus(void)
     ros::spinOnce();
     boost::unique_lock<boost::mutex> lock(_runMutex);
     return _run;
+    //return true;
 }
 
 void hmiStatusCallback(std_msgs::String msg)

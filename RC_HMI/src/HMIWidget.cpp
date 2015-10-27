@@ -292,17 +292,20 @@ void HMIWidget::imageQueueHandler()
     rc_hmi::getConfiguration getQObj;
 
     // Call service
-    if(!_serviceKukaGetConf.call(getQObj))
-       _consoleQueue.enqueue("Failed to call the 'serviceKukaGetConfiguration'");
+    //if(_cbAuto->isChecked())
+    //{
+        if(!_serviceKukaGetConf.call(getQObj))
+           _consoleQueue.enqueue("Failed to call the 'serviceKukaGetConfiguration'");
 
-    // Get information
-    rw::math::Q q(6);
-    for(unsigned int i=0; i<6; i++)
-       q(i) = getQObj.response.q[i]*DEGREETORAD;
+        // Get information
+        rw::math::Q q(6);
+        for(unsigned int i=0; i<6; i++)
+           q(i) = getQObj.response.q[i]*DEGREETORAD;
 
-    _manualJog = false;
-    _deviceKuka->setQ(q, _state);
-    _rws->setState(_state);
+        _manualJog = false;
+        _deviceKuka->setQ(q, _state);
+        _rws->setState(_state);
+    //}
 
     // Get vision
     boost::unique_lock<boost::mutex> lock(_liveFeedMutex);

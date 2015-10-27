@@ -120,8 +120,7 @@ boost::mutex _blobMutex, _paramMutex;
 std::vector<BlobColor> _blobs;
 cv::Mat _blobImage;
 int xPoint = ((double)_imageSize.width/_pixelToM-0.3)*_pixelToM/2.0;
-cv::Point2f _tl(0, 90);
-cv::Point2f _br(_imageSize.width-0, 590);
+cv::Point2f _tl, _br;
 
 // Functions
 void printConsole(std::string msg)
@@ -494,7 +493,9 @@ std::vector<Brick> findBricks()
         // Draw workspace box
         cv::Point2i tl(center.x - _xMax * _pixelToM, center.y -_yMax * _pixelToM);
         cv::Point2i br(center.x + _xMax * _pixelToM, center.y +_yMax * _pixelToM);
-        cv::rectangle(img, tl, br, cv::Scalar(255,255,255), 5);
+        //cv::Point2i tl(0, center.y -_yMax * _pixelToM);
+        //cv::Point2i br(img.cols, center.y +_yMax * _pixelToM);
+        cv::rectangle(img, tl, br, cv::Scalar(255,255,255), 3);
 
         // Convert to ROS format
         sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img).toImageMsg();
@@ -578,7 +579,7 @@ int main()
     pNh.param<std::string>("visionParamSub", visionParamSub, "/rcHMI/visionParam");
     pNh.param<std::string>("visionImagePub", imagePub, "/rcVision/image");
     pNh.param<double>("xMax", _xMax, 0.15);
-    pNh.param<double>("yMax", _yMax, 0.08);
+    pNh.param<double>("yMax", _yMax, 0.085);
 
     // Service
     ros::ServiceServer analyzeFrameService = nh.advertiseService(analyzeService, analyzeFrameCallback);
@@ -592,6 +593,13 @@ int main()
     _anyBricksPub = nh.advertise<std_msgs::Bool>(anyBricksPub, 1);
     _hmiConsolePub = nh.advertise<std_msgs::String>(hmiConsolePub, 100);
     _imagePub = itImg.advertise(imagePub, 1);
+
+    // Init
+    cv::Point2f center(_imageSize.width/2, _imageSize.height/2);
+    _tl.x = 0;
+    _tl.y = center.y -_yMax * _pixelToM;
+    _br.x = center.x*2;
+    _br.y = center.y +_yMax * _pixelToM;
 
     // Brick detection thread
     boost::thread detectionThread(detectBricksThread);

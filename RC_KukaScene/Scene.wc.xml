@@ -44,7 +44,7 @@
 	</Frame>
 
 	<Frame name="Camera" refframe="ToolMount">
-		<RPY>-90 0 180</RPY><Pos>-0.07 0 0.105</Pos>
+		<RPY>-90 0 180</RPY><Pos>-0.075 0.0075 0.105</Pos> <!-- -0.07-->
 	</Frame>
 
 	<Frame name="fence_right" refframe="WORLD">

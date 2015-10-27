@@ -50,7 +50,7 @@ void printConsole(std::string msg)
 bool grabBrick(Brick brick)
 {
     rc_main::grabBrick obj;
-    obj.request.x = brick.posX - 0.005;
+    obj.request.x = brick.posX;
     obj.request.y = brick.posY;
     obj.request.theta = brick.theta;
     obj.request.size = brick.size;

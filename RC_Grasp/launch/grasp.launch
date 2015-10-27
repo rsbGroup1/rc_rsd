@@ -12,7 +12,7 @@
 			<param name="graspOffset" value="0.0"/>
 			<param name="graspLifted" value="0.1"/>
 			<param name="xMax" value="0.15"/>
-			<param name="yMax" value="0.08"/>
+			<param name="yMax" value="0.085"/>
 			<param name="gripperOpenoffset" value="0.015"/>
 		</node>
 	</group>
