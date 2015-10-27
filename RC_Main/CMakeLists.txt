@@ -15,6 +15,7 @@ add_service_files(
 	ChangeDirection.srv
 	getIsMoving.srv
 	getConfiguration.srv
+	getSafety.srv
 )
 
 generate_messages(DEPENDENCIES std_msgs)

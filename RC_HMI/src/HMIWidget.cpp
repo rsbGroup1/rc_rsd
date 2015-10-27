@@ -142,11 +142,10 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         pNh.param<std::string>("KukaCmdServiceName", kukaService, "/KukaNode");
         pNh.param<std::string>("PG70CmdServiceName", PG70Service, "/PG70/PG70");
         pNh.param<std::string>("console_sub", consoleSub, "/rcHMI/console");
-        pNh.param<std::string>("status_pub", statusPub, "/rcHMI/status");
         pNh.param<std::string>("convServiceName", convService, "/rcPLC");
         pNh.param<std::string>("anyBricks_sub", anyBricksSub, "/rcVision/anyBricks");
         pNh.param<std::string>("getBricks_service", getBricksService, "/rcVision/getBricks");
-        pNh.param<std::string>("safety_sub", safetySub, "/rcSafety/status");
+        pNh.param<std::string>("safety_sub", safetySub, "/KukaNode/GetSafety");
         pNh.param<std::string>("mesPub", mesPub, "/rcMESServer/msgToServer");
         pNh.param<std::string>("mesSub", mesSub, "/rcMESServer/msgFromServer");
         pNh.param<std::string>("visionParamPub", visionPub, "/rcHMI/visionParam");
@@ -155,6 +154,7 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         _serviceKukaSetConf = _nodeHandle->serviceClient<rc_hmi::setConfiguration>(kukaService + "/SetConfiguration");
         _serviceKukaGetConf = _nodeHandle->serviceClient<rc_hmi::getConfiguration>(kukaService + "/GetConfiguration");
         _serviceKukaStop = _nodeHandle->serviceClient<rc_hmi::stopRobot>(kukaService + "/StopRobot");
+        _serviceKukaGetSafety = _nodeHandle->serviceClient<rc_hmi::getSafety>(kukaService + "/GetSafety");
         _servicePG70Close = _nodeHandle->serviceClient<rc_hmi::Close>(PG70Service + "/close");
         _servicePG70Stop = _nodeHandle->serviceClient<rc_hmi::Stop>(PG70Service + "/stop");
         _servicePG70Open = _nodeHandle->serviceClient<rc_hmi::Open>(PG70Service + "/open");
@@ -170,7 +170,6 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
 
         // Subscribers
         _anyBrickSub = _nodeHandle->subscribe(anyBricksSub, 10, &HMIWidget::anyBrickCallback, this);
-        _safetySub = _nodeHandle->subscribe(safetySub, 10, &HMIWidget::safetyCallback, this);
         _mesMessageSub = _nodeHandle->subscribe(mesSub, 10, &HMIWidget::mesRecCallback, this);
         _consoleSub = _nodeHandle->subscribe(consoleSub, 100, &HMIWidget::consoleCallback, this);
         _itImg = new image_transport::ImageTransport(*_nodeHandle);
@@ -265,11 +264,17 @@ void HMIWidget::imageQueueHandler()
     }
     _labelBricksMutex.unlock();
 
-    _labelSafetyMutex.lock();
+    // Get safety
+    rc_hmi::getSafety obj;
+    _serviceKukaGetSafety.call(obj);
+    _safety = obj.response.safetyBreached;
+
+    // Update label
     if(_safety != oldSafety)
     {
         if(_safety)
         {
+            emergencyStop();
             _labelSafety->setText("Not Ok!");
             _labelSafety->setStyleSheet("QLabel {color : red; }");
         }
@@ -281,7 +286,6 @@ void HMIWidget::imageQueueHandler()
 
         oldSafety = _safety;
     }
-    _labelSafetyMutex.unlock();
 
     // Fetch robot position and update HMI
     // Create setConfiguration service
@@ -318,12 +322,6 @@ void HMIWidget::anyBrickCallback(std_msgs::Bool msg)
         _anyBricks = true;
     else
         _anyBricks = false;
-}
-
-void HMIWidget::safetyCallback(std_msgs::Bool msg)
-{
-    boost::unique_lock<boost::mutex> lock(_labelSafetyMutex);
-    _safety = msg.data;
 }
 
 void HMIWidget::mesRecCallback(std_msgs::String msg)
@@ -450,21 +448,7 @@ void HMIWidget::eventCb(bool input)
                 _btnGripperClose->setEnabled(true);
                 _btnGripperOpen->setEnabled(true);
 
-
-                // Stop robot
-                rc_hmi::stopRobot stopObj;
-                if(!_serviceKukaStop.call(stopObj))
-                    _consoleQueue.enqueue("Failed to call the 'serviceKukaStopRobot'");
-
-                // Stop gripper
-                rc_hmi::Stop stopObjPG70;
-                if(!_servicePG70Stop.call(stopObjPG70))
-                    _consoleQueue.enqueue("Failed to call the 'servicePG70Stop'");
-
-                // Stop conveyer
-                rc_hmi::StopConv obj;
-                if(!_serviceConvStop.call(obj))
-                    _consoleQueue.enqueue("Failed to call the 'serviceStopConveyer'");
+                emergencyStop();
             }
 
             _hmiStatusPub.publish(msg);
@@ -481,6 +465,24 @@ void HMIWidget::eventCb(bool input)
     }
 
     runOnce = !runOnce;
+}
+
+void HMIWidget::emergencyStop()
+{
+    // Stop robot
+    rc_hmi::stopRobot stopObj;
+    if(!_serviceKukaStop.call(stopObj))
+        _consoleQueue.enqueue("Failed to call the 'serviceKukaStopRobot'");
+
+    // Stop gripper
+    rc_hmi::Stop stopObjPG70;
+    if(!_servicePG70Stop.call(stopObjPG70))
+        _consoleQueue.enqueue("Failed to call the 'servicePG70Stop'");
+
+    // Stop conveyer
+    rc_hmi::StopConv obj;
+    if(!_serviceConvStop.call(obj))
+        _consoleQueue.enqueue("Failed to call the 'serviceStopConveyer'");
 }
 
 void HMIWidget::eventBtn()
@@ -510,20 +512,7 @@ void HMIWidget::eventBtn()
     }
     else if(obj == _btnEmStop)
     {
-        // Stop robot
-        rc_hmi::stopRobot stopObj;
-        if(!_serviceKukaStop.call(stopObj))
-            _consoleQueue.enqueue("Failed to call the 'serviceKukaStopRobot'");
-
-        // Stop gripper
-        rc_hmi::Stop stopObjPG70;
-        if(!_servicePG70Stop.call(stopObjPG70))
-            _consoleQueue.enqueue("Failed to call the 'servicePG70Stop'");
-
-        // Stop conveyer
-        rc_hmi::StopConv obj;
-        if(!_serviceConvStop.call(obj))
-            _consoleQueue.enqueue("Failed to call the 'serviceStopConveyer'");
+        emergencyStop();
 
         _cbAuto->setChecked(false);
         _cbManual->setChecked(true);

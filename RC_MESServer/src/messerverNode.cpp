@@ -50,13 +50,8 @@ int main()
     ros::Subscriber mesMessageSub = nh.subscribe(mesSub, 10, sendMsgCallback);
 
     // Set loop rate
-    ros::Rate loop_rate(10);
-
-    while(nh.ok())
-    {
+    while(ros::ok())
         ros::spinOnce();
-        loop_rate.sleep();
-    }
 
     // Return
     return 0;

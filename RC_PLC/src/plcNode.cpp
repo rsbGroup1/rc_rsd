@@ -124,10 +124,14 @@ void writeSerialThread()
     {
         try
         {
-            // Write
-            _serialConnection->write(_queue.dequeue());
+            if(_queue.size()>0)
+            {
+                // Write
+                _serialConnection->write(_queue.dequeue());
+            }
 
             // Signal interrupt point
+            boost::this_thread::sleep(boost::posix_time::milliseconds(10));
             boost::this_thread::interruption_point();
         }
         catch(const boost::thread_interrupted&)
@@ -252,7 +256,7 @@ int main()
 
     // ROS Spin: Handle callbacks
     while(ros::ok())
-    ros::spinOnce();
+        ros::spinOnce();
 
     // Close connection
     _writeThread->interrupt();

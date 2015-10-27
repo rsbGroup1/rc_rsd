@@ -11,6 +11,7 @@
 #include <rc_main/ChangeDirection.h>
 #include <rc_main/getIsMoving.h>
 #include <rc_main/getConfiguration.h>
+#include <rc_main/getSafety.h>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread.hpp>
 
@@ -31,7 +32,7 @@ struct Brick
 
 // Global variables
 ros::Publisher _hmiConsolePub, _mesMessagePub;
-ros::ServiceClient _serviceGrabBrick, _serviceGetBricks, _serviceMove, _serviceStart, _serviceStop, _serviceChangeDir, _serviceGetIsMoving, _serviceGetConf;
+ros::ServiceClient _serviceGrabBrick, _serviceGetBricks, _serviceMove, _serviceStart, _serviceStop, _serviceChangeDir, _serviceGetIsMoving, _serviceGetConf, _serviceGetSafety;
 bool _run = false, _safety = false, _anyBricks = false;
 boost::mutex _runMutex, _safetyMutex, _anyBricksMutex, _qMutex;
 double _qIdle[6] = {1.34037, 0.696857, 0.158417, 0.418082, -0.736247, -0.531764};
@@ -49,7 +50,7 @@ void printConsole(std::string msg)
 bool grabBrick(Brick brick)
 {
     rc_main::grabBrick obj;
-    obj.request.x = brick.posX;
+    obj.request.x = brick.posX - 0.005;
     obj.request.y = brick.posY;
     obj.request.theta = brick.theta;
     obj.request.size = brick.size;
@@ -154,12 +155,6 @@ void anyBrickCallback(std_msgs::Bool msg)
     _qMutex.lock();
     _positionQIdle = same;
     _qMutex.unlock();
-}
-
-void safetyCallback(std_msgs::Bool msg)
-{
-    boost::unique_lock<boost::mutex> lock(_safetyMutex);
-    _safety = msg.data;
 }
 
 void mesRecCallback(std_msgs::String msg)
@@ -336,7 +331,6 @@ int main()
     pNh.param<std::string>("getBricksService", getBricksService, "/rcVision/getBricks");
     pNh.param<std::string>("plcService", plcService, "/rcPLC");
     pNh.param<std::string>("anyBricks_sub", anyBricksSub, "/rcVision/anyBricks");
-    pNh.param<std::string>("safety_sub", safetySub, "/rcSafety/status");
     pNh.param<std::string>("hmi_status_sub", hmiStatusSub, "/rcHMI/status");
     pNh.param<std::string>("mesPub", mesPub, "/rcMESServer/msgToServer");
     pNh.param<std::string>("mesSub", mesSub, "/rcMESServer/msgFromServer");
@@ -350,6 +344,7 @@ int main()
     _serviceChangeDir = nh.serviceClient<rc_main::ChangeDirection>(plcService + "/ChangeDirection");
     _serviceGetIsMoving = nh.serviceClient<rc_main::getIsMoving>("/KukaNode/IsMoving");
     _serviceGetConf = nh.serviceClient<rc_main::getConfiguration>("/KukaNode/GetConfiguration");
+    _serviceGetSafety = nh.serviceClient<rc_main::getSafety>("/KukaNode/GetSafety");
 
     // Publishers
     _hmiConsolePub = nh.advertise<std_msgs::String>(hmiConsolePub, 100);
@@ -357,15 +352,28 @@ int main()
 
     // Subscribers
     ros::Subscriber anyBrickSub = nh.subscribe(anyBricksSub, 10, anyBrickCallback);
-    ros::Subscriber safetySubs = nh.subscribe(safetySub, 10, safetyCallback);
     ros::Subscriber mesMessageSub = nh.subscribe(mesSub, 10, mesRecCallback);
     ros::Subscriber hmiStatusSubs = nh.subscribe(hmiStatusSub, 10, hmiStatusCallback);
 
     // Main handler thread
     boost::thread mainThread(mainHandlerThread);
 
+    // Spin rate
+    ros::Rate r(10); // 10 hz
+
     // Spin
-   ros::spin();
+    while(ros::ok())
+    {
+        // Get safety
+        rc_main::getSafety obj;
+        _serviceGetSafety.call(obj);
+        _safetyMutex.lock();
+        _safety = obj.response.safetyBreached;
+        _safetyMutex.unlock();
+
+        ros::spinOnce();
+        r.sleep();
+    }
 
     // Return
    mainThread.interrupt();

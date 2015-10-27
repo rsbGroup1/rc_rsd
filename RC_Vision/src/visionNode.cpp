@@ -112,7 +112,7 @@ int _vMin = 50, _vMax = 255;
 int _minBlobSize = 500; // 500
 int _minLegoArea = 0, _maxLegoArea = 50000; // 5000, 20000
 int _closeKernelSize = 5;
-int _pixelToM = 3070;   // Pixels per meter
+int _pixelToM = 3200; //3070;   // Pixels per meter
 int _baseLegoSize = 50; // Half the width of all bricks: 1 tap on lego brick
 double _xMax, _yMax;
 cv::Size2i _imageSize(1280,720);
@@ -443,9 +443,8 @@ std::vector<Brick> findBricks()
                 Brick brick;
                 brick.color = blobColorVec[k].color;
                 brick.theta = angle;
-                box.center = convertPixelToM(box.center, image);
-                brick.posX = box.center.x;
-                brick.posY = box.center.y;
+                brick.posX = convertPixelToM(box.center, image).x;
+                brick.posY = convertPixelToM(box.center, image).y;
                 brick.size = (box.size.height>box.size.width?box.size.height:box.size.width);
                 brick.size = round(brick.size/_baseLegoSize) * 2;
 
@@ -481,6 +480,10 @@ std::vector<Brick> findBricks()
                 // Draw box in image
                 for(int i=0; i<4; ++i)
                     cv::line(img, vertices[i]+_tl, vertices[(i + 1) % 4]+_tl, color, lineThickness, CV_AA);
+
+                // Draw center in image
+                box.center += _tl;
+                cv::circle(img, box.center, 3, cv::Scalar(255,255,255), 5);
             }
         }
 
@@ -585,7 +588,8 @@ int main()
     boost::thread detectionThread(detectBricksThread);
 
     // Loop
-    ros::spin();
+    while(ros::ok())
+        ros::spinOnce();
 
     // Interrupt thread
     detectionThread.interrupt();

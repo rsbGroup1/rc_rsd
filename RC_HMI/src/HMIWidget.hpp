@@ -21,6 +21,7 @@
 
 #include <rc_hmi/setConfiguration.h>
 #include <rc_hmi/getConfiguration.h>
+#include <rc_hmi/getSafety.h>
 #include <rc_hmi/stopRobot.h>
 #include <rc_hmi/Open.h>
 #include <rc_hmi/Close.h>
@@ -150,13 +151,13 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
         void liveImageCallback(const sensor_msgs::ImageConstPtr& msg);
         void visionImageCallback(const sensor_msgs::ImageConstPtr& msg);
         void anyBrickCallback(std_msgs::Bool msg);
-        void safetyCallback(std_msgs::Bool msg);
         void mesRecCallback(std_msgs::String msg);
         void startROSThread();
         bool openWorkCell();
         bool msgBoxHelper(QString, QString);
         void writeToLog(QString text);
         void consoleCallback(std_msgs::String msg);
+        void emergencyStop();
 
         // Variables
         rw::models::WorkCell::Ptr _rwWorkCell;
@@ -169,11 +170,11 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
         ros::NodeHandle *_nodeHandle;
         image_transport::ImageTransport *_itImg;
         image_transport::Subscriber _subLiveImg, _subVisionImg;
-        ros::ServiceClient _serviceKukaSetConf, _serviceKukaStop, _serviceKukaGetConf;
+        ros::ServiceClient _serviceKukaSetConf, _serviceKukaStop, _serviceKukaGetConf, _serviceKukaGetSafety;
         ros::ServiceClient _servicePG70Open, _servicePG70Stop, _servicePG70Close;
         ros::ServiceClient _serviceConvChange, _serviceConvStop, _serviceConvStart;
         ros::ServiceClient _serviceGetBricks;
-        ros::Subscriber _consoleSub, _mesMessageSub, _anyBrickSub, _safetySub;
+        ros::Subscriber _consoleSub, _mesMessageSub, _anyBrickSub;
         ros::Publisher _mesMessagePub, _hmiStatusPub, _visionParamPub;
 
         // Image
@@ -182,7 +183,7 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
         SynchronisedQueue<QString> _consoleQueue;
 
         // UI
-        boost::mutex _labelBricksMutex, _labelSafetyMutex, _liveFeedMutex;
+        boost::mutex _labelBricksMutex, _liveFeedMutex;
         bool _anyBricks, _safety;
 
         // Else
