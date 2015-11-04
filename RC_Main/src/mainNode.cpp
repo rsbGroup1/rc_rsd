@@ -350,7 +350,7 @@ int main()
     // Init ROS Node
     ros::init(argc, argv, "RC_Main");
     ros::NodeHandle nh;
-    ros::NodeHandle pNh(ros::this_node::getName() + "/");
+    ros::NodeHandle pNh("~");
 
     // Topic names
     std::string hmiConsolePub, grabService, getBricksService, plcService, anyBricksSub, safetySub, mesPub, mesSub, hmiStatusSub;

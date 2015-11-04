@@ -568,7 +568,7 @@ int main()
     // Init ROS Node
     ros::init(argc, argv, "rc_vision");
     ros::NodeHandle nh;
-    ros::NodeHandle pNh(ros::this_node::getName() + "/");
+    ros::NodeHandle pNh("~");
 
     // Topic names
     std::string imageSub, anyBricksPub, hmiConsolePub, analyzeService, visionParamSub, imagePub;

@@ -133,7 +133,7 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         // Init ROS
         ros::init(argc, argv, "RC_HMI");
         _nodeHandle = new ros::NodeHandle;
-        ros::NodeHandle pNh(ros::this_node::getName() + "/");
+        ros::NodeHandle pNh("~");
 
         // Topic names
         std::string liveImageSub, visionImageSub, kukaService, PG70Service, consoleSub, convService, mesPub, mesSub, anyBricksSub, safetySub, statusPub, visionPub, getBricksService;

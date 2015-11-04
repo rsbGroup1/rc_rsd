@@ -68,7 +68,7 @@ int main()
     // Init ROS Node
     ros::init(argc, argv, "RC_MES_Client");
     ros::NodeHandle nh;
-    ros::NodeHandle pNh(ros::this_node::getName() + "/");
+    ros::NodeHandle pNh("~");
 
     // Topic names
     std::string hmiConsolePub, mesSub, mesPub;

@@ -266,7 +266,7 @@ int main()
     // Init ROS Node
     ros::init(argc, argv, "rc_grasp");
     ros::NodeHandle nh;
-    ros::NodeHandle pNh(ros::this_node::getName() + "/");
+    ros::NodeHandle pNh("~");
 
     // Topic names
     std::string kukaService, PG70Service, scenePath, hmiConsolePub, hmiStatusSub;
