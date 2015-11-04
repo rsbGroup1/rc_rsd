@@ -5,21 +5,18 @@ project(rc_main)
 find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs genmsg)
 
 # Service files
-add_service_files(
-	FILES
-	grabBrick.srv
-	getBricks.srv
-	StopConv.srv
-	StartConv.srv
-	MoveConv.srv
-	ChangeDirection.srv
-	getIsMoving.srv
-	getConfiguration.srv
-	getSafety.srv
+#add_service_files(
+	#FILES
+#)
+
+generate_messages(
+	DEPENDENCIES
+	std_msgs 
+	kuka_rsi
+	rc_vision
+	rc_plc
+	rc_grasp
 )
-
-generate_messages(DEPENDENCIES std_msgs)
-
 catkin_package()
 
 include_directories(${catkin_INCLUDE_DIRS})

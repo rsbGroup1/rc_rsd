@@ -16,14 +16,14 @@
 #include <rw/kinematics.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
 
-#include <rc_grasp/setConfiguration.h>
-#include <rc_grasp/getConfiguration.h>
-#include <rc_grasp/stopRobot.h>
-#include <rc_grasp/getIsMoving.h>
-#include <rc_grasp/getQueueSize.h>
-#include <rc_grasp/Move.h>
-#include <rc_grasp/Stop.h>
-#include <rc_grasp/Open.h>
+#include <kuka_rsi/setConfiguration.h>
+#include <kuka_rsi/getConfiguration.h>
+#include <kuka_rsi/stopRobot.h>
+#include <kuka_rsi/getIsMoving.h>
+#include <kuka_rsi/getQueueSize.h>
+#include <pg70/Move.h>
+#include <pg70/Stop.h>
+#include <pg70/Open.h>
 #include <rc_grasp/grabBrick.h>
 #include <boost/thread/mutex.hpp>
 
@@ -283,14 +283,14 @@ int main()
     pNh.param<double>("gripperOpenoffset", _gripperOpenOffset, 0.015);
 
     // Create service calls
-    _serviceKukaSetConf = nh.serviceClient<rc_grasp::setConfiguration>(kukaService + "/SetConfiguration");
-    _serviceKukaStop = nh.serviceClient<rc_grasp::stopRobot>(kukaService + "/StopRobot");
-    _serviceKukaGetConf = nh.serviceClient<rc_grasp::getConfiguration>(kukaService + "/GetConfiguration");
-    _serviceKukaGetIsMoving = nh.serviceClient<rc_grasp::getIsMoving>(kukaService + "/IsMoving");
-    _serviceKukaGetQueueSize = nh.serviceClient<rc_grasp::getQueueSize>(kukaService + "/GetQueueSize");
-    _servicePG70Move = nh.serviceClient<rc_grasp::Move>(PG70Service + "/move");
-    _servicePG70Stop = nh.serviceClient<rc_grasp::Stop>(PG70Service + "/stop");
-    _servicePG70Open = nh.serviceClient<rc_grasp::Open>(PG70Service + "/open");
+    _serviceKukaSetConf = nh.serviceClient<kuka_rsi::setConfiguration>(kukaService + "/SetConfiguration");
+    _serviceKukaStop = nh.serviceClient<kuka_rsi::stopRobot>(kukaService + "/StopRobot");
+    _serviceKukaGetConf = nh.serviceClient<kuka_rsi::getConfiguration>(kukaService + "/GetConfiguration");
+    _serviceKukaGetIsMoving = nh.serviceClient<kuka_rsi::getIsMoving>(kukaService + "/IsMoving");
+    _serviceKukaGetQueueSize = nh.serviceClient<kuka_rsi::getQueueSize>(kukaService + "/GetQueueSize");
+    _servicePG70Move = nh.serviceClient<pg70::Move>(PG70Service + "/move");
+    _servicePG70Stop = nh.serviceClient<pg70::Stop>(PG70Service + "/stop");
+    _servicePG70Open = nh.serviceClient<pg70::Open>(PG70Service + "/open");
     ros::ServiceServer serviceGrabBrick = nh.advertiseService("/rcGrasp/grabBrick", grabBrickCallback);
 
     // Subscribe
@@ -403,7 +403,7 @@ void KukaStopRobot()
     if(CONNECT_KUKA)
     {
         // Stop robot
-        rc_grasp::stopRobot stopObj;
+        kuka_rsi::stopRobot stopObj;
         if(!_serviceKukaStop.call(stopObj))
             printConsole("Failed to call the 'serviceKukaStopRobot'");
     }
@@ -414,7 +414,7 @@ bool KukaIsMoving()
     if(CONNECT_KUKA)
     {
         // Is moving
-        rc_grasp::getIsMoving isMoveObj;
+        kuka_rsi::getIsMoving isMoveObj;
         if(!_serviceKukaGetIsMoving.call(isMoveObj))
         {
             printConsole("Failed to call the 'serviceKukaGetIsMoving'");
@@ -435,7 +435,7 @@ bool KukaSetConf(rw::math::Q q, rw::math::Q speed)
             return false;
 
         // Create setConfiguration service
-        rc_grasp::setConfiguration config;
+        kuka_rsi::setConfiguration config;
 
         // Fill out information
         for(unsigned int i = 0; i<q.size(); i++)
@@ -462,7 +462,7 @@ int KukaGetQueueSize()
     if(CONNECT_KUKA)
     {
         // Get UR queue size (commands)
-        rc_grasp::getQueueSize SizeObj;
+        kuka_rsi::getQueueSize SizeObj;
         if(!_serviceKukaGetQueueSize.call(SizeObj))
         {
             printConsole("Failed to call the 'serviceKukaGetQueueSize'");
@@ -483,7 +483,7 @@ rw::math::Q KukaGetConf()
     if(CONNECT_KUKA)
     {
         // Get current position
-        rc_grasp::getConfiguration confObj;
+        kuka_rsi::getConfiguration confObj;
         if(!_serviceKukaGetConf.call(confObj))
         {
             printConsole("Failed to call the 'serviceKukaGetConf'");
@@ -505,7 +505,7 @@ bool PG70SetConf(rw::math::Q q)
             return false;
 
         // Create setConfiguration service
-        rc_grasp::Move config;
+        pg70::Move config;
 
         // Fill out information
         config.request.pos = q(0);
@@ -528,7 +528,7 @@ void PG70Stop()
     if(CONNECT_PG70)
     {
         // Stop
-        rc_grasp::Stop stopObj;
+        pg70::Stop stopObj;
         if(!_servicePG70Stop.call(stopObj))
             printConsole("Failed to call the 'servicePG70Stop'");
     }
@@ -539,7 +539,7 @@ void PG70Open()
     if(CONNECT_PG70)
     {
         // Open
-        rc_grasp::Open openObj;
+        pg70::Open openObj;
         openObj.request.power = 10.0;
         if(!_servicePG70Open.call(openObj))
             printConsole("Failed to call the 'servicePG70Open'");

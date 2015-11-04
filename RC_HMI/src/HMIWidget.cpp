@@ -131,7 +131,7 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         int argc = 0;
 
         // Init ROS
-        ros::init(argc, argv, "rc_hmi");
+        ros::init(argc, argv, "RC_HMI");
         _nodeHandle = new ros::NodeHandle;
         ros::NodeHandle pNh(ros::this_node::getName() + "/");
 
@@ -151,17 +151,17 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         pNh.param<std::string>("visionParamPub", visionPub, "/rcHMI/visionParam");
 
         // Create service calls
-        _serviceKukaSetConf = _nodeHandle->serviceClient<rc_hmi::setConfiguration>(kukaService + "/SetConfiguration");
-        _serviceKukaGetConf = _nodeHandle->serviceClient<rc_hmi::getConfiguration>(kukaService + "/GetConfiguration");
-        _serviceKukaStop = _nodeHandle->serviceClient<rc_hmi::stopRobot>(kukaService + "/StopRobot");
-        _serviceKukaGetSafety = _nodeHandle->serviceClient<rc_hmi::getSafety>(kukaService + "/GetSafety");
-        _servicePG70Close = _nodeHandle->serviceClient<rc_hmi::Close>(PG70Service + "/close");
-        _servicePG70Stop = _nodeHandle->serviceClient<rc_hmi::Stop>(PG70Service + "/stop");
-        _servicePG70Open = _nodeHandle->serviceClient<rc_hmi::Open>(PG70Service + "/open");
-        _serviceConvChange = _nodeHandle->serviceClient<rc_hmi::ChangeDirection>(convService + "/ChangeDirection");
-        _serviceConvStop = _nodeHandle->serviceClient<rc_hmi::StopConv>(convService + "/StopConv");
-        _serviceConvStart = _nodeHandle->serviceClient<rc_hmi::StartConv>(convService + "/StartConv");
-        _serviceGetBricks = _nodeHandle->serviceClient<rc_hmi::getBricks>(getBricksService);
+        _serviceKukaSetConf = _nodeHandle->serviceClient<kuka_rsi::setConfiguration>(kukaService + "/SetConfiguration");
+        _serviceKukaGetConf = _nodeHandle->serviceClient<kuka_rsi::getConfiguration>(kukaService + "/GetConfiguration");
+        _serviceKukaStop = _nodeHandle->serviceClient<kuka_rsi::stopRobot>(kukaService + "/StopRobot");
+        _serviceKukaGetSafety = _nodeHandle->serviceClient<kuka_rsi::getSafety>(kukaService + "/GetSafety");
+        _servicePG70Close = _nodeHandle->serviceClient<pg70::Close>(PG70Service + "/close");
+        _servicePG70Stop = _nodeHandle->serviceClient<pg70::Stop>(PG70Service + "/stop");
+        _servicePG70Open = _nodeHandle->serviceClient<pg70::Open>(PG70Service + "/open");
+        _serviceConvChange = _nodeHandle->serviceClient<rc_plc::ChangeDirection>(convService + "/ChangeDirection");
+        _serviceConvStop = _nodeHandle->serviceClient<rc_plc::StopConv>(convService + "/StopConv");
+        _serviceConvStart = _nodeHandle->serviceClient<rc_plc::StartConv>(convService + "/StartConv");
+        _serviceGetBricks = _nodeHandle->serviceClient<rc_vision::getBricks>(getBricksService);
 
         // Publishers
         _mesMessagePub = _nodeHandle->advertise<std_msgs::String>(mesPub, 100);
@@ -265,7 +265,7 @@ void HMIWidget::imageQueueHandler()
     _labelBricksMutex.unlock();
 
     // Get safety
-    rc_hmi::getSafety obj;
+    kuka_rsi::getSafety obj;
     _serviceKukaGetSafety.call(obj);
     _safety = obj.response.safetyBreached;
 
@@ -289,7 +289,7 @@ void HMIWidget::imageQueueHandler()
 
     // Fetch robot position and update HMI
     // Create setConfiguration service
-    rc_hmi::getConfiguration getQObj;
+    kuka_rsi::getConfiguration getQObj;
 
     // Call service
     //if(_cbAuto->isChecked())
@@ -311,7 +311,7 @@ void HMIWidget::imageQueueHandler()
     boost::unique_lock<boost::mutex> lock(_liveFeedMutex);
     if(_liveFeed == false)
     {
-        rc_hmi::getBricks obj;
+        rc_vision::getBricks obj;
         _serviceGetBricks.call(obj);
     }
 }
@@ -347,7 +347,7 @@ void HMIWidget::stateChangedListener(const rw::kinematics::State &state)
         rw::math::Q qRobot = _deviceKuka->getQ(_state);
 
         // Create setConfiguration service
-        rc_hmi::setConfiguration setQObj;
+        kuka_rsi::setConfiguration setQObj;
 
         // Fill out information
         for(int i = 0; i<6; i++)
@@ -473,17 +473,17 @@ void HMIWidget::eventCb(bool input)
 void HMIWidget::emergencyStop()
 {
     // Stop robot
-    rc_hmi::stopRobot stopObj;
+    kuka_rsi::stopRobot stopObj;
     if(!_serviceKukaStop.call(stopObj))
         _consoleQueue.enqueue("Failed to call the 'serviceKukaStopRobot'");
 
     // Stop gripper
-    rc_hmi::Stop stopObjPG70;
+    pg70::Stop stopObjPG70;
     if(!_servicePG70Stop.call(stopObjPG70))
         _consoleQueue.enqueue("Failed to call the 'servicePG70Stop'");
 
     // Stop conveyer
-    rc_hmi::StopConv obj;
+    rc_plc::StopConv obj;
     if(!_serviceConvStop.call(obj))
         _consoleQueue.enqueue("Failed to call the 'serviceStopConveyer'");
 }
@@ -530,7 +530,7 @@ void HMIWidget::eventBtn()
         if(obj == _btnConvStartR)
         {
             // Move conveyer 1 step forward
-            rc_hmi::StartConv obj;
+            rc_plc::StartConv obj;
             obj.request.direction = true;
             if(!_serviceConvStart.call(obj))
                 _consoleQueue.enqueue("Failed to call the 'serviceStartConveyer'");
@@ -539,7 +539,7 @@ void HMIWidget::eventBtn()
         else if(obj == _btnConvStartF)
         {
             // Start conveyer
-            rc_hmi::StartConv obj;
+            rc_plc::StartConv obj;
             obj.request.direction = false;
             if(!_serviceConvStart.call(obj))
                 _consoleQueue.enqueue("Failed to call the 'serviceStartConveyer'");
@@ -548,7 +548,7 @@ void HMIWidget::eventBtn()
         else if(obj == _btnConvStop)
         {
             // Stop conveyer
-            rc_hmi::StopConv obj;
+            rc_plc::StopConv obj;
             if(!_serviceConvStop.call(obj))
                 _consoleQueue.enqueue("Failed to call the 'serviceStopConveyer'");
         }
@@ -571,14 +571,14 @@ void HMIWidget::eventBtn()
         else if(obj == _btnRobotStop)
         {
             // Stop robot
-            rc_hmi::stopRobot stopObj;
+            kuka_rsi::stopRobot stopObj;
             if(!_serviceKukaStop.call(stopObj))
                 _consoleQueue.enqueue("Failed to call the 'serviceKukaStopRobot'");
         }
         else if(obj == _btnGripperClose)
         {
             // Close gripper
-            rc_hmi::Close clsoeObj;
+            pg70::Close clsoeObj;
             clsoeObj.request.power = 10.0;
             if(!_servicePG70Close.call(clsoeObj))
                 _consoleQueue.enqueue("Failed to call the 'servicePG70Close'");
@@ -586,7 +586,7 @@ void HMIWidget::eventBtn()
         else if(obj == _btnGripperOpen)
         {
             // Open gripper
-            rc_hmi::Open openObj;
+            pg70::Open openObj;
             openObj.request.power = 10.0;
             if(!_servicePG70Open.call(openObj))
                 _consoleQueue.enqueue("Failed to call the 'servicePG70Open'");

@@ -19,17 +19,17 @@
 #include <rw/invkin/IKMetaSolver.hpp>
 #include <rw/invkin/JacobianIKSolver.hpp>
 
-#include <rc_hmi/setConfiguration.h>
-#include <rc_hmi/getConfiguration.h>
-#include <rc_hmi/getSafety.h>
-#include <rc_hmi/stopRobot.h>
-#include <rc_hmi/Open.h>
-#include <rc_hmi/Close.h>
-#include <rc_hmi/Stop.h>
-#include <rc_hmi/ChangeDirection.h>
-#include <rc_hmi/StartConv.h>
-#include <rc_hmi/StopConv.h>
-#include <rc_hmi/getBricks.h>
+#include <kuka_rsi/setConfiguration.h>
+#include <kuka_rsi/getConfiguration.h>
+#include <kuka_rsi/getSafety.h>
+#include <kuka_rsi/stopRobot.h>
+#include <pg70/Open.h>
+#include <pg70/Close.h>
+#include <pg70/Stop.h>
+#include <rc_plc/ChangeDirection.h>
+#include <rc_plc/StartConv.h>
+#include <rc_plc/StopConv.h>
+#include <rc_vision/getBricks.h>
 
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/TreeDevice.hpp>

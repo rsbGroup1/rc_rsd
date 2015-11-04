@@ -7,27 +7,23 @@ FIND_PACKAGE(catkin REQUIRED COMPONENTS roscpp rospy std_msgs message_generation
 
 ## Declare ROS messages and services
 # Service files
-add_service_files(
-	FILES
-	getConfiguration.srv
-	setConfiguration.srv		
-	stopRobot.srv
-	Open.srv
-	Close.srv
-	Stop.srv
-	MoveConv.srv
-	StartConv.srv
-	StopConv.srv
-	getBricks.srv
-	ChangeDirection.srv
-	getSafety.srv
-)
+#add_service_files(
+	#FILES
+#)
 
 # Use OpenCV
 INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
 LINK_DIRECTORIES(${OpenCV_LIB_DIR})
 
-generate_messages(DEPENDENCIES std_msgs)
+## Generate added messages and services with any dependencies listed here
+generate_messages(
+	DEPENDENCIES
+	std_msgs  # Or other packages containing msgs
+	kuka_rsi
+	rc_plc
+	pg70
+	rc_vision
+)
 
 catkin_package(CATKIN_DEPENDS message_runtime)
 

@@ -10,18 +10,16 @@ SET(RW_ROOT "$ENV{RW_ROOT}")
 # Service files
 add_service_files(
 	FILES
-	getConfiguration.srv
-	setConfiguration.srv	
-	getQueueSize.srv	
-	stopRobot.srv
-	getIsMoving.srv
-	Move.srv
-	Stop.srv
-	Open.srv
 	grabBrick.srv
 )
 
-generate_messages(DEPENDENCIES std_msgs)
+generate_messages(
+	DEPENDENCIES
+	std_msgs 
+	kuka_rsi
+	pg70
+	rc_plc
+)
 
 catkin_package()
 

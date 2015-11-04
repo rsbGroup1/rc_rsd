@@ -3,15 +3,15 @@
 #include "std_msgs/String.h"
 #include "std_msgs/Bool.h"
 #include <iostream>
-#include <rc_main/getBricks.h>
-#include <rc_main/grabBrick.h>
-#include <rc_main/MoveConv.h>
-#include <rc_main/StartConv.h>
-#include <rc_main/StopConv.h>
-#include <rc_main/ChangeDirection.h>
-#include <rc_main/getIsMoving.h>
-#include <rc_main/getConfiguration.h>
-#include <rc_main/getSafety.h>
+#include <rc_vision/getBricks.h>
+#include <rc_grasp/grabBrick.h>
+#include <rc_plc/MoveConv.h>
+#include <rc_plc/StartConv.h>
+#include <rc_plc/StopConv.h>
+#include <rc_plc/ChangeDirection.h>
+#include <kuka_rsi/getConfiguration.h>
+#include <kuka_rsi/getIsMoving.h>
+#include <kuka_rsi/getSafety.h>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread.hpp>
 
@@ -49,7 +49,7 @@ void printConsole(std::string msg)
 
 bool grabBrick(Brick brick)
 {
-    rc_main::grabBrick obj;
+    rc_grasp::grabBrick obj;
     obj.request.x = brick.posX;
     obj.request.y = brick.posY;
     obj.request.theta = brick.theta;
@@ -64,7 +64,7 @@ bool grabBrick(Brick brick)
 std::vector<Brick> getBricks()
 {
     std::vector<Brick> retVec;
-    rc_main::getBricks obj;
+    rc_vision::getBricks obj;
 
     if(!_serviceGetBricks.call(obj))
     {
@@ -89,7 +89,7 @@ std::vector<Brick> getBricks()
 
 void moveCoveyerBelt(double duration, bool dir = false)
 {
-    rc_main::MoveConv obj;
+    rc_plc::MoveConv obj;
     obj.request.duration = duration;
     obj.request.direction = dir;
     if(!_serviceMove.call(obj))
@@ -98,7 +98,7 @@ void moveCoveyerBelt(double duration, bool dir = false)
 
 void startConveyerBelt(bool dir = false)
 {
-    rc_main::StartConv obj;
+    rc_plc::StartConv obj;
     obj.request.direction = dir;
     if(!_serviceStart.call(obj))
         printConsole("Failed to call the 'serviceStartConveyer'");
@@ -106,14 +106,14 @@ void startConveyerBelt(bool dir = false)
 
 void stopConveyerBelt()
 {
-    rc_main::StopConv obj;
+    rc_plc::StopConv obj;
     if(!_serviceStop.call(obj))
         printConsole("Failed to call the 'serviceStopConveyer'");
 }
 
 void changeDirConveyerBelt(bool dir) // true = reverse
 {
-    rc_main::ChangeDirection obj;
+    rc_plc::ChangeDirection obj;
     obj.request.direction = dir;
     if(!_serviceChangeDir.call(obj))
         printConsole("Failed to call the 'serviceChangeDirConveyer'");
@@ -121,7 +121,7 @@ void changeDirConveyerBelt(bool dir) // true = reverse
 
 bool isRobotMoving()
 {
-    rc_main::getIsMoving obj;
+    kuka_rsi::getIsMoving obj;
     if(!_serviceGetIsMoving.call(obj))
         printConsole("Failed to call the 'serviceIsRobotMoving'");
 
@@ -131,7 +131,7 @@ bool isRobotMoving()
 void anyBrickCallback(std_msgs::Bool msg)
 {
     // Fetch robot position
-    rc_main::getConfiguration getQObj;
+    kuka_rsi::getConfiguration getQObj;
 
     // Call service
     if(!_serviceGetConf.call(getQObj))
@@ -320,7 +320,7 @@ int main()
     int argc = 0;
 
     // Init ROS Node
-    ros::init(argc, argv, "rc_main");
+    ros::init(argc, argv, "RC_Main");
     ros::NodeHandle nh;
     ros::NodeHandle pNh(ros::this_node::getName() + "/");
 
@@ -336,15 +336,15 @@ int main()
     pNh.param<std::string>("mesSub", mesSub, "/rcMESServer/msgFromServer");
 
     // Create service calls
-    _serviceGrabBrick = nh.serviceClient<rc_main::grabBrick>(grabService);
-    _serviceGetBricks = nh.serviceClient<rc_main::getBricks>(getBricksService);
-    _serviceMove = nh.serviceClient<rc_main::MoveConv>(plcService + "/MoveConv");
-    _serviceStart = nh.serviceClient<rc_main::StartConv>(plcService + "/StartConv");
-    _serviceStop = nh.serviceClient<rc_main::StopConv>(plcService + "/StopConv");
-    _serviceChangeDir = nh.serviceClient<rc_main::ChangeDirection>(plcService + "/ChangeDirection");
-    _serviceGetIsMoving = nh.serviceClient<rc_main::getIsMoving>("/KukaNode/IsMoving");
-    _serviceGetConf = nh.serviceClient<rc_main::getConfiguration>("/KukaNode/GetConfiguration");
-    _serviceGetSafety = nh.serviceClient<rc_main::getSafety>("/KukaNode/GetSafety");
+    _serviceGrabBrick = nh.serviceClient<rc_grasp::grabBrick>(grabService);
+    _serviceGetBricks = nh.serviceClient<rc_vision::getBricks>(getBricksService);
+    _serviceMove = nh.serviceClient<rc_plc::MoveConv>(plcService + "/MoveConv");
+    _serviceStart = nh.serviceClient<rc_plc::StartConv>(plcService + "/StartConv");
+    _serviceStop = nh.serviceClient<rc_plc::StopConv>(plcService + "/StopConv");
+    _serviceChangeDir = nh.serviceClient<rc_plc::ChangeDirection>(plcService + "/ChangeDirection");
+    _serviceGetIsMoving = nh.serviceClient<kuka_rsi::getIsMoving>("/KukaNode/IsMoving");
+    _serviceGetConf = nh.serviceClient<kuka_rsi::getConfiguration>("/KukaNode/GetConfiguration");
+    _serviceGetSafety = nh.serviceClient<kuka_rsi::getSafety>("/KukaNode/GetSafety");
 
     // Publishers
     _hmiConsolePub = nh.advertise<std_msgs::String>(hmiConsolePub, 100);
@@ -365,7 +365,7 @@ int main()
     while(ros::ok())
     {
         // Get safety
-        rc_main::getSafety obj;
+        kuka_rsi::getSafety obj;
         _serviceGetSafety.call(obj);
         _safetyMutex.lock();
         _safety = obj.response.safetyBreached;
