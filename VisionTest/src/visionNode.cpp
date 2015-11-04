@@ -2,7 +2,6 @@
 #include <ros/ros.h>
 #include "std_msgs/Bool.h"
 #include "std_msgs/String.h"
-#include <rc_vision/getBricks.h>
 #include <image_transport/image_transport.h>
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"

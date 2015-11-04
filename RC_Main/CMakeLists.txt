@@ -9,14 +9,10 @@ find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs genmsg)
 	#FILES
 #)
 
-generate_messages(
-	DEPENDENCIES
-	std_msgs 
-	kuka_rsi
-	rc_vision
-	rc_plc
-	rc_grasp
-)
+#generate_messages(
+#	DEPENDENCIES
+#)
+
 catkin_package()
 
 include_directories(${catkin_INCLUDE_DIRS})

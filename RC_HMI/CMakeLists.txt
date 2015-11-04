@@ -16,14 +16,10 @@ INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
 LINK_DIRECTORIES(${OpenCV_LIB_DIR})
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-	DEPENDENCIES
-	std_msgs  # Or other packages containing msgs
-	kuka_rsi
-	rc_plc
-	pg70
-	rc_vision
-)
+#generate_messages(
+	#DEPENDENCIES
+	#std_msgs  # Or other packages containing msgs
+#)
 
 catkin_package(CATKIN_DEPENDS message_runtime)
 

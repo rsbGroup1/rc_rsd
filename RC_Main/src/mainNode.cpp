@@ -12,6 +12,7 @@
 #include <kuka_rsi/getConfiguration.h>
 #include <kuka_rsi/getIsMoving.h>
 #include <kuka_rsi/getSafety.h>
+#include <rc_mes_client/server.h>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread.hpp>
 
@@ -37,6 +38,7 @@ bool _run = false, _safety = false, _anyBricks = false;
 boost::mutex _runMutex, _safetyMutex, _anyBricksMutex, _qMutex;
 double _qIdle[6] = {1.34037, 0.696857, 0.158417, 0.418082, -0.736247, -0.531764};
 bool _positionQIdle = false;
+int _red = 0, _blue = 0, _yellow = 0;
 
 // Functions
 void printConsole(std::string msg)
@@ -157,9 +159,11 @@ void anyBrickCallback(std_msgs::Bool msg)
     _qMutex.unlock();
 }
 
-void mesRecCallback(std_msgs::String msg)
+void mesRecCallback(rc_mes_client::server msg)
 {
-    // Store order
+    _blue = msg.blue;
+    _red = msg.red;
+    _yellow = msg.yellow;
 }
 
 void mesSend(std::string sendMsg)
@@ -235,9 +239,6 @@ void mainHandlerThread()
                         // Get bricks
                         std::vector<Brick> bricks = getBricks();
 
-                        // Filter and choose the correct bricks
-                        // ..
-
                         // Check safety
                         _safetyMutex.lock();
                         safety = _safety;
@@ -247,9 +248,36 @@ void mainHandlerThread()
                         {
                             if(bricks.size())
                             {
-                                // Grab first brick for now
-                                bricks.front().size = 0.015; // Default size of standard LEGO width
-                                grabBrick(bricks.front());
+                                // Filter and choose the correct bricks
+                                int brickToPick = -1;
+                                for(unsigned int i = 0; i<bricks.size(); i++)
+                                {
+                                    if(bricks[i].color == "red" && _red > 0)
+                                    {
+                                        _red--;
+                                        brickToPick = i;
+                                        break;
+                                    }
+                                    else if(bricks[i].color == "blue" && _blue > 0)
+                                    {
+                                        _blue--;
+                                        brickToPick = i;
+                                        break;
+                                    }
+                                    else if(bricks[i].color == "yellow" && _yellow > 0)
+                                    {
+                                        _yellow--;
+                                        brickToPick = i;
+                                        break;
+                                    }
+                                }
+
+                                if(brickToPick >= 0)
+                                {
+                                    // Grab brick
+                                    bricks[brickToPick].size = 0.014; // Default size of standard LEGO width
+                                    grabBrick(bricks[brickToPick]);
+                                }
                             }
                             else // Bricks are to far from robot, move forward
                             {

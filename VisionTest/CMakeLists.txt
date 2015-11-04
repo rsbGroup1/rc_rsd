@@ -4,12 +4,12 @@ project(rc_vision_test)
 find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs message_generation cv_bridge genmsg image_transport sensor_msgs)
 
 # Service files
-add_service_files(
-	FILES
-	getBricks.srv
-)
+#add_service_files(
+	#FILES
+	#getBricks2.srv
+#)
 
-generate_messages(DEPENDENCIES std_msgs)
+#generate_messages(DEPENDENCIES std_msgs)
 
 catkin_package()
 

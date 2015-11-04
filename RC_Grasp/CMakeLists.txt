@@ -16,9 +16,6 @@ add_service_files(
 generate_messages(
 	DEPENDENCIES
 	std_msgs 
-	kuka_rsi
-	pg70
-	rc_plc
 )
 
 catkin_package()

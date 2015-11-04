@@ -327,9 +327,9 @@ void HMIWidget::anyBrickCallback(std_msgs::Bool msg)
         _anyBricks = false;
 }
 
-void HMIWidget::mesRecCallback(std_msgs::String msg)
+void HMIWidget::mesRecCallback(rc_mes_client::server msg)
 {
-    _consoleQueue.enqueue(QString::fromStdString("MES: " + msg.data));
+    _labelBricks->setText("Red: " + QString::number(msg.red) + " Blue: " + QString::number(msg.blue) + " Yellow: " + QString::number(msg.yellow));
 }
 
 void HMIWidget::stateChangedListener(const rw::kinematics::State &state)

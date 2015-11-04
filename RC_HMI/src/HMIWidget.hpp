@@ -30,6 +30,7 @@
 #include <rc_plc/StartConv.h>
 #include <rc_plc/StopConv.h>
 #include <rc_vision/getBricks.h>
+#include <rc_mes_client/server.h>
 
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/TreeDevice.hpp>
@@ -151,7 +152,7 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
         void liveImageCallback(const sensor_msgs::ImageConstPtr& msg);
         void visionImageCallback(const sensor_msgs::ImageConstPtr& msg);
         void anyBrickCallback(std_msgs::Bool msg);
-        void mesRecCallback(std_msgs::String msg);
+        void mesRecCallback(rc_mes_client::server msg);
         void startROSThread();
         bool openWorkCell();
         bool msgBoxHelper(QString, QString);
