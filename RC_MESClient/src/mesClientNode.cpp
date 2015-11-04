@@ -66,7 +66,7 @@ int main()
     int argc = 0;
 
     // Init ROS Node
-    ros::init(argc, argv, "rc_messerver");
+    ros::init(argc, argv, "RC_MES_Client");
     ros::NodeHandle nh;
     ros::NodeHandle pNh(ros::this_node::getName() + "/");
 
@@ -75,8 +75,8 @@ int main()
     pNh.param<std::string>("hmiConsole", hmiConsolePub, "/rcHMI/console");
     pNh.param<std::string>("mesPub", mesPub, "/rcMESClient/msgFromServer");
     pNh.param<std::string>("mesSub", mesSub, "/rcMESClient/msgToServer");
-    pNh.param<std::string>("server_ip", _serverIP, "127.0.0.1");
-    pNh.param<int>("server_port", _serverPort, 9999);
+    pNh.param<std::string>("server_ip", _serverIP, "10.115.253.233");
+    pNh.param<int>("server_port", _serverPort, 21240);
 
     // Publishers
     _hmiConsolePub = nh.advertise<std_msgs::String>(hmiConsolePub, 100);
@@ -109,14 +109,13 @@ int main()
         {
             std::string msg(buffer);
             msg = msg.substr(0, msg.size()-1);
+            std::cout << msg << std::endl;
 
             // Open document
             tinyxml2::XMLDocument doc;
             if(doc.Parse(msg.c_str()) != 0)
             {
                 printConsole("Error parsing string!");
-                std::cout << msg << std::endl;
-                std::cout << msg[msg.size()-1] << std::endl;
                 return false;
             }
 

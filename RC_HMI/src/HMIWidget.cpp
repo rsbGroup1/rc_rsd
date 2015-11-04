@@ -146,8 +146,8 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         pNh.param<std::string>("anyBricks_sub", anyBricksSub, "/rcVision/anyBricks");
         pNh.param<std::string>("getBricks_service", getBricksService, "/rcVision/getBricks");
         pNh.param<std::string>("safety_sub", safetySub, "/KukaNode/GetSafety");
-        pNh.param<std::string>("mesPub", mesPub, "/rcMESServer/msgToServer");
-        pNh.param<std::string>("mesSub", mesSub, "/rcMESServer/msgFromServer");
+        pNh.param<std::string>("mesPub", mesPub, "/rcMESClient/msgToServer");
+        pNh.param<std::string>("mesSub", mesSub, "/rcMESClient/msgFromServer");
         pNh.param<std::string>("visionParamPub", visionPub, "/rcHMI/visionParam");
 
         // Create service calls
@@ -329,7 +329,7 @@ void HMIWidget::anyBrickCallback(std_msgs::Bool msg)
 
 void HMIWidget::mesRecCallback(rc_mes_client::server msg)
 {
-    _labelBricks->setText("Red: " + QString::number(msg.red) + " Blue: " + QString::number(msg.blue) + " Yellow: " + QString::number(msg.yellow));
+    _labelOrderStatus->setText("Red: " + QString::number(msg.red) + " Blue: " + QString::number(msg.blue) + " Yellow: " + QString::number(msg.yellow));
 }
 
 void HMIWidget::stateChangedListener(const rw::kinematics::State &state)

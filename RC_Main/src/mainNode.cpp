@@ -360,8 +360,8 @@ int main()
     pNh.param<std::string>("plcService", plcService, "/rcPLC");
     pNh.param<std::string>("anyBricks_sub", anyBricksSub, "/rcVision/anyBricks");
     pNh.param<std::string>("hmi_status_sub", hmiStatusSub, "/rcHMI/status");
-    pNh.param<std::string>("mesPub", mesPub, "/rcMESServer/msgToServer");
-    pNh.param<std::string>("mesSub", mesSub, "/rcMESServer/msgFromServer");
+    pNh.param<std::string>("mesPub", mesPub, "/rcMESClient/msgToServer");
+    pNh.param<std::string>("mesSub", mesSub, "/rcMESClient/msgFromServer");
 
     // Create service calls
     _serviceGrabBrick = nh.serviceClient<rc_grasp::grabBrick>(grabService);

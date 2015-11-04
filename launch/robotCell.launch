@@ -64,8 +64,8 @@
 			<param name="anyBricks_sub" value="/rcVision/anyBricks"/>
 			<param name="safety_sub" value="/rcSafety/status"/>
 			<param name="hmi_status_sub" value="/rcHMI/status"/>
-			<param name="mesPub" value="/rcMESServer/msgToServer"/>
-			<param name="mesSub" value="/rcMESServer/msgFromServer"/>
+			<param name="mesPub" value="/rcMESClient/msgToServer"/>
+			<param name="mesSub" value="/rcMESClient/msgFromServer"/>
 		</node>
 	</group>
 </launch>
