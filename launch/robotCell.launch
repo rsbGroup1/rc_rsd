@@ -2,32 +2,29 @@
 
 <launch>
 	<group ns="RC_PLC">
-		<node pkg="rc_plc" name="rc_plc" type="rc_plc">
+		<node pkg="rc_plc" name="rc_plc" type="rc_plc" output="screen">
 			<param name="hmiConsole" value="/rcHMI/console"/> 
 			<param name="port" value="/dev/serial/by-id/usb-FTDI_USB-RS485_Cable_FTVFYA1U-if00-port0"/> 
 			<param name="baud_rate" value="19200"/>
 		</node>
 	</group>
 
-	<!--<group ns="Kuka_RSI">
-		<node pkg="kuka_rsi" name="KukaRSI" type="kuka_rsi">
-			  <param name="IPServer" value="192.168.100.50"/>
-			  <param name="IPClient" value="192.168.100.100"/>
-			  <param name="PortServer" value="49000"/>
-			  <param name="PortClient" value="53453"/>
-			  <param name="Debug" value="false"/>
-			  <param name="CmdServiceName" value="/KukaNode/"/>
+	<group ns="kuka_ros">
+		<node pkg="kuka_ros" name="KukaROS" type="kuka_ros" output="screen">
+			<param name="CmdServiceName" value="/KukaNode"/>
+			<param name="ServerIP" value="192.168.100.50"/>
+			<param name="ServerPort" value="49002"/>
 		</node>
-	</group>-->
+	</group>
 
 	<!--<group ns="PG70">
-		<node pkg="pg70" name="PG70" type="pg70">
+		<node pkg="pg70" name="PG70" type="pg70" output="screen">
 			  <param name="SerialName" value="/dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_D-if00-port0"/>
 		</node>
 	</group>-->
 
 	<group ns="RC_Vision">
-		<node pkg="rc_vision" name="rc_vision" type="rc_vision">
+		<node pkg="rc_vision" name="rc_vision" type="rc_vision" output="screen">
 			<param name="image_sub" value="/RC_Camera/image_rect_color"/> 
 			<param name="any_brick_pub" value="/rcVision/anyBricks"/> 
 			<param name="hmiConsole" value="/rcHMI/console"/> 
@@ -40,7 +37,7 @@
 	</group>
 
 	<group ns="RC_Grasp">
-		<node pkg="rc_grasp" name="rc_grasp" type="rc_grasp">
+		<node pkg="rc_grasp" name="rc_grasp" type="rc_grasp" output="screen">
 			<param name="KukaCmdServiceName" value="/KukaNode"/>
 			<param name="PG70CmdServiceName" value="/PG70/PG70"/>
 			<param name="scenePath" value="/home/yonas/catkin_ws/src/rc_rsd/RC_KukaScene/Scene.wc.xml"/>
@@ -56,7 +53,7 @@
 	</group>
 
 	<group ns="RC_Main">
-		<node pkg="rc_main" name="rc_main" type="rc_main">
+		<node pkg="rc_main" name="rc_main" type="rc_main" output="screen">
 			<param name="hmiConsole" value="/rcHMI/console"/>
 			<param name="grabService" value="/rcGrasp/grabBrick"/>
 			<param name="getBricksService" value="/rcVision/getBricks"/>
@@ -68,4 +65,14 @@
 			<param name="mesSub" value="/rcMESClient/msgFromServer"/>
 		</node>
 	</group>
+
+	<!--<group ns="RC_MES_Client">
+		<node pkg="rc_mes_client" name="rc_mes_client" type="rc_mes_client" output="screen">
+			<param name="hmiConsole" value="/rcHMI/console"/>
+			<param name="mesPub" value="/rcMESClient/msgFromServer"/>
+			<param name="mesSub" value="/rcMESClient/msgToServer"/>
+			<param name="server_ip" value="10.115.253.233"/>
+			<param name="server_port" value="21240"/>
+		</node>
+	</group>-->
 </launch>

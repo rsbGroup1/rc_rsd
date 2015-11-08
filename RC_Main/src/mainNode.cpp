@@ -47,6 +47,7 @@ void printConsole(std::string msg)
     std_msgs::String pubMsg;
     pubMsg.data = "Main: " + msg;
     _hmiConsolePub.publish(pubMsg);
+    std::cout << pubMsg.data << std::endl;
 }
 
 bool grabBrick(Brick brick)
@@ -248,7 +249,7 @@ void mainHandlerThread()
                         {
                             if(bricks.size())
                             {
-                                // Filter and choose the correct bricks
+                                /*// Filter and choose the correct bricks
                                 int brickToPick = -1;
                                 for(unsigned int i = 0; i<bricks.size(); i++)
                                 {
@@ -277,7 +278,12 @@ void mainHandlerThread()
                                     // Grab brick
                                     bricks[brickToPick].size = 0.014; // Default size of standard LEGO width
                                     grabBrick(bricks[brickToPick]);
-                                }
+                                }*/
+
+
+                                // Grab brick
+                                bricks[0].size = 0.014; // Default size of standard LEGO width
+                                grabBrick(bricks.front());
                             }
                             else // Bricks are to far from robot, move forward
                             {
