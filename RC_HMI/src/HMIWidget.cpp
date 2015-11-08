@@ -149,6 +149,7 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         pNh.param<std::string>("mesPub", mesPub, "/rcMESClient/msgToServer");
         pNh.param<std::string>("mesSub", mesSub, "/rcMESClient/msgFromServer");
         pNh.param<std::string>("visionParamPub", visionPub, "/rcHMI/visionParam");
+        pNh.param<std::string>("hmi_statusPub", statusPub, "/rcHMI/status");
 
         // Create service calls
         _serviceKukaSetConf = _nodeHandle->serviceClient<kuka_rsi::setConfiguration>(kukaService + "/SetConfiguration");
