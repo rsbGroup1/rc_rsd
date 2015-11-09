@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'HMIWidgetV23942.ui'
+** Form generated from reading UI file 'HMIWidgetSm3827.ui'
 **
 ** Created by: Qt User Interface Compiler version 4.8.6
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef HMIWIDGETV23942_H
-#define HMIWIDGETV23942_H
+#ifndef HMIWIDGETSM3827_H
+#define HMIWIDGETSM3827_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -85,6 +85,7 @@ public:
     QHBoxLayout *horizontalLayout_5;
     QRadioButton *_cbAuto;
     QRadioButton *_cbManual;
+    QRadioButton *_cbJog;
     QPushButton *_btnCellReady;
     QPushButton *_btnCellBusy;
     QPushButton *_btnCellError;
@@ -917,6 +918,29 @@ public:
 
         horizontalLayout_5->addWidget(_cbManual);
 
+        _cbJog = new QRadioButton(horizontalLayoutWidget_5);
+        _cbJog->setObjectName(QString::fromUtf8("_cbJog"));
+        _cbJog->setFocusPolicy(Qt::NoFocus);
+        _cbJog->setStyleSheet(QString::fromUtf8("QRadioButton::indicator::unchecked { \n"
+"	border: 1px solid darkgray; \n"
+"	border-radius: 6px; \n"
+"	background-color: white; \n"
+"	width: 15px; \n"
+"	height: 15px; \n"
+"	margin-left: 5px;\n"
+"}\n"
+"\n"
+"QRadioButton::indicator::checked { \n"
+"	border: 1px solid darkgray; \n"
+"	border-radius: 6px; \n"
+"	background-color: #003399; \n"
+"	width: 15px; \n"
+"	height: 15px; \n"
+"	margin-left: 5px;\n"
+"}"));
+
+        horizontalLayout_5->addWidget(_cbJog);
+
         _btnCellReady = new QPushButton(groupBox_2);
         _btnCellReady->setObjectName(QString::fromUtf8("_btnCellReady"));
         _btnCellReady->setGeometry(QRect(10, 210, 101, 31));
@@ -1304,6 +1328,7 @@ public:
         label_5->setText(QApplication::translate("HMIWidgetClass", "Safety status", 0, QApplication::UnicodeUTF8));
         _cbAuto->setText(QApplication::translate("HMIWidgetClass", "Auto", 0, QApplication::UnicodeUTF8));
         _cbManual->setText(QApplication::translate("HMIWidgetClass", "Manual", 0, QApplication::UnicodeUTF8));
+        _cbJog->setText(QApplication::translate("HMIWidgetClass", "Jog", 0, QApplication::UnicodeUTF8));
         _btnCellReady->setText(QApplication::translate("HMIWidgetClass", "Cell Ready", 0, QApplication::UnicodeUTF8));
         _btnCellBusy->setText(QApplication::translate("HMIWidgetClass", "Cell Busy", 0, QApplication::UnicodeUTF8));
         _btnCellError->setText(QApplication::translate("HMIWidgetClass", "Cell Error", 0, QApplication::UnicodeUTF8));
@@ -1333,5 +1358,5 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // HMIWIDGETV23942_H
+#endif // HMIWIDGETSM3827_H
 

@@ -153,6 +153,7 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
         void visionImageCallback(const sensor_msgs::ImageConstPtr& msg);
         void anyBrickCallback(std_msgs::Bool msg);
         void mesRecCallback(rc_mes_client::server msg);
+        void mainCallback(std_msgs::String msg);
         void startROSThread();
         bool openWorkCell();
         bool msgBoxHelper(QString, QString);
@@ -175,7 +176,7 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
         ros::ServiceClient _servicePG70Open, _servicePG70Stop, _servicePG70Close;
         ros::ServiceClient _serviceConvChange, _serviceConvStop, _serviceConvStart;
         ros::ServiceClient _serviceGetBricks;
-        ros::Subscriber _consoleSub, _mesMessageSub, _anyBrickSub;
+        ros::Subscriber _consoleSub, _mesMessageSub, _anyBrickSub, _mainStatusSub;
         ros::Publisher _mesMessagePub, _hmiStatusPub, _visionParamPub;
 
         // Image
@@ -191,6 +192,10 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
         rw::math::Q _qIdle;
         bool _liveFeed;
         bool _manualJog;
+
+        // Order
+        int _red, _blue, _yellow;
+        boost::mutex _orderMutex;
 };
 
 #endif // HMIWIDGET_HPP

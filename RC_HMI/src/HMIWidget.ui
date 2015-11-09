@@ -1179,6 +1179,35 @@ QRadioButton::indicator::checked {
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QRadioButton" name="_cbJog">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QRadioButton::indicator::unchecked { 
+	border: 1px solid darkgray; 
+	border-radius: 6px; 
+	background-color: white; 
+	width: 15px; 
+	height: 15px; 
+	margin-left: 5px;
+}
+
+QRadioButton::indicator::checked { 
+	border: 1px solid darkgray; 
+	border-radius: 6px; 
+	background-color: #003399; 
+	width: 15px; 
+	height: 15px; 
+	margin-left: 5px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Jog</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
    <widget class="QPushButton" name="_btnCellReady">

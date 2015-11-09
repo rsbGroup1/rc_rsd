@@ -23,6 +23,7 @@ HMIWidget::HMIWidget(QWidget *parent): QWidget(parent)
     connect(_btnClearLog, SIGNAL(released()), this, SLOT(eventBtn()));
     connect(_cbAuto, SIGNAL(toggled(bool)), this, SLOT(eventCb(bool)));
     connect(_cbManual, SIGNAL(toggled(bool)), this, SLOT(eventCb(bool)));
+    connect(_cbJog, SIGNAL(toggled(bool)), this, SLOT(eventCb(bool)));
     connect(_cbLive, SIGNAL(toggled(bool)), this, SLOT(eventCb(bool)));
     connect(_cbVision, SIGNAL(toggled(bool)), this, SLOT(eventCb(bool)));
     connect(_sliderArea, SIGNAL(sliderReleased()), this, SLOT(eventSlider()));
@@ -45,6 +46,7 @@ HMIWidget::HMIWidget(QWidget *parent): QWidget(parent)
     _anyBricks = false;
     _liveFeed = true;
     _manualJog = false;
+    _red = _blue = _yellow = 0;
 
     // Update labels
     _labelArea->setText(QString::number(_sliderArea->value()));
@@ -176,6 +178,7 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         _itImg = new image_transport::ImageTransport(*_nodeHandle);
         _subLiveImg = _itImg->subscribe(liveImageSub, 1, &HMIWidget::liveImageCallback, this);
         _subVisionImg = _itImg->subscribe(visionImageSub, 1, &HMIWidget::visionImageCallback, this);
+        _mainStatusSub = _nodeHandle->subscribe("/rcMain/status", 10, &HMIWidget::mainCallback, this);
 
         // Start new threads
         boost::thread rosSpin(&HMIWidget::startROSThread, this);
@@ -186,6 +189,36 @@ void HMIWidget::startROSThread()
 {
     // ROS Spin (handle callbacks etc)
     ros::spin();
+}
+
+void HMIWidget::mainCallback(std_msgs::String msg)
+{
+    if(msg.data == "grabError")
+    {
+        boost::unique_lock<boost::mutex> lock(_orderMutex);
+        /*_red = 0;
+        _blue = 0;
+        _yellow = 0;*/
+
+        emergencyStop();
+        _cbAuto->setChecked(false);
+        _cbManual->setChecked(true);
+    }
+    else if(msg.data == "red")
+    {
+        boost::unique_lock<boost::mutex> lock(_orderMutex);
+        _red--;
+    }
+    else if(msg.data == "blue")
+    {
+        boost::unique_lock<boost::mutex> lock(_orderMutex);
+        _blue--;
+    }
+    else if(msg.data == "yellow")
+    {
+        boost::unique_lock<boost::mutex> lock(_orderMutex);
+        _yellow--;
+    }
 }
 
 void HMIWidget::consoleCallback(std_msgs::String msg)
@@ -293,8 +326,8 @@ void HMIWidget::imageQueueHandler()
     kuka_rsi::getConfiguration getQObj;
 
     // Call service
-    //if(_cbAuto->isChecked())
-    //{
+    if(_cbAuto->isChecked() || _cbManual->isChecked())
+    {
         if(!_serviceKukaGetConf.call(getQObj))
            _consoleQueue.enqueue("Failed to call the 'serviceKukaGetConfiguration'");
 
@@ -306,7 +339,11 @@ void HMIWidget::imageQueueHandler()
         _manualJog = false;
         _deviceKuka->setQ(q, _state);
         _rws->setState(_state);
-    //}
+    }
+    else
+    {
+        _manualJog = true;
+    }
 
     // Get vision
     boost::unique_lock<boost::mutex> lock(_liveFeedMutex);
@@ -315,6 +352,14 @@ void HMIWidget::imageQueueHandler()
         rc_vision::getBricks obj;
         _serviceGetBricks.call(obj);
     }
+
+    // Update order
+    boost::unique_lock<boost::mutex> lock2(_orderMutex);
+    if(_red || _blue || _yellow)
+        _labelOrderStatus->setText("Red: " + QString::number(_red) + " Blue: " + QString::number(_blue) + " Yellow: " + QString::number(_yellow));
+    else
+        _labelOrderStatus->setText("No order..");
+
 }
 
 void HMIWidget::anyBrickCallback(std_msgs::Bool msg)
@@ -330,7 +375,13 @@ void HMIWidget::anyBrickCallback(std_msgs::Bool msg)
 
 void HMIWidget::mesRecCallback(rc_mes_client::server msg)
 {
-    _labelOrderStatus->setText("Red: " + QString::number(msg.red) + " Blue: " + QString::number(msg.blue) + " Yellow: " + QString::number(msg.yellow));
+    if(msg.cell == 1)
+    {
+        boost::unique_lock<boost::mutex> lock(_orderMutex);
+        _red = msg.red;
+        _blue = msg.blue;
+        _yellow = msg.yellow;
+    }
 }
 
 void HMIWidget::stateChangedListener(const rw::kinematics::State &state)
