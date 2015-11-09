@@ -32,18 +32,19 @@ struct Brick
 };
 
 // Global variables
-ros::Publisher _hmiConsolePub, _mesMessagePub;
+ros::Publisher _hmiConsolePub, _mesMessagePub, _mainStatusPub;
 ros::ServiceClient _serviceGrabBrick, _serviceGetBricks, _serviceMove, _serviceStart, _serviceStop, _serviceChangeDir, _serviceGetIsMoving, _serviceGetConf, _serviceGetSafety;
-bool _run = false, _safety = false, _anyBricks = false;
-boost::mutex _runMutex, _safetyMutex, _anyBricksMutex, _qMutex;
+bool _run = false, _safety = false, _anyBricks = false, _mesOrder = false;
+boost::mutex _runMutex, _safetyMutex, _anyBricksMutex, _qMutex, _orderMutex;
 double _qIdle[6] = {1.34037, 0.696857, 0.158417, 0.418082, -0.736247, -0.531764};
 bool _positionQIdle = false;
 int _red = 0, _blue = 0, _yellow = 0;
 
 // Functions
-void printConsole(std::string msg)
+void printConsole(std::string msg, bool ros_print = false)
 {
-    ROS_ERROR_STREAM(msg.c_str());
+    if(ros_print)
+        ROS_INFO_STREAM(msg.c_str());
     std_msgs::String pubMsg;
     pubMsg.data = "Main: " + msg;
     _hmiConsolePub.publish(pubMsg);
@@ -162,9 +163,14 @@ void anyBrickCallback(std_msgs::Bool msg)
 
 void mesRecCallback(rc_mes_client::server msg)
 {
-    _blue = msg.blue;
-    _red = msg.red;
-    _yellow = msg.yellow;
+    if(msg.cell == 1)
+    {
+        boost::unique_lock<boost::mutex> lock(_orderMutex);
+        _blue = msg.blue;
+        _red = msg.red;
+        _yellow = msg.yellow;
+        _mesOrder = true;
+    }
 }
 
 void mesSend(std::string sendMsg)
@@ -188,7 +194,7 @@ void mainHandlerThread()
     bool waitForBrick = false;
     bool waitForIdle = false;
     bool conveyerRunning = false;
-    bool run, anyBricks, safety, positionIdle;
+    bool run, anyBricks, safety, positionIdle, mesOrder;
 
     while(true)
     {
@@ -199,7 +205,12 @@ void mainHandlerThread()
             run = _run;
             _runMutex.unlock();
 
-            if(run)
+            // Get if mes order
+            _orderMutex.lock();
+            mesOrder = _mesOrder;
+            _orderMutex.unlock();
+
+            if(run && mesOrder)
             {
                 // Get position
                 _qMutex.lock();
@@ -247,9 +258,10 @@ void mainHandlerThread()
 
                         if(safety == false)
                         {
-                            if(bricks.size())
+                            if(bricks.empty() == false)
                             {
-                                /*// Filter and choose the correct bricks
+                                // Filter and choose the correct bricks
+                                _orderMutex.lock();
                                 int brickToPick = -1;
                                 for(unsigned int i = 0; i<bricks.size(); i++)
                                 {
@@ -257,38 +269,105 @@ void mainHandlerThread()
                                     {
                                         _red--;
                                         brickToPick = i;
+
+                                        std_msgs::String msg;
+                                        msg.data = "red";
+                                        _mainStatusPub.publish(msg);
+
+                                        printConsole("Picking up red brick..");
+
                                         break;
                                     }
                                     else if(bricks[i].color == "blue" && _blue > 0)
                                     {
                                         _blue--;
                                         brickToPick = i;
+
+                                        std_msgs::String msg;
+                                        msg.data = "blue";
+                                        _mainStatusPub.publish(msg);
+
+                                        printConsole("Picking up blue brick..");
+
                                         break;
                                     }
                                     else if(bricks[i].color == "yellow" && _yellow > 0)
                                     {
                                         _yellow--;
                                         brickToPick = i;
+
+                                        std_msgs::String msg;
+                                        msg.data = "yellow";
+                                        _mainStatusPub.publish(msg);
+
+                                        printConsole("Picking up yellow brick..");
+
                                         break;
                                     }
                                 }
+                                _orderMutex.unlock();
 
                                 if(brickToPick >= 0)
                                 {
                                     // Grab brick
                                     bricks[brickToPick].size = 0.014; // Default size of standard LEGO width
-                                    grabBrick(bricks[brickToPick]);
-                                }*/
+                                    if(grabBrick(bricks[brickToPick]) == false)
+                                    {
+                                        // Get run
+                                        _runMutex.lock();
+                                        _run = false;
+                                        _runMutex.unlock();
 
+                                        std_msgs::String msg;
+                                        msg.data = "grabError";
+                                        _mainStatusPub.publish(msg);
+
+                                        printConsole("Grab error!", true);
+                                    }
+                                }
+                                else
+                                {
+                                    if(!_red && !_blue && !_yellow)
+                                    {
+                                        // If no more bricks to pick
+                                        printConsole("Clearing conveyer belt..");
+                                        printConsole("Waiting for order!");
+                                        // Move conveyer so that remaining bricks can be removed
+                                        moveCoveyerBelt(15);
+
+                                        boost::unique_lock<boost::mutex> lock(_orderMutex);
+                                        _mesOrder = false;
+                                    }
+                                    else
+                                    {
+                                        // Move slightly more forward and stop
+                                        moveCoveyerBelt(1);
+                                    }
+                                }
 
                                 // Grab brick
-                                bricks[0].size = 0.014; // Default size of standard LEGO width
-                                grabBrick(bricks.front());
+                                //bricks[0].size = 0.014; // Default size of standard LEGO width
+                                //grabBrick(bricks.front());
                             }
-                            else // Bricks are to far from robot, move forward
+                            else
                             {
-                                startConveyerBelt();
-                                conveyerRunning = true;
+                                // If no more bricks to pick
+                                if(!_red && !_blue && !_yellow)
+                                {
+                                    printConsole("Clearing conveyer belt..");
+                                    printConsole("Waiting for order!");
+                                    // Move conveyer so that remaining bricks can be removed
+                                    moveCoveyerBelt(15);
+
+                                    boost::unique_lock<boost::mutex> lock(_orderMutex);
+                                    _mesOrder = false;
+                                }
+                                // Bricks are to far from robot, move forward
+                                else
+                                {
+                                    startConveyerBelt();
+                                    conveyerRunning = true;
+                                }
                             }
                         }
                         else
@@ -383,6 +462,7 @@ int main()
     // Publishers
     _hmiConsolePub = nh.advertise<std_msgs::String>(hmiConsolePub, 100);
     _mesMessagePub = nh.advertise<std_msgs::String>(mesPub, 100);
+    _mainStatusPub = nh.advertise<std_msgs::String>("/rcMain/status", 100);
 
     // Subscribers
     ros::Subscriber anyBrickSub = nh.subscribe(anyBricksSub, 10, anyBrickCallback);
