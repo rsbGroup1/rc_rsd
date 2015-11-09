@@ -4,7 +4,7 @@ import errno
 import thread
 
 BUFF = 1024
-ADR = ('10.115.253.233', 21240)
+ADR = ('localhost', 21240)
 MAX_BRICKS = 10
 
 def response(key):
