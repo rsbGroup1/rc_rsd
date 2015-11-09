@@ -66,7 +66,7 @@ int main()
     int argc = 0;
 
     // Init ROS Node
-    ros::init(argc, argv, "RC_MES_Client");
+    ros::init(argc, argv, "rc_mes_client");
     ros::NodeHandle nh;
     ros::NodeHandle pNh("~");
 
@@ -75,8 +75,8 @@ int main()
     pNh.param<std::string>("hmiConsole", hmiConsolePub, "/rcHMI/console");
     pNh.param<std::string>("mesPub", mesPub, "/rcMESClient/msgFromServer");
     pNh.param<std::string>("mesSub", mesSub, "/rcMESClient/msgToServer");
-    pNh.param<std::string>("server_ip", _serverIP, "10.115.253.233");
-    pNh.param<int>("server_port", _serverPort, 21240);
+    pNh.param<std::string>("serverIP", _serverIP, "10.115.253.233");
+    pNh.param<int>("serverPort", _serverPort, 21240);
 
     // Publishers
     _hmiConsolePub = nh.advertise<std_msgs::String>(hmiConsolePub, 100);
