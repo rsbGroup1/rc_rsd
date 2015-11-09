@@ -23,6 +23,16 @@
 		</node>
 	</group>-->
 
+	<group ns="RC_MES_Client">
+		<node pkg="rc_mes_client" name="rc_mes_client" type="rc_mes_client" output="screen">
+			<param name="hmiConsole" value="/rcHMI/console"/>
+			<param name="mesPub" value="/rcMESClient/msgFromServer"/>
+			<param name="mesSub" value="/rcMESClient/msgToServer"/>
+			<param name="serverIP" value="127.0.0.1"/> <!--10.115.253.233-->
+			<param name="serverPort" value="21240"/>
+		</node>
+	</group>
+
 	<group ns="RC_Vision">
 		<node pkg="rc_vision" name="rc_vision" type="rc_vision" output="screen">
 			<param name="image_sub" value="/RC_Camera/image_rect_color"/> 
@@ -31,7 +41,7 @@
 			<param name="getBricks_service" value="/rcVision/getBricks"/> 
 			<param name="visionParamSub" value="/rcHMI/visionParam"/> 
 			<param name="visionImagePub" value="/rcVision/image"/> 
-			<param name="xMax" value="0.15"/>
+			<param name="xMax" value="0.13"/>
 			<param name="yMax" value="0.08"/>
 		</node>
 	</group>
@@ -44,11 +54,11 @@
 			<param name="hmiConsole" value="/rcHMI/console"/>
 			<param name="hmi_status_sub" value="/rcHMI/status"/>
 			<param name="idleHeight" value="0.3"/>
-			<param name="graspOffset" value="0.0"/>
+			<param name="graspOffset" value="0.0025"/>
 			<param name="graspLifted" value="0.1"/>
 			<param name="xMax" value="0.15"/>
 			<param name="yMax" value="0.08"/>
-			<param name="gripperOpenoffset" value="0.015"/>
+			<param name="gripperOpenoffset" value="0.014"/>
 		</node>
 	</group>
 
@@ -65,14 +75,4 @@
 			<param name="mesSub" value="/rcMESClient/msgFromServer"/>
 		</node>
 	</group>
-
-	<!--<group ns="RC_MES_Client">
-		<node pkg="rc_mes_client" name="rc_mes_client" type="rc_mes_client" output="screen">
-			<param name="hmiConsole" value="/rcHMI/console"/>
-			<param name="mesPub" value="/rcMESClient/msgFromServer"/>
-			<param name="mesSub" value="/rcMESClient/msgToServer"/>
-			<param name="server_ip" value="10.115.253.233"/>
-			<param name="server_port" value="21240"/>
-		</node>
-	</group>-->
 </launch>
