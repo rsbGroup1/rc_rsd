@@ -200,14 +200,15 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     // 2. Move to brick lifted (blocking call)
     if(!getStatus())
         return false;
-    if(moveRobotWait(qBrickLifted) == false)
+    rw::math::Q speed = getSpeed(45);
+    if(moveRobotWait(qBrickLifted, speed) == false)
         return false;
 
     // 3. Move to brick down (blocking call)
     if(!getStatus())
         return false;
-    rw::math::Q downSpeed = getSpeed(5);
-    if(moveRobotWait(qBrick, downSpeed) == false)
+    speed = getSpeed(5);
+    if(moveRobotWait(qBrick, speed) == false)
         return false;
 
     // 4. Close gripper to req.size
@@ -228,15 +229,15 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     // 6. Go to idle Q (when camera is taking pictures)
     if(!getStatus())
         return false;
-    rw::math::Q liftedSpeed = getSpeed(35);
-    if(moveRobotWait(_idleQ, liftedSpeed) == false)
+    speed = getSpeed(50);
+    if(moveRobotWait(_idleQ, speed) == false)
         return false;
 
     // 7. Go to release-lego-to-mr Q
     if(!getStatus())
         return false;
-    rw::math::Q releaseSpeed = getSpeed(45);
-    if(moveRobotWait(_releaseBrickQ, releaseSpeed) == false)
+    speed = getSpeed(80);
+    if(moveRobotWait(_releaseBrickQ, speed) == false)
         return false;
 
     // 8. Open gripper
@@ -249,8 +250,8 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     // 9. Go back to idle Q
     if(!getStatus())
         return false;
-    rw::math::Q backSpeed = getSpeed(45);
-    if(moveRobotWait(_idleQ, backSpeed) == false)
+    speed = getSpeed(80);
+    if(moveRobotWait(_idleQ, speed) == false)
         return false;
 
     res.success = true;
