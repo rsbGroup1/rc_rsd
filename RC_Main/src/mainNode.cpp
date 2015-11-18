@@ -332,6 +332,10 @@ void mainHandlerThread()
                                         // If no more bricks to pick
                                         printConsole("Clearing conveyer belt..");
                                         printConsole("Waiting for order!");
+
+                                        // Tell MES Server
+                                        mesSend("Ok");
+
                                         // Move conveyer so that remaining bricks can be removed
                                         moveCoveyerBelt(15);
 

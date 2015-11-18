@@ -21,6 +21,8 @@ ros::Publisher _hmiConsolePub, _mesMessagePub;
 std::string _serverIP;
 int _serverPort;
 int _socket;
+bool _connected = false;
+bool _waitForServer = true;
 
 // Functions
 void printConsole(std::string msg)
@@ -31,9 +33,15 @@ void printConsole(std::string msg)
     _hmiConsolePub.publish(pubMsg);
 }
 
+// Functions
 void sendMsgCallback(std_msgs::String msg)
 {
-    // Construct and send message to server
+    if(_connected)
+    {
+        // Send data
+        write(_socket, msg.data.c_str(), msg.data.size()+1);
+        _waitForServer = true;
+    }
 }
 
 bool connectToServer()
@@ -52,11 +60,17 @@ bool connectToServer()
     connect(_socket, (sockaddr*)&addr, sizeof(addr));
 
     // Test connection
-    int writeSize = write(_socket, "Cell 1", 7);
+    int writeSize = write(_socket, "RC1", 4);
     if(writeSize < 0)
+    {
+        _connected = false;
         return false;
+    }
     else
+    {
+        _connected = true;
         return true;
+    }
 }
 
 int main()
@@ -75,7 +89,7 @@ int main()
     pNh.param<std::string>("hmiConsole", hmiConsolePub, "/rcHMI/console");
     pNh.param<std::string>("mesPub", mesPub, "/rcMESClient/msgFromServer");
     pNh.param<std::string>("mesSub", mesSub, "/rcMESClient/msgToServer");
-    pNh.param<std::string>("serverIP", _serverIP, "10.115.253.233");
+    pNh.param<std::string>("serverIP", _serverIP, "127.0.0.1");//10.115.253.233");
     pNh.param<int>("serverPort", _serverPort, 21240);
 
     // Publishers
@@ -98,46 +112,54 @@ int main()
     // Set loop rate
     while(ros::ok())
     {
-        char buffer[BUFFER_SIZE];
-        int readSize = read(_socket, buffer, BUFFER_SIZE);
-
-        if(readSize <= 0)
+        if(_waitForServer)
         {
-            printConsole("No message from MES Server!");
-        }
-        else
-        {
-            std::string msg(buffer);
-            msg = msg.substr(0, msg.size()-1);
-            std::cout << msg << std::endl;
+            char buffer[BUFFER_SIZE];
+            int readSize = read(_socket, buffer, BUFFER_SIZE);
 
-            // Open document
-            tinyxml2::XMLDocument doc;
-            if(doc.Parse(msg.c_str()) != 0)
+            if(readSize <= 0)
             {
-                printConsole("Error parsing string!");
-                return false;
+                printConsole("No message from MES Server!");
+                break;
             }
-
-            int cell, mobileRobot, red, blue, yellow;
-
-            // Check if "MESServer"
-            if(std::string(doc.RootElement()->Value()) == "MESServer")
+            else
             {
-                // Get stuff
-                cell = atoi(doc.RootElement()->FirstChildElement("Cell")->FirstChild()->Value());
-                mobileRobot = atoi(doc.RootElement()->FirstChildElement("MobileRobot")->FirstChild()->Value());
-                red = atoi(doc.RootElement()->FirstChildElement("Red")->FirstChild()->Value());
-                blue = atoi(doc.RootElement()->FirstChildElement("Blue")->FirstChild()->Value());
-                yellow = atoi(doc.RootElement()->FirstChildElement("Yellow")->FirstChild()->Value());
+                std::string MESServer = "</MESServer>";
+                std::string msg(buffer);
+                size_t found = msg.find(MESServer);
+                msg = msg.substr(0, found+12);
+                std::cout << msg << std::endl;
 
-                rc_mes_client::server msg;
-                msg.blue = blue;
-                msg.cell = cell;
-                msg.mobileRobot = mobileRobot;
-                msg.yellow = yellow;
-                msg.red = red;
-                _mesMessagePub.publish(msg);
+                // Open document
+                tinyxml2::XMLDocument doc;
+                if(doc.Parse(msg.c_str()) != 0)
+                {
+                    printConsole("Error parsing string!");
+                    break;
+                }
+
+                int cell, mobileRobot, red, blue, yellow;
+
+                // Check if "MESServer"
+                if(std::string(doc.RootElement()->Value()) == "MESServer")
+                {
+                    // Get stuff
+                    cell = atoi(doc.RootElement()->FirstChildElement("Cell")->FirstChild()->Value());
+                    mobileRobot = atoi(doc.RootElement()->FirstChildElement("MobileRobot")->FirstChild()->Value());
+                    red = atoi(doc.RootElement()->FirstChildElement("Red")->FirstChild()->Value());
+                    blue = atoi(doc.RootElement()->FirstChildElement("Blue")->FirstChild()->Value());
+                    yellow = atoi(doc.RootElement()->FirstChildElement("Yellow")->FirstChild()->Value());
+
+                    rc_mes_client::server msg;
+                    msg.blue = blue;
+                    msg.cell = cell;
+                    msg.mobileRobot = mobileRobot;
+                    msg.yellow = yellow;
+                    msg.red = red;
+                    _mesMessagePub.publish(msg);
+                }
+
+                _waitForServer = false;
             }
         }
 
