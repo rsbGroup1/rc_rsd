@@ -6,8 +6,8 @@
 			<param name="hmiConsole" value="/rcHMI/console"/>
 			<param name="mesPub" value="/rcMESClient/msgFromServer"/>
 			<param name="mesSub" value="/rcMESClient/msgToServer"/>
-			<param name="server_ip" value="10.115.253.233"/>
-			<param name="server_port" value="21240"/>
+			<param name="serverIP" value="10.115.253.233"/>
+			<param name="serverPort" value="21240"/>
 		</node>
 	</group>
 </launch> 

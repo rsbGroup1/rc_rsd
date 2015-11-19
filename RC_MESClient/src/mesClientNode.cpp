@@ -53,6 +53,8 @@ bool connectToServer()
     addr.sin_addr.s_addr = inet_addr(_serverIP.c_str());
     addr.sin_port = htons(_serverPort);
 
+    std::cout << _serverIP << " " << _serverPort << std::endl;
+
     // Create socket
     _socket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -89,7 +91,7 @@ int main()
     pNh.param<std::string>("hmiConsole", hmiConsolePub, "/rcHMI/console");
     pNh.param<std::string>("mesPub", mesPub, "/rcMESClient/msgFromServer");
     pNh.param<std::string>("mesSub", mesSub, "/rcMESClient/msgToServer");
-    pNh.param<std::string>("serverIP", _serverIP, "127.0.0.1");//10.115.253.233");
+    pNh.param<std::string>("serverIP", _serverIP, "10.115.253.233"); // "127.0.0.1"
     pNh.param<int>("serverPort", _serverPort, 21240);
 
     // Publishers
