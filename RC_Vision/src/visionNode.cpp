@@ -542,18 +542,17 @@ std::vector<Brick> findBricks()
     //Container for monster rectangels.
     std::vector<cv::RotatedRect> monsterRectVec;
 
+    // Get image
+    _blobMutex.lock();
+    cv::Mat img;
+    _blobImage.copyTo(img);
+    _blobMutex.unlock();
+
     // If any blobs
     if(blobColorVec.size() > 0)
     {
-        // Get image
-        _blobMutex.lock();
-        cv::Mat image;
-        _blobImage.copyTo(image);
-        _blobMutex.unlock();
 
         // Make OBB's
-        cv::Mat img;
-        image.copyTo(img);
         for(int k=0; k<blobColorVec.size(); k++)
         {
             cv::RotatedRect box = cv::minAreaRect(cv::Mat(blobColorVec[k].blob));
@@ -578,11 +577,11 @@ std::vector<Brick> findBricks()
 
                 // Create new brick
                 Brick brick;
-		brick.box = box;
+                brick.box = box;
                 brick.color = blobColorVec[k].color;
                 brick.theta = angle;
-                brick.posX = convertPixelToM(box.center, image).x;
-                brick.posY = convertPixelToM(box.center, image).y;
+                brick.posX = convertPixelToM(box.center, img).x;
+                brick.posY = convertPixelToM(box.center, img).y;
                 brick.size = (box.size.height>box.size.width?box.size.height:box.size.width);
                 brick.size = round(brick.size/_baseLegoSize) * 2;
 
@@ -596,11 +595,9 @@ std::vector<Brick> findBricks()
                 }
 
                 // Add to vector if in robot reach
-                int lineThickness = 5;
+                int lineThickness = 2;
                 if(-_xMax < brick.posX && brick.posX < _xMax && -_yMax < brick.posY && brick.posY < _yMax )
                     brickVec.push_back(brick);
-                else
-                    lineThickness = 2;
 
                 // Show correspondant color on image
                 cv::Scalar color;
@@ -628,26 +625,63 @@ std::vector<Brick> findBricks()
                 monsterRectVec.push_back(box);
             }
         }
-
-        // Draw center of image
-        cv::Point2i center(img.cols/2, img.rows/2);
-        cv::circle(img, center, 3, cv::Scalar(255,255,255), 5);
-
-        // Draw workspace box
-        cv::Point2i tl(center.x - _xMax * _pixelToM, center.y -_yMax * _pixelToM);
-        cv::Point2i br(center.x + _xMax * _pixelToM, center.y +_yMax * _pixelToM);
-        //cv::Point2i tl(0, center.y -_yMax * _pixelToM);
-        //cv::Point2i br(img.cols, center.y +_yMax * _pixelToM);
-        cv::rectangle(img, tl, br, cv::Scalar(255,255,255), 3);
-
-        // Convert to ROS format
-        sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img).toImageMsg();
-
-        // Publish to topic
-        _imagePub.publish(msg);
     }
-    //Choose only bricks where there is a non colliding grasp path.
+
+    // Choose only bricks where there is a non colliding grasp path.
     brickVec = findNoGraspCollisionBricks(brickVec,monsterRectVec,_graspWidthM*_pixelToM,_fingerWidthM*_pixelToM);
+
+    // Draw center of image
+    cv::Point2i center(img.cols/2, img.rows/2);
+    cv::circle(img, center, 3, cv::Scalar(255,255,255), 5);
+
+    // Draw workspace box
+    cv::Point2i tl(center.x - _xMax * _pixelToM, center.y -_yMax * _pixelToM);
+    cv::Point2i br(center.x + _xMax * _pixelToM, center.y +_yMax * _pixelToM);
+    cv::rectangle(img, tl, br, cv::Scalar(255,255,255), 3);
+
+    // Draw pickable bricks
+    for(std::vector<Brick>::iterator it=brickVec.begin(); it!=brickVec.end();++it)
+    {
+        cv::Point2f vertices[4];
+        it->box.points(vertices);
+
+        // Show correspondant color on image
+        cv::Scalar color;
+        if(it->color == "red")
+            color = cv::Scalar(0,0,255);
+        else if(it->color == "blue")
+            color = cv::Scalar(255,0,0);
+        else if(it->color== "green")
+            color = cv::Scalar(0,255,0);
+        else if(it->color == "yellow")
+            color = cv::Scalar(0,255,255);
+        else if(it->color == "white")
+            color = cv::Scalar(255,255,255);
+
+        // Draw box in image
+        for(int i=0; i<4; ++i)
+            cv::line(img, vertices[i]+_tl, vertices[(i + 1) % 4]+_tl, color, 5, CV_AA);
+    }
+
+    //Draw Monsters
+    for(std::vector<cv::RotatedRect>::iterator it=monsterRectVec.begin(); it!=monsterRectVec.end();++it)
+    {
+        cv::Point2f vertices[4];
+        it->points(vertices);
+
+        // Show correspondant color on image
+        cv::Scalar color = cv::Scalar(0,255,0); //green
+
+        // Draw box in image
+        for(int i=0; i<4; ++i)
+            cv::line(img, vertices[i]+_tl, vertices[(i + 1) % 4]+_tl, color, 2, CV_AA);
+    }
+
+    // Convert to ROS format
+    sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img).toImageMsg();
+
+    // Publish to topic
+    _imagePub.publish(msg);
 
     return brickVec;
 }
