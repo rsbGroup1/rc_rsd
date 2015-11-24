@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'HMIWidgetSm3827.ui'
+** Form generated from reading UI file 'HMIWidget118536.ui'
 **
 ** Created by: Qt User Interface Compiler version 4.8.6
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef HMIWIDGETSM3827_H
-#define HMIWIDGETSM3827_H
+#ifndef HMIWIDGET118536_H
+#define HMIWIDGET118536_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -57,11 +57,6 @@ public:
     QLabel *label_10;
     QSlider *_sliderClose;
     QLabel *_labelClose;
-    QWidget *horizontalLayoutWidget_8;
-    QHBoxLayout *horizontalLayout_8;
-    QLabel *label_11;
-    QSlider *_sliderArea;
-    QLabel *_labelArea;
     QWidget *horizontalLayoutWidget_9;
     QHBoxLayout *horizontalLayout_9;
     QLabel *label_12;
@@ -125,7 +120,7 @@ public:
 "}"));
         _labelCameraView = new QLabel(groupBox);
         _labelCameraView->setObjectName(QString::fromUtf8("_labelCameraView"));
-        _labelCameraView->setGeometry(QRect(10, 270, 331, 221));
+        _labelCameraView->setGeometry(QRect(10, 260, 331, 221));
         _labelCameraView->setAlignment(Qt::AlignCenter);
         label_6 = new QLabel(groupBox);
         label_6->setObjectName(QString::fromUtf8("label_6"));
@@ -205,7 +200,7 @@ public:
 "border-radius: 4px;\n"
 "}"));
         _sliderSMin->setMaximum(255);
-        _sliderSMin->setValue(80);
+        _sliderSMin->setValue(0);
         _sliderSMin->setOrientation(Qt::Horizontal);
 
         horizontalLayout->addWidget(_sliderSMin);
@@ -454,7 +449,7 @@ public:
 
         horizontalLayoutWidget_7 = new QWidget(groupBox);
         horizontalLayoutWidget_7->setObjectName(QString::fromUtf8("horizontalLayoutWidget_7"));
-        horizontalLayoutWidget_7->setGeometry(QRect(10, 220, 331, 31));
+        horizontalLayoutWidget_7->setGeometry(QRect(10, 190, 331, 31));
         horizontalLayout_7 = new QHBoxLayout(horizontalLayoutWidget_7);
         horizontalLayout_7->setObjectName(QString::fromUtf8("horizontalLayout_7"));
         horizontalLayout_7->setContentsMargins(0, 0, 0, 0);
@@ -533,90 +528,9 @@ public:
 
         horizontalLayout_7->addWidget(_labelClose);
 
-        horizontalLayoutWidget_8 = new QWidget(groupBox);
-        horizontalLayoutWidget_8->setObjectName(QString::fromUtf8("horizontalLayoutWidget_8"));
-        horizontalLayoutWidget_8->setGeometry(QRect(10, 160, 331, 31));
-        horizontalLayout_8 = new QHBoxLayout(horizontalLayoutWidget_8);
-        horizontalLayout_8->setObjectName(QString::fromUtf8("horizontalLayout_8"));
-        horizontalLayout_8->setContentsMargins(0, 0, 0, 0);
-        label_11 = new QLabel(horizontalLayoutWidget_8);
-        label_11->setObjectName(QString::fromUtf8("label_11"));
-
-        horizontalLayout_8->addWidget(label_11);
-
-        _sliderArea = new QSlider(horizontalLayoutWidget_8);
-        _sliderArea->setObjectName(QString::fromUtf8("_sliderArea"));
-        _sliderArea->setFocusPolicy(Qt::NoFocus);
-        _sliderArea->setStyleSheet(QString::fromUtf8("QSlider::groove:horizontal {\n"
-"border: 1px solid #bbb;\n"
-"background: #003399;\n"
-"height: 10px;\n"
-"border-radius: 4px;\n"
-"}\n"
-"\n"
-"QSlider::sub-page:horizontal {\n"
-"background: #003399;\n"
-"border: 1px solid #777;\n"
-"height: 10px;\n"
-"border-radius: 4px;\n"
-"}\n"
-"\n"
-"QSlider::add-page:horizontal {\n"
-"background: #fff;\n"
-"border: 1px solid #777;\n"
-"height: 10px;\n"
-"border-radius: 4px;\n"
-"}\n"
-"\n"
-"QSlider::handle:horizontal {\n"
-"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
-"    stop:0 #eee, stop:1 #ccc);\n"
-"border: 1px solid #777;\n"
-"width: 13px;\n"
-"margin-top: -2px;\n"
-"margin-bottom: -2px;\n"
-"border-radius: 4px;\n"
-"}\n"
-"\n"
-"QSlider::handle:horizontal:hover {\n"
-"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
-"    stop:0 #fff, stop:1 #ddd);\n"
-"border: 1px solid #444;\n"
-"border-radius: 4px;\n"
-"}\n"
-"\n"
-"QSlider::sub-page:horizontal:disabled {\n"
-"background: #bbb;\n"
-"border-color: #999;\n"
-"}\n"
-"\n"
-"QSlider::add-page:horizontal:disabled {\n"
-"background: #eee;\n"
-""
-                        "border-color: #999;\n"
-"}\n"
-"\n"
-"QSlider::handle:horizontal:disabled {\n"
-"background: #eee;\n"
-"border: 1px solid #aaa;\n"
-"border-radius: 4px;\n"
-"}"));
-        _sliderArea->setMaximum(30000);
-        _sliderArea->setSingleStep(100);
-        _sliderArea->setPageStep(1000);
-        _sliderArea->setValue(4000);
-        _sliderArea->setOrientation(Qt::Horizontal);
-
-        horizontalLayout_8->addWidget(_sliderArea);
-
-        _labelArea = new QLabel(horizontalLayoutWidget_8);
-        _labelArea->setObjectName(QString::fromUtf8("_labelArea"));
-
-        horizontalLayout_8->addWidget(_labelArea);
-
         horizontalLayoutWidget_9 = new QWidget(groupBox);
         horizontalLayoutWidget_9->setObjectName(QString::fromUtf8("horizontalLayoutWidget_9"));
-        horizontalLayoutWidget_9->setGeometry(QRect(10, 190, 331, 31));
+        horizontalLayoutWidget_9->setGeometry(QRect(10, 160, 331, 31));
         horizontalLayout_9 = new QHBoxLayout(horizontalLayoutWidget_9);
         horizontalLayout_9->setObjectName(QString::fromUtf8("horizontalLayout_9"));
         horizontalLayout_9->setContentsMargins(0, 0, 0, 0);
@@ -1312,8 +1226,6 @@ public:
         _labelVMax->setText(QApplication::translate("HMIWidgetClass", "1000", 0, QApplication::UnicodeUTF8));
         label_10->setText(QApplication::translate("HMIWidgetClass", "Close kernel size", 0, QApplication::UnicodeUTF8));
         _labelClose->setText(QApplication::translate("HMIWidgetClass", "1000", 0, QApplication::UnicodeUTF8));
-        label_11->setText(QApplication::translate("HMIWidgetClass", "Min brick area     ", 0, QApplication::UnicodeUTF8));
-        _labelArea->setText(QApplication::translate("HMIWidgetClass", "1000", 0, QApplication::UnicodeUTF8));
         label_12->setText(QApplication::translate("HMIWidgetClass", "Min blob size        ", 0, QApplication::UnicodeUTF8));
         _labelBlob->setText(QApplication::translate("HMIWidgetClass", "1000", 0, QApplication::UnicodeUTF8));
         _btnEmStop->setText(QApplication::translate("HMIWidgetClass", "EMERGENCY STOP", 0, QApplication::UnicodeUTF8));
@@ -1358,5 +1270,5 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // HMIWIDGETSM3827_H
+#endif // HMIWIDGET118536_H
 

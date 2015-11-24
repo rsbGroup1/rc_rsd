@@ -26,7 +26,6 @@ HMIWidget::HMIWidget(QWidget *parent): QWidget(parent)
     connect(_cbJog, SIGNAL(toggled(bool)), this, SLOT(eventCb(bool)));
     connect(_cbLive, SIGNAL(toggled(bool)), this, SLOT(eventCb(bool)));
     connect(_cbVision, SIGNAL(toggled(bool)), this, SLOT(eventCb(bool)));
-    connect(_sliderArea, SIGNAL(sliderReleased()), this, SLOT(eventSlider()));
     connect(_sliderBlob, SIGNAL(sliderReleased()), this, SLOT(eventSlider()));
     connect(_sliderClose, SIGNAL(sliderReleased()), this, SLOT(eventSlider()));
     connect(_sliderVMax, SIGNAL(sliderReleased()), this, SLOT(eventSlider()));
@@ -49,7 +48,6 @@ HMIWidget::HMIWidget(QWidget *parent): QWidget(parent)
     _red = _blue = _yellow = 0;
 
     // Update labels
-    _labelArea->setText(QString::number(_sliderArea->value()));
     _labelBlob->setText(QString::number(_sliderBlob->value()));
     _labelClose->setText(QString::number(_sliderClose->value()));
     _labelVMax->setText(QString::number(_sliderVMax->value()));
@@ -421,12 +419,7 @@ void HMIWidget::eventSlider()
 
     std_msgs::String msg;
 
-    if(obj == _sliderArea)
-    {
-        _labelArea->setText(QString::number(_sliderArea->value()));
-        msg.data = "area|" + SSTR(_sliderArea->value());
-    }
-    else if(obj == _sliderBlob)
+    if(obj == _sliderBlob)
     {
         _labelBlob->setText(QString::number(_sliderBlob->value()));
         msg.data = "blob|" + SSTR(_sliderBlob->value());
