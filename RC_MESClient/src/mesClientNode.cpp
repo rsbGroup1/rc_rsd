@@ -23,6 +23,7 @@ int _serverPort;
 int _socket;
 bool _connected = false;
 bool _waitForServer = true;
+bool _waitForStatus = false;
 
 // Functions
 void printConsole(std::string msg)
@@ -40,6 +41,9 @@ void sendMsgCallback(std_msgs::String msg)
     {
         // Send data
         write(_socket, msg.data.c_str(), msg.data.size()+1);
+
+        // Reset
+        _waitForStatus = false;
         _waitForServer = true;
     }
 }
@@ -140,28 +144,48 @@ int main()
                     break;
                 }
 
-                int cell, mobileRobot, red, blue, yellow;
+                int cell, mobileRobot, red, blue, yellow, status;
 
                 // Check if "MESServer"
                 if(std::string(doc.RootElement()->Value()) == "MESServer")
                 {
-                    // Get stuff
-                    cell = atoi(doc.RootElement()->FirstChildElement("Cell")->FirstChild()->Value());
-                    mobileRobot = atoi(doc.RootElement()->FirstChildElement("MobileRobot")->FirstChild()->Value());
-                    red = atoi(doc.RootElement()->FirstChildElement("Red")->FirstChild()->Value());
-                    blue = atoi(doc.RootElement()->FirstChildElement("Blue")->FirstChild()->Value());
-                    yellow = atoi(doc.RootElement()->FirstChildElement("Yellow")->FirstChild()->Value());
-
                     rc_mes_client::server msg;
-                    msg.blue = blue;
-                    msg.cell = cell;
-                    msg.mobileRobot = mobileRobot;
-                    msg.yellow = yellow;
-                    msg.red = red;
+
+                    if(_waitForStatus)
+                    {
+                        // Get stuff
+                        status = atoi(doc.RootElement()->FirstChildElement("Status")->FirstChild()->Value());
+
+                        msg.cell = 1;
+                        msg.status = status;
+
+                        // Reset
+                        _waitForServer = false;
+                    }
+                    else
+                    {
+                        // Get stuff
+                        cell = atoi(doc.RootElement()->FirstChildElement("Cell")->FirstChild()->Value());
+                        mobileRobot = atoi(doc.RootElement()->FirstChildElement("MobileRobot")->FirstChild()->Value());
+                        red = atoi(doc.RootElement()->FirstChildElement("Red")->FirstChild()->Value());
+                        blue = atoi(doc.RootElement()->FirstChildElement("Blue")->FirstChild()->Value());
+                        yellow = atoi(doc.RootElement()->FirstChildElement("Yellow")->FirstChild()->Value());
+
+                        msg.blue = blue;
+                        msg.cell = cell;
+                        msg.mobileRobot = mobileRobot;
+                        msg.yellow = yellow;
+                        msg.red = red;
+
+                        // Reset
+                        _waitForStatus = true;
+                    }
+
                     _mesMessagePub.publish(msg);
                 }
 
-                _waitForServer = false;
+                // Reset
+                _waitForStatus = true;
             }
         }
 
