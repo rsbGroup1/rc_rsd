@@ -200,14 +200,14 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     // 2. Move to brick lifted (blocking call)
     if(!getStatus())
         return false;
-    rw::math::Q speed = getSpeed(45);
+    rw::math::Q speed = getSpeed(80);
     if(moveRobotWait(qBrickLifted, speed) == false)
         return false;
 
     // 3. Move to brick down (blocking call)
     if(!getStatus())
         return false;
-    speed = getSpeed(5);
+    speed = getSpeed(10);
     if(moveRobotWait(qBrick, speed) == false)
         return false;
 
@@ -229,7 +229,7 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     // 6. Go to idle Q (when camera is taking pictures)
     if(!getStatus())
         return false;
-    speed = getSpeed(50);
+    speed = getSpeed(80);
     if(moveRobotWait(_idleQ, speed) == false)
         return false;
 
