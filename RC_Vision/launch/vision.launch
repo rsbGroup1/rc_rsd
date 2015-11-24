@@ -9,10 +9,10 @@
 			<param name="getBricks_service" value="/rcVision/getBricks"/> 
 			<param name="visionParamSub" value="/rcHMI/visionParam"/> 
 			<param name="visionImagePub" value="/rcVision/image"/> 
-			<param name="xMax" value="0.15"/>
-			<param name="yMax" value="0.085"/>
-			<param name="fingerWidth_meter" value="0.02"/>
-			<param name="graspWidth_meter" value="0.03"/>
+			<param name="xMax" value="0.13"/>
+			<param name="yMax" value="0.08"/>
+			<param name="fingerWidth_meter" value="0.03"/>
+			<param name="graspWidth_meter" value="0.045"/>
 		</node>
 	</group>
 </launch>
