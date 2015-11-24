@@ -348,10 +348,6 @@ void mainHandlerThread()
                                         moveCoveyerBelt(1);
                                     }
                                 }
-
-                                // Grab brick
-                                //bricks[0].size = 0.014; // Default size of standard LEGO width
-                                //grabBrick(bricks.front());
                             }
                             else
                             {
