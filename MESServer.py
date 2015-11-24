@@ -113,7 +113,7 @@ def keyboardHandler(dummy):
 	# Create MES order message
 	sendMsg = '<MESServer>' + '<MobileRobot>' + str(mobileRobot) + '</MobileRobot>' + '<Cell>' + str(cell) + '</Cell>' + '<Red>' + str(redBricks) + '</Red>' + '<Blue>' + str(blueBricks) + '</Blue>' + '<Yellow>' + str(yellowBricks) + '</Yellow>' + '</MESServer>' 
 
-	print 'Order msg: ' + sendMsg + '\n\n'
+	print '\nOrder msg: ' + sendMsg + '\n'
 	mrSend = True
 	rcSend = True
 	
@@ -122,7 +122,7 @@ def keyboardHandler(dummy):
 		time.sleep(2)
 
 	# Print
-	print "Orders sent!"
+	print "Orders sent!\n\nWaiting for MR to reach the conveyer belt!"
 
 	# Wait for robot cell to be done
 	while(rcDone == False):
@@ -208,7 +208,7 @@ def clientHandler(clientsock, addr):
 			feedback = clientsock.recv(100)
 			if "Ok" in feedback:
 				mrToRcSend = 1
-				print "MR: At conveyer!"
+				print "MR: At conveyer!\n\nWaiting for RC to finish order!"
 			else:
 				mrToRcSend = -1 
 				print "MR: Error!"
@@ -291,7 +291,7 @@ def clientHandler(clientsock, addr):
 			feedback = clientsock.recv(100)
 			if "Ok" in feedback:
 				rcToMrSend = 1
-				print "RC: Done!"
+				print "RC: Order done!\n\nWaiting for MR to go home!"
 			else:
 				rcToMrSend = -1 
 				print "RC: Error!"
