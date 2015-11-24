@@ -28,7 +28,7 @@
 			<param name="hmiConsole" value="/rcHMI/console"/>
 			<param name="mesPub" value="/rcMESClient/msgFromServer"/>
 			<param name="mesSub" value="/rcMESClient/msgToServer"/>
-			<param name="serverIP" value="127.0.0.1"/> <!--10.115.253.233-->
+			<param name="serverIP" value="10.115.253.233"/> <!--10.115.253.233-->
 			<param name="serverPort" value="21240"/>
 		</node>
 	</group>
@@ -43,6 +43,8 @@
 			<param name="visionImagePub" value="/rcVision/image"/> 
 			<param name="xMax" value="0.13"/>
 			<param name="yMax" value="0.08"/>
+			<param name="fingerWidth_meter" value="0.03"/>
+			<param name="graspWidth_meter" value="0.045"/>
 		</node>
 	</group>
 
