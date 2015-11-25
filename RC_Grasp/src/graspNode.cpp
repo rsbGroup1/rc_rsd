@@ -220,18 +220,18 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     sleep(1);
 
     // 5. Move to brick lifted (blocking call)
-    /*if(!getStatus())
-        return false;
-    rw::math::Q liftedSpeed = getSpeed(35);
-    if(moveRobotWait(qBrickLifted, liftedSpeed) == false)
-        return false;*/
-
-    // 6. Go to idle Q (when camera is taking pictures)
     if(!getStatus())
         return false;
     speed = getSpeed(80);
-    if(moveRobotWait(_idleQ, speed) == false)
+    if(moveRobotWait(qBrickLifted, speed) == false)
         return false;
+
+    // 6. Go to idle Q (when camera is taking pictures)
+    /*if(!getStatus())
+        return false;
+    speed = getSpeed(80);
+    if(moveRobotWait(_idleQ, speed) == false)
+        return false;*/
 
     // 7. Go to release-lego-to-mr Q
     if(!getStatus())
@@ -277,8 +277,8 @@ int main()
     pNh.param<std::string>("hmiConsole", hmiConsolePub, "/rcHMI/console");
     pNh.param<std::string>("hmi_status_sub", hmiStatusSub, "/rcHMI/status");
     pNh.param<double>("idleHeight", _idleQHeight, 0.3);
-    pNh.param<double>("graspOffset", _graspOffset, 0.015);
-    pNh.param<double>("graspLifted", _graspLifted, 0.1);
+    pNh.param<double>("graspOffset", _graspOffset, 0.0025);
+    pNh.param<double>("graspLifted", _graspLifted, 0.03);
     pNh.param<double>("xMax", _xMax, 0.15);
     pNh.param<double>("yMax", _yMax, 0.08);
     pNh.param<double>("gripperOpenoffset", _gripperOpenOffset, 0.015);
