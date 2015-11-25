@@ -46,14 +46,15 @@ def keyboardHandler(dummy):
 	global rcConnected
 
 	# Print
-	print "\nWaiting for RC and MR connection!"
+	if(mrConnected == False or rcConnected == False):
+		print "\nWaiting for RC and MR connection!"
 
 	# Wait for connection
 	while(mrConnected == False or rcConnected == False):
 		time.sleep(2)
 
 	# Print
-	print "Order handling:"
+	print "\nOrder handling:"
 
 	# Get input
 	while mobileRobot < 1 or mobileRobot > 3:
@@ -113,7 +114,15 @@ def keyboardHandler(dummy):
 	# Create MES order message
 	sendMsg = '<MESServer>' + '<MobileRobot>' + str(mobileRobot) + '</MobileRobot>' + '<Cell>' + str(cell) + '</Cell>' + '<Red>' + str(redBricks) + '</Red>' + '<Blue>' + str(blueBricks) + '</Blue>' + '<Yellow>' + str(yellowBricks) + '</Yellow>' + '</MESServer>' 
 
-	print '\nOrder msg: ' + sendMsg + '\n'
+	if(blueBricks == redBricks == yellowBricks == 0):
+		redBricks = -1
+		blueBricks = -1
+		yellowBricks = -1
+		mobileRobot = 0
+		cell = 0
+		continue
+
+	#print '\nOrder msg: ' + sendMsg + '\n'
 	mrSend = True
 	rcSend = True
 	
@@ -122,21 +131,21 @@ def keyboardHandler(dummy):
 		time.sleep(2)
 
 	# Print
-	print "Orders sent!\n\nWaiting for MR to reach the conveyer belt!"
+	print "\nMES: Orders sent!\n\nWaiting for MR to reach the conveyer belt!"
 
 	# Wait for robot cell to be done
 	while(rcDone == False):
 		time.sleep(2)
 
 	# Print
-	print "Robot cell done!"
+	#print "Robot cell done!"
 
 	# Wait for mobile robot to be done
 	while(mrDone == False):
 		time.sleep(2)
 
 	# Print
-	print "Mobile robot done!"
+	#print "Mobile robot done!"
 
 	# Reset 
 	redBricks = -1
@@ -146,7 +155,10 @@ def keyboardHandler(dummy):
 	cell = 0
 	mrDone = False
 	rcDone = False
-
+	mrSend = False
+	rcSend = False
+	rcToMrSend = 0 
+	mrToRcSend = 0 
 
 # Client handler
 def clientHandler(clientsock, addr):
@@ -186,7 +198,7 @@ def clientHandler(clientsock, addr):
 
 	if robotType == MOBILE_ROBOT:
 		# Print
-		print "Connection from: Mobile Robot " + str(mobileRobotNumber)
+		print "\nConnection from: Mobile Robot " + str(mobileRobotNumber)
 		mrConnected = True
 
 		while True:
@@ -208,10 +220,10 @@ def clientHandler(clientsock, addr):
 			feedback = clientsock.recv(100)
 			if "Ok" in feedback:
 				mrToRcSend = 1
-				print "MR: At conveyer!\n\nWaiting for RC to finish order!"
+				print "\nMR: At conveyer!\n\nWaiting for RC to finish order!"
 			else:
 				mrToRcSend = -1 
-				print "MR: Error!"
+				print "\nMR: Error!"
 
 			# Wait for robot-cell-done message
 			while(rcToMrSend == 0):
@@ -222,7 +234,7 @@ def clientHandler(clientsock, addr):
 			if(rcToMrSend == 1):
 				msg = '<MESServer>' + '<Status>' + str(1) + '</Status>' + '</MESServer>' 
 			else:# if(rcToMrSend == -1):
-				msg = '<MESServer>' + '<Status>' + str(0) + '</Status>' + '</MESServer>' 
+				msg = '<MESServer>' + '<Status>' + str(2) + '</Status>' + '</MESServer>' 
 				
 			# Send msg
 			try:
@@ -233,12 +245,12 @@ def clientHandler(clientsock, addr):
 
 			# Reset
 			rcToMrSend = 0
-			time.sleep(2)
+			#time.sleep(2)
 
 			# Wait for done message
 			feedback = clientsock.recv(100)
 			if "Ok" in feedback:
-				print "MR: Done!"
+				print "\nMR: Home!"
 			else:
 				print "MR: Error!"
 
@@ -274,7 +286,7 @@ def clientHandler(clientsock, addr):
 			if(mrToRcSend == 1):
 				msg = '<MESServer>' + '<Status>' + str(1) + '</Status>' + '</MESServer>' 
 			else:# if(rcToMrSend == -1):
-				msg = '<MESServer>' + '<Status>' + str(0) + '</Status>' + '</MESServer>' 
+				msg = '<MESServer>' + '<Status>' + str(2) + '</Status>' + '</MESServer>' 
 				
 			# Send msg
 			try:
@@ -285,16 +297,16 @@ def clientHandler(clientsock, addr):
 
 			# Reset
 			mrToRcSend = 0
-			time.sleep(2)
+			#time.sleep(2)
 
 			# Wait for done message
 			feedback = clientsock.recv(100)
 			if "Ok" in feedback:
 				rcToMrSend = 1
-				print "RC: Order done!\n\nWaiting for MR to go home!"
+				print "\nRC: Order done!\n\nWaiting for MR to go home!"
 			else:
 				rcToMrSend = -1 
-				print "RC: Error!"
+				print "\nRC: Error!"
 
 			# Signal to keyboard handler
 			rcDone = True 	

@@ -97,7 +97,7 @@ int main()
     pNh.param<std::string>("hmiConsole", hmiConsolePub, "/rcHMI/console");
     pNh.param<std::string>("mesPub", mesPub, "/rcMESClient/msgFromServer");
     pNh.param<std::string>("mesSub", mesSub, "/rcMESClient/msgToServer");
-    pNh.param<std::string>("serverIP", _serverIP, "127.0.0.1"); // 127.0.0.1 - 10.115.253.233
+    pNh.param<std::string>("serverIP", _serverIP, "10.115.253.233"); // 127.0.0.1 - 10.115.253.233
     pNh.param<int>("serverPort", _serverPort, 21240);
 
     // Publishers
@@ -178,6 +178,7 @@ int main()
                         msg.mobileRobot = mobileRobot;
                         msg.yellow = yellow;
                         msg.red = red;
+                        msg.status = 0;
 
                         // Reset
                         _waitForStatus = true;
