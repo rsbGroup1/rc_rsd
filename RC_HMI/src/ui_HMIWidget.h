@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'HMIWidgetb19518.ui'
+** Form generated from reading UI file 'HMIWidgetW24784.ui'
 **
 ** Created by: Qt User Interface Compiler version 4.8.6
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef HMIWIDGETB19518_H
-#define HMIWIDGETB19518_H
+#ifndef HMIWIDGETW24784_H
+#define HMIWIDGETW24784_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -81,9 +81,9 @@ public:
     QRadioButton *_cbAuto;
     QRadioButton *_cbManual;
     QRadioButton *_cbJog;
-    QPushButton *_btnCellReady;
     QPushButton *_btnCellDone;
-    QPushButton *_btnCellError;
+    QPushButton *_btnMrOk;
+    QPushButton *_btnClearOrder;
     QFrame *line_3;
     QLabel *LocalPlanner;
     QFrame *line_4;
@@ -855,34 +855,9 @@ public:
 
         horizontalLayout_5->addWidget(_cbJog);
 
-        _btnCellReady = new QPushButton(groupBox_2);
-        _btnCellReady->setObjectName(QString::fromUtf8("_btnCellReady"));
-        _btnCellReady->setGeometry(QRect(10, 210, 101, 31));
-        _btnCellReady->setMinimumSize(QSize(92, 0));
-        _btnCellReady->setFocusPolicy(Qt::NoFocus);
-        _btnCellReady->setStyleSheet(QString::fromUtf8("QPushButton {\n"
-"color: #333;\n"
-"border: 1px solid #003399;\n"
-"border-radius: 5px;\n"
-"padding: 5px;\n"
-"min-width: 80px;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
-"fx: 0.9, fy: -0.1,\n"
-"radius: 10.35, stop: 0 #fff, stop: 1 #003399);\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
-"fx: 0.9, fy: -0.1,\n"
-"radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
-"}\n"
-""));
         _btnCellDone = new QPushButton(groupBox_2);
         _btnCellDone->setObjectName(QString::fromUtf8("_btnCellDone"));
-        _btnCellDone->setGeometry(QRect(120, 210, 111, 31));
+        _btnCellDone->setGeometry(QRect(10, 210, 101, 31));
         _btnCellDone->setMinimumSize(QSize(92, 0));
         _btnCellDone->setFocusPolicy(Qt::NoFocus);
         _btnCellDone->setStyleSheet(QString::fromUtf8("QPushButton {\n"
@@ -904,14 +879,39 @@ public:
 "fx: 0.9, fy: -0.1,\n"
 "radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
 "}\n"
+""));
+        _btnMrOk = new QPushButton(groupBox_2);
+        _btnMrOk->setObjectName(QString::fromUtf8("_btnMrOk"));
+        _btnMrOk->setGeometry(QRect(120, 210, 111, 31));
+        _btnMrOk->setMinimumSize(QSize(92, 0));
+        _btnMrOk->setFocusPolicy(Qt::NoFocus);
+        _btnMrOk->setStyleSheet(QString::fromUtf8("QPushButton {\n"
+"color: #333;\n"
+"border: 1px solid #003399;\n"
+"border-radius: 5px;\n"
+"padding: 5px;\n"
+"min-width: 80px;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 10.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.9, fy: -0.1,\n"
+"radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
+"}\n"
 "\n"
 ""));
-        _btnCellError = new QPushButton(groupBox_2);
-        _btnCellError->setObjectName(QString::fromUtf8("_btnCellError"));
-        _btnCellError->setGeometry(QRect(241, 210, 101, 31));
-        _btnCellError->setMinimumSize(QSize(92, 0));
-        _btnCellError->setFocusPolicy(Qt::NoFocus);
-        _btnCellError->setStyleSheet(QString::fromUtf8("QPushButton {\n"
+        _btnClearOrder = new QPushButton(groupBox_2);
+        _btnClearOrder->setObjectName(QString::fromUtf8("_btnClearOrder"));
+        _btnClearOrder->setGeometry(QRect(241, 210, 101, 31));
+        _btnClearOrder->setMinimumSize(QSize(92, 0));
+        _btnClearOrder->setFocusPolicy(Qt::NoFocus);
+        _btnClearOrder->setStyleSheet(QString::fromUtf8("QPushButton {\n"
 "color: #333;\n"
 "border: 1px solid #003399;\n"
 "border-radius: 5px;\n"
@@ -1165,13 +1165,13 @@ public:
 "radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
 "}\n"
 ""));
-        _btnCellReady->raise();
+        _btnCellDone->raise();
         label_15->raise();
         _labelOrderStatus->raise();
         label_5->raise();
         horizontalLayoutWidget_5->raise();
-        _btnCellDone->raise();
-        _btnCellError->raise();
+        _btnMrOk->raise();
+        _btnClearOrder->raise();
         line_3->raise();
         LocalPlanner->raise();
         line_4->raise();
@@ -1241,9 +1241,9 @@ public:
         _cbAuto->setText(QApplication::translate("HMIWidgetClass", "Auto", 0, QApplication::UnicodeUTF8));
         _cbManual->setText(QApplication::translate("HMIWidgetClass", "Manual", 0, QApplication::UnicodeUTF8));
         _cbJog->setText(QApplication::translate("HMIWidgetClass", "Jog", 0, QApplication::UnicodeUTF8));
-        _btnCellReady->setText(QApplication::translate("HMIWidgetClass", "Cell Ready", 0, QApplication::UnicodeUTF8));
         _btnCellDone->setText(QApplication::translate("HMIWidgetClass", "Cell Done", 0, QApplication::UnicodeUTF8));
-        _btnCellError->setText(QApplication::translate("HMIWidgetClass", "Cell Error", 0, QApplication::UnicodeUTF8));
+        _btnMrOk->setText(QApplication::translate("HMIWidgetClass", "MR Ok (Debug)", 0, QApplication::UnicodeUTF8));
+        _btnClearOrder->setText(QApplication::translate("HMIWidgetClass", "Clear Order", 0, QApplication::UnicodeUTF8));
         LocalPlanner->setText(QApplication::translate("HMIWidgetClass", "Control mode and status", 0, QApplication::UnicodeUTF8));
         label_18->setText(QApplication::translate("HMIWidgetClass", "Log messages", 0, QApplication::UnicodeUTF8));
         label_7->setText(QApplication::translate("HMIWidgetClass", "Bricks on conv", 0, QApplication::UnicodeUTF8));
@@ -1270,5 +1270,5 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // HMIWIDGETB19518_H
+#endif // HMIWIDGETW24784_H
 

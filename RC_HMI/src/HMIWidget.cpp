@@ -9,8 +9,8 @@ HMIWidget::HMIWidget(QWidget *parent): QWidget(parent)
 
     // Connect UI elements
     connect(_btnCellDone, SIGNAL(released()), this, SLOT(eventBtn()));
-    connect(_btnCellError, SIGNAL(released()), this, SLOT(eventBtn()));
-    connect(_btnCellReady, SIGNAL(released()), this, SLOT(eventBtn()));
+    connect(_btnClearOrder, SIGNAL(released()), this, SLOT(eventBtn()));
+    connect(_btnMrOk, SIGNAL(released()), this, SLOT(eventBtn()));
     connect(_btnEmStop, SIGNAL(released()), this, SLOT(eventBtn()));
     connect(_btnConvStartR, SIGNAL(released()), this, SLOT(eventBtn()));
     connect(_btnConvStartF, SIGNAL(released()), this, SLOT(eventBtn()));
@@ -472,6 +472,8 @@ void HMIWidget::eventCb(bool input)
 
             if(_cbAuto->isChecked())
             {
+                _consoleQueue.enqueue("HMI: Changed to auto-mode!");
+
                 // Ready robot
                 _manualJog = true;
                 _deviceKuka->setQ(_qIdle, _state);
@@ -487,9 +489,11 @@ void HMIWidget::eventCb(bool input)
                 _btnRobotStop->setEnabled(false);
                 _btnGripperClose->setEnabled(false);
                 _btnGripperOpen->setEnabled(false);
+                _btnClearOrder->setEnabled(false);
             }
             else if(_cbManual->isChecked())
             {
+                _consoleQueue.enqueue("HMI: Changed to man-mode!");
                 msg.data = "stop";
 
                 _btnConvStartF->setEnabled(true);
@@ -500,6 +504,7 @@ void HMIWidget::eventCb(bool input)
                 _btnRobotStop->setEnabled(true);
                 _btnGripperClose->setEnabled(true);
                 _btnGripperOpen->setEnabled(true);
+                _btnClearOrder->setEnabled(true);
 
                 emergencyStop();
             }
@@ -542,12 +547,16 @@ void HMIWidget::eventBtn()
 {
     QObject *obj = sender();
 
-    if(obj == _btnCellReady)
+    if(obj == _btnClearOrder)
     {
-        _consoleQueue.enqueue("HMI: Cell Ok!");
-        /*std_msgs::String msg;
-        msg.data = "Ok";
-        _mesMessagePub.publish(msg);*/
+        _consoleQueue.enqueue("HMI: Clear Order!");
+
+        std_msgs::String msg;
+        msg.data = "clear";
+        _hmiStatusPub.publish(msg);
+
+        boost::unique_lock<boost::mutex> lock(_orderMutex);
+        _red =  _blue = _yellow = 0;
     }
     if(obj == _btnCellDone)
     {
@@ -556,7 +565,7 @@ void HMIWidget::eventBtn()
         msg.data = "Ok";
         _mesMessagePub.publish(msg);
     }
-    else if(obj == _btnCellError)
+    else if(obj == _btnMrOk)
     {
         _consoleQueue.enqueue("HMI: MR Ok!");
         std_msgs::String msg;

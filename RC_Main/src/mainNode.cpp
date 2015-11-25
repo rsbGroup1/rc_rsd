@@ -172,7 +172,7 @@ void mesRecCallback(rc_mes_client::server msg)
             _red = msg.red;
             _yellow = msg.yellow;
 
-            if(_blue == _red == _yellow == 0)
+            if(_blue == 0 && _red == 0 && _yellow == 0)
             {
                 printConsole("Empty order received.. Doing nothing!");
             }
@@ -205,12 +205,23 @@ void hmiStatusCallback(std_msgs::String msg)
         _run = true;
     else if(msg.data == "stop")
         _run = false;
+    else if(msg.data == "clear")
+    {
+        _run = false;
+
+        boost::unique_lock<boost::mutex> lock(_orderMutex);
+        _blue = _red = _yellow = 0;
+        _mesOrder = false;
+
+        stopConveyerBelt();
+    }
 }
 
 void orderDone()
 {
-    printConsole("Clearing conveyer belt..");
-    printConsole("Waiting for order!");
+    //printConsole("Clearing conveyer belt..");
+    printConsole("Order done..");
+    printConsole("Waiting for new order!");
 
     // Tell MES Server
     mesSend("Ok");
@@ -289,7 +300,7 @@ void mainHandlerThread()
                             continue;
 
                         // Sleep in order for image to settle
-                        sleep(3);
+                        sleep(3.5);
 
                         // Get bricks
                         std::vector<Brick> bricks = getBricks();

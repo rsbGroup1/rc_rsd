@@ -1107,7 +1107,7 @@ QRadioButton::indicator::checked {
      </item>
     </layout>
    </widget>
-   <widget class="QPushButton" name="_btnCellReady">
+   <widget class="QPushButton" name="_btnCellDone">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -1148,10 +1148,10 @@ radius: 5.35, stop: 0 #fff, stop: 1 #003399);
 </string>
     </property>
     <property name="text">
-     <string>Cell Ready</string>
+     <string>Cell Done</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="_btnCellDone">
+   <widget class="QPushButton" name="_btnMrOk">
     <property name="geometry">
      <rect>
       <x>120</x>
@@ -1193,10 +1193,10 @@ radius: 5.35, stop: 0 #fff, stop: 1 #003399);
 </string>
     </property>
     <property name="text">
-     <string>Cell Done</string>
+     <string>MR Ok (Debug)</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="_btnCellError">
+   <widget class="QPushButton" name="_btnClearOrder">
     <property name="geometry">
      <rect>
       <x>241</x>
@@ -1237,7 +1237,7 @@ radius: 5.35, stop: 0 #fff, stop: 1 #003399);
 </string>
     </property>
     <property name="text">
-     <string>Cell Error</string>
+     <string>Clear Order</string>
     </property>
    </widget>
    <widget class="Line" name="line_3">
@@ -1768,13 +1768,13 @@ radius: 5.35, stop: 0 #fff, stop: 1 #003399);
      <string>Start conv (r)</string>
     </property>
    </widget>
-   <zorder>_btnCellReady</zorder>
+   <zorder>_btnCellDone</zorder>
    <zorder>label_15</zorder>
    <zorder>_labelOrderStatus</zorder>
    <zorder>label_5</zorder>
    <zorder>horizontalLayoutWidget_5</zorder>
-   <zorder>_btnCellDone</zorder>
-   <zorder>_btnCellError</zorder>
+   <zorder>_btnMrOk</zorder>
+   <zorder>_btnClearOrder</zorder>
    <zorder>line_3</zorder>
    <zorder>LocalPlanner</zorder>
    <zorder>line_4</zorder>
