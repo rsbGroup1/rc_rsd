@@ -34,8 +34,8 @@ struct Brick
 // Global variables
 ros::Publisher _hmiConsolePub, _mesMessagePub, _mainStatusPub;
 ros::ServiceClient _serviceGrabBrick, _serviceGetBricks, _serviceMove, _serviceStart, _serviceStop, _serviceChangeDir, _serviceGetIsMoving, _serviceGetConf, _serviceGetSafety;
-bool _run = false, _safety = false, _anyBricks = false, _mesOrder = false;
-boost::mutex _runMutex, _safetyMutex, _anyBricksMutex, _qMutex, _orderMutex;
+bool _run = false, _safety = false, _anyBricks = false, _mesOrder = false, _startConveyer = false;
+boost::mutex _runMutex, _safetyMutex, _anyBricksMutex, _qMutex, _orderMutex, _startConveyerMutex;
 double _qIdle[6] = {1.34037, 0.696857, 0.158417, 0.418082, -0.736247, -0.531764};
 bool _positionQIdle = false;
 int _red = 0, _blue = 0, _yellow = 0;
@@ -165,11 +165,29 @@ void mesRecCallback(rc_mes_client::server msg)
 {
     if(msg.cell == 1)
     {
-        boost::unique_lock<boost::mutex> lock(_orderMutex);
-        _blue = msg.blue;
-        _red = msg.red;
-        _yellow = msg.yellow;
-        _mesOrder = true;
+        if(msg.status == 0)
+        {
+            boost::unique_lock<boost::mutex> lock(_orderMutex);
+            _blue = msg.blue;
+            _red = msg.red;
+            _yellow = msg.yellow;
+
+            if(_blue == _red == _yellow == 0)
+            {
+                printConsole("Empty order received.. Doing nothing!");
+            }
+            else
+            {
+                _mesOrder = true;
+                printConsole("Order received.. Waiting for MR!");
+            }
+        }
+        else
+        {
+            boost::unique_lock<boost::mutex> lock(_startConveyerMutex);
+            _startConveyer = true;
+            printConsole("MR is here! Starting conveyer belt..");
+        }
     }
 }
 
@@ -189,12 +207,32 @@ void hmiStatusCallback(std_msgs::String msg)
         _run = false;
 }
 
+void orderDone()
+{
+    printConsole("Clearing conveyer belt..");
+    printConsole("Waiting for order!");
+
+    // Tell MES Server
+    mesSend("Ok");
+
+    // Move conveyer so that remaining bricks can be removed
+    //moveCoveyerBelt(15);
+
+    // Reset
+    boost::unique_lock<boost::mutex> lock(_orderMutex);
+    _mesOrder = false;
+
+    // Reset
+    boost::unique_lock<boost::mutex> lock2(_startConveyerMutex);
+    _startConveyer = false;
+}
+
 void mainHandlerThread()
 {
     bool waitForBrick = false;
     bool waitForIdle = false;
     bool conveyerRunning = false;
-    bool run, anyBricks, safety, positionIdle, mesOrder;
+    bool run, anyBricks, safety, positionIdle, mesOrder, startConveyer;
 
     while(true)
     {
@@ -210,7 +248,13 @@ void mainHandlerThread()
             mesOrder = _mesOrder;
             _orderMutex.unlock();
 
-            if(run && mesOrder)
+            // Get if conveyer can be started
+            _startConveyerMutex.lock();
+            startConveyer = _startConveyer;
+            _startConveyerMutex.unlock();
+
+            // Check state
+            if(run && mesOrder && startConveyer)
             {
                 // Get position
                 _qMutex.lock();
@@ -237,7 +281,6 @@ void mainHandlerThread()
                         {
                             // Move slightly more forward and stop
                             moveCoveyerBelt(1);
-                            //stopConveyerBelt();
                             conveyerRunning = false;
                         }
 
@@ -327,20 +370,10 @@ void mainHandlerThread()
                                 }
                                 else
                                 {
+                                    // If no more bricks to pick
                                     if(!_red && !_blue && !_yellow)
                                     {
-                                        // If no more bricks to pick
-                                        printConsole("Clearing conveyer belt..");
-                                        printConsole("Waiting for order!");
-
-                                        // Tell MES Server
-                                        mesSend("Ok");
-
-                                        // Move conveyer so that remaining bricks can be removed
-                                        moveCoveyerBelt(15);
-
-                                        boost::unique_lock<boost::mutex> lock(_orderMutex);
-                                        _mesOrder = false;
+                                        orderDone();
                                     }
                                     else
                                     {
@@ -354,13 +387,7 @@ void mainHandlerThread()
                                 // If no more bricks to pick
                                 if(!_red && !_blue && !_yellow)
                                 {
-                                    printConsole("Clearing conveyer belt..");
-                                    printConsole("Waiting for order!");
-                                    // Move conveyer so that remaining bricks can be removed
-                                    moveCoveyerBelt(15);
-
-                                    boost::unique_lock<boost::mutex> lock(_orderMutex);
-                                    _mesOrder = false;
+                                    orderDone();
                                 }
                                 // Bricks are to far from robot, move forward
                                 else
