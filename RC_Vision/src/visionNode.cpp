@@ -111,9 +111,9 @@ int _hMin = 0, _hMax = 255;
 int _sMin = 0, _sMax = 255;
 int _vMin = 50, _vMax = 255;
 int _minBlobSize = 500;
-int _minRedSize = 4650, _maxRedSize = 6000;
-int _minYellowSize = 7200, _maxYellowSize = 9200;
-int _minBlueSize = 2000, _maxBlueSize = 3000;
+int _minRedSize = 4300, _maxRedSize = 6000;
+int _minYellowSize = 7000, _maxYellowSize = 9200;
+int _minBlueSize = 1800, _maxBlueSize = 3000;
 int _closeKernelSize = 5;
 int _pixelToM = 3200; //3070;   // Pixels per meter
 int _baseLegoSize = 50; // Half the width of all bricks: 1 tap on lego brick
