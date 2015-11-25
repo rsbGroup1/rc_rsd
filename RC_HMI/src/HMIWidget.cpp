@@ -8,7 +8,7 @@ HMIWidget::HMIWidget(QWidget *parent): QWidget(parent)
 	setupUi(this);
 
     // Connect UI elements
-    connect(_btnCellBusy, SIGNAL(released()), this, SLOT(eventBtn()));
+    connect(_btnCellDone, SIGNAL(released()), this, SLOT(eventBtn()));
     connect(_btnCellError, SIGNAL(released()), this, SLOT(eventBtn()));
     connect(_btnCellReady, SIGNAL(released()), this, SLOT(eventBtn()));
     connect(_btnEmStop, SIGNAL(released()), this, SLOT(eventBtn()));
@@ -40,11 +40,12 @@ HMIWidget::HMIWidget(QWidget *parent): QWidget(parent)
     _labelBricks->setStyleSheet("QLabel {color : red; }");
     _labelSafety->setText("Ok");
     _labelSafety->setStyleSheet("QLabel {color : green }");
-    _cbManual->setChecked(true);
     _safety = false;
     _anyBricks = false;
-    _liveFeed = true;
+    _liveFeed = false;
     _manualJog = false;
+    _cbManual->setChecked(true);
+    _cbVision->setChecked(true);
     _red = _blue = _yellow = 0;
 
     // Update labels
@@ -165,6 +166,7 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         _serviceGetBricks = _nodeHandle->serviceClient<rc_vision::getBricks>(getBricksService);
 
         // Publishers
+        _mesMRMessagePub = _nodeHandle->advertise<std_msgs::String>("/mrMESClient/msgToServer", 100);
         _mesMessagePub = _nodeHandle->advertise<std_msgs::String>(mesPub, 100);
         _hmiStatusPub = _nodeHandle->advertise<std_msgs::String>(statusPub, 100);
         _visionParamPub = _nodeHandle->advertise<std_msgs::String>(visionPub, 100);
@@ -375,10 +377,13 @@ void HMIWidget::mesRecCallback(rc_mes_client::server msg)
 {
     if(msg.cell == 1)
     {
-        boost::unique_lock<boost::mutex> lock(_orderMutex);
-        _red = msg.red;
-        _blue = msg.blue;
-        _yellow = msg.yellow;
+        if(msg.status == 0)
+        {
+            boost::unique_lock<boost::mutex> lock(_orderMutex);
+            _red = msg.red;
+            _blue = msg.blue;
+            _yellow = msg.yellow;
+        }
     }
 }
 
@@ -539,24 +544,24 @@ void HMIWidget::eventBtn()
 
     if(obj == _btnCellReady)
     {
-        _consoleQueue.enqueue("HMI: Cell Ready!");
-        std_msgs::String msg;
-        msg.data = "ready";
-        _mesMessagePub.publish(msg);
+        _consoleQueue.enqueue("HMI: Cell Ok!");
+        /*std_msgs::String msg;
+        msg.data = "Ok";
+        _mesMessagePub.publish(msg);*/
     }
-    if(obj == _btnCellBusy)
+    if(obj == _btnCellDone)
     {
-        _consoleQueue.enqueue("HMI: Cell Busy!");
+        _consoleQueue.enqueue("HMI: Cell Done!");
         std_msgs::String msg;
-        msg.data = "busy";
+        msg.data = "Ok";
         _mesMessagePub.publish(msg);
     }
     else if(obj == _btnCellError)
     {
-        _consoleQueue.enqueue("HMI: Cell Error!");
+        _consoleQueue.enqueue("HMI: MR Ok!");
         std_msgs::String msg;
-        msg.data = "error";
-        _mesMessagePub.publish(msg);
+        msg.data = "Ok";
+        _mesMRMessagePub.publish(msg);
     }
     else if(obj == _btnEmStop)
     {

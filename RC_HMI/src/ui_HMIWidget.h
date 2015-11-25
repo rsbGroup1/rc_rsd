@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'HMIWidget118536.ui'
+** Form generated from reading UI file 'HMIWidgetb19518.ui'
 **
 ** Created by: Qt User Interface Compiler version 4.8.6
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef HMIWIDGET118536_H
-#define HMIWIDGET118536_H
+#ifndef HMIWIDGETB19518_H
+#define HMIWIDGETB19518_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -82,7 +82,7 @@ public:
     QRadioButton *_cbManual;
     QRadioButton *_cbJog;
     QPushButton *_btnCellReady;
-    QPushButton *_btnCellBusy;
+    QPushButton *_btnCellDone;
     QPushButton *_btnCellError;
     QFrame *line_3;
     QLabel *LocalPlanner;
@@ -729,7 +729,7 @@ public:
 "	height: 15px; \n"
 "	margin-left: 5px;\n"
 "}"));
-        _cbLive->setChecked(true);
+        _cbLive->setChecked(false);
 
         horizontalLayout_10->addWidget(_cbLive);
 
@@ -754,7 +754,7 @@ public:
 "	height: 15px; \n"
 "	margin-left: 5px;\n"
 "}"));
-        _cbVision->setChecked(false);
+        _cbVision->setChecked(true);
 
         horizontalLayout_10->addWidget(_cbVision);
 
@@ -880,12 +880,12 @@ public:
 "radius: 5.35, stop: 0 #fff, stop: 1 #003399);\n"
 "}\n"
 ""));
-        _btnCellBusy = new QPushButton(groupBox_2);
-        _btnCellBusy->setObjectName(QString::fromUtf8("_btnCellBusy"));
-        _btnCellBusy->setGeometry(QRect(120, 210, 111, 31));
-        _btnCellBusy->setMinimumSize(QSize(92, 0));
-        _btnCellBusy->setFocusPolicy(Qt::NoFocus);
-        _btnCellBusy->setStyleSheet(QString::fromUtf8("QPushButton {\n"
+        _btnCellDone = new QPushButton(groupBox_2);
+        _btnCellDone->setObjectName(QString::fromUtf8("_btnCellDone"));
+        _btnCellDone->setGeometry(QRect(120, 210, 111, 31));
+        _btnCellDone->setMinimumSize(QSize(92, 0));
+        _btnCellDone->setFocusPolicy(Qt::NoFocus);
+        _btnCellDone->setStyleSheet(QString::fromUtf8("QPushButton {\n"
 "color: #333;\n"
 "border: 1px solid #003399;\n"
 "border-radius: 5px;\n"
@@ -1170,7 +1170,7 @@ public:
         _labelOrderStatus->raise();
         label_5->raise();
         horizontalLayoutWidget_5->raise();
-        _btnCellBusy->raise();
+        _btnCellDone->raise();
         _btnCellError->raise();
         line_3->raise();
         LocalPlanner->raise();
@@ -1236,13 +1236,13 @@ public:
         _cbVision->setText(QApplication::translate("HMIWidgetClass", "Vision feed", 0, QApplication::UnicodeUTF8));
         groupBox_2->setTitle(QString());
         label_15->setText(QApplication::translate("HMIWidgetClass", "Order status", 0, QApplication::UnicodeUTF8));
-        _labelOrderStatus->setText(QApplication::translate("HMIWidgetClass", "5 red, 4 black", 0, QApplication::UnicodeUTF8));
+        _labelOrderStatus->setText(QApplication::translate("HMIWidgetClass", "No order..", 0, QApplication::UnicodeUTF8));
         label_5->setText(QApplication::translate("HMIWidgetClass", "Safety status", 0, QApplication::UnicodeUTF8));
         _cbAuto->setText(QApplication::translate("HMIWidgetClass", "Auto", 0, QApplication::UnicodeUTF8));
         _cbManual->setText(QApplication::translate("HMIWidgetClass", "Manual", 0, QApplication::UnicodeUTF8));
         _cbJog->setText(QApplication::translate("HMIWidgetClass", "Jog", 0, QApplication::UnicodeUTF8));
         _btnCellReady->setText(QApplication::translate("HMIWidgetClass", "Cell Ready", 0, QApplication::UnicodeUTF8));
-        _btnCellBusy->setText(QApplication::translate("HMIWidgetClass", "Cell Busy", 0, QApplication::UnicodeUTF8));
+        _btnCellDone->setText(QApplication::translate("HMIWidgetClass", "Cell Done", 0, QApplication::UnicodeUTF8));
         _btnCellError->setText(QApplication::translate("HMIWidgetClass", "Cell Error", 0, QApplication::UnicodeUTF8));
         LocalPlanner->setText(QApplication::translate("HMIWidgetClass", "Control mode and status", 0, QApplication::UnicodeUTF8));
         label_18->setText(QApplication::translate("HMIWidgetClass", "Log messages", 0, QApplication::UnicodeUTF8));
@@ -1270,5 +1270,5 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // HMIWIDGET118536_H
+#endif // HMIWIDGETB19518_H
 

@@ -177,7 +177,7 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
         ros::ServiceClient _serviceConvChange, _serviceConvStop, _serviceConvStart;
         ros::ServiceClient _serviceGetBricks;
         ros::Subscriber _consoleSub, _mesMessageSub, _anyBrickSub, _mainStatusSub;
-        ros::Publisher _mesMessagePub, _hmiStatusPub, _visionParamPub;
+        ros::Publisher _mesMessagePub, _hmiStatusPub, _visionParamPub, _mesMRMessagePub;
 
         // Image
         QTimer *_imageShowTimer;
