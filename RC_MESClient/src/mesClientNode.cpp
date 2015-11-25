@@ -114,7 +114,7 @@ int main()
     if(connectToServer() == false)
     {
         printConsole("No connection to MES Server!");
-        return -1;
+        return 0;
     }
 
     // Set loop rate
