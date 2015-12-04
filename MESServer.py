@@ -236,9 +236,6 @@ def clientHandler(clientsock, addr):
 			# ------------------------------------------------------------------------------------ #
 			# Wait for at-robot message
 			feedback = clientsock.recv(100)
-
-			print feedback
-
 			if "Ok" in feedback:
 				mrToRcRobot = 1
 				print "\nMR: At robot!\n\nWaiting for RC to finish order!"
