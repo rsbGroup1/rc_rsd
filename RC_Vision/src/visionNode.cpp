@@ -111,9 +111,9 @@ int _hMin = 0, _hMax = 255;
 int _sMin = 85, _sMax = 255;
 int _vMin = 35, _vMax = 255;
 int _minBlobSize = 500;
-int _minRedSize = 3500, _maxRedSize = 6000;
-int _minYellowSize = 6000, _maxYellowSize = 10000;
-int _minBlueSize = 1500, _maxBlueSize = 3000;
+int _minRedSize = 3500, _maxRedSize = 6500;
+int _minYellowSize = 5500, _maxYellowSize = 12000;
+int _minBlueSize = 1200, _maxBlueSize = 3500;
 int _closeKernelSize = 5;
 int _pixelToM = 3200; //3070;   // Pixels per meter
 int _baseLegoSize = 50; // Half the width of all bricks: 1 tap on lego brick
@@ -347,9 +347,20 @@ void detectBricksThread()
             // Update global blob
             setBlobs(blob);
 
-            // Check if any blobs
+            // Check if any right blobs
+            bool anyBricks = false;
+            for(int i=0; i<blob.size(); i++)
+            {
+                std::string color = blob[i].color;
+                if(color == "red" || color == "yellow" ||color == "blue")
+                {
+                    anyBricks = true;
+                    break;
+                }
+            }
+
             std_msgs::Bool msg;
-            if(blob.size() > 0)
+            if(anyBricks)
             {
                 msg.data = true;
                 boost::unique_lock<boost::mutex> lock(_blobMutex);
@@ -633,10 +644,14 @@ std::vector<Brick> findBricks()
             else
             {
                 if(color != "tape")
+                {
                     // Save monster rect in vector
                     monsterRectVec.push_back(box);
+
+                    //printConsole("Monster");
+                }
                 //else
-                  //  std::cout << "tape" << std::endl;
+                    //printConsole("Tape");
             }
         }
 
@@ -708,7 +723,6 @@ bool analyzeFrameCallback(rc_vision::getBricks::Request &req, rc_vision::getBric
 {
     // Fetch image and analyze
     std::vector<Brick> bricks = findBricks();
-
 
     // Resize return vectors
     res.color.resize(bricks.size());
