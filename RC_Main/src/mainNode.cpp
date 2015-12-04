@@ -188,11 +188,11 @@ void mesRecCallback(rc_mes_client::server msg)
         {
             if(_waitForRobot)
             {
-                // Move forward for 3 seconds
-                moveCoveyerBelt(3);
+                // Move forward for 8 seconds
+                moveCoveyerBelt(8);
 
                 // Log
-                printConsole("MR is at conveyer! Running for 3 seconds!");
+                printConsole("MR is at conveyer! Running for 8 seconds!");
 
                 _waitForRobot = false;
             }
