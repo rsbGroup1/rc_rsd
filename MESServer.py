@@ -9,7 +9,7 @@ import time
 MOBILE_ROBOT = 1
 ROBOT_CELL = 2
 BUFF = 1024
-ADR = ('localhost', 21240)
+ADR = ('10.115.253.233', 21240)
 MAX_BRICKS = 100
 
 # Global variables
@@ -221,7 +221,7 @@ def clientHandler(clientsock, addr):
 			feedback = clientsock.recv(100)
 			if "Ok" in feedback:
 				mrToRcConveyer = 1
-				print "\nMR: At conveyer!\n\nStarting conveyer!"
+				print "\nMR: At conveyer!\n\nRC: Starting conveyer!"
 			else:
 				mrToRcConveyer = -1 
 				print "\nMR: Error!"
