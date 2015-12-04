@@ -40,7 +40,8 @@
 	</Frame>
 
 	<Frame name="MobileRobot" refframe="WORLD">
-		<RPY>0 0 0</RPY><Pos>0.57 -0.07 0.67</Pos>
+		<RPY>0 0 0</RPY><Pos>0.635 -0.13 0.62</Pos>
+		<!--<RPY>0 0 0</RPY><Pos>0.57 -0.07 0.67</Pos>-->
 	</Frame>
 
 	<Frame name="Camera" refframe="ToolMount">

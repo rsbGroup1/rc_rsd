@@ -60,11 +60,18 @@ HMIWidget::HMIWidget(QWidget *parent): QWidget(parent)
     _imageShowTimer = new QTimer(this);
     connect(_imageShowTimer, SIGNAL(timeout()), this, SLOT(imageQueueHandler()));
     _imageShowTimer->start(IMAGE_SHOW_FREQUENCY);
+    file.open("/home/yonas/Desktop/rc_log.txt", std::ios_base::app);
+    file << "************************ STARTUP **************************\n";
 }
 
 HMIWidget::~HMIWidget()
 {
-    //
+    // Close log file
+    if(file.is_open())
+    {
+        file.close();
+        std::cout << "Closing log file.." << std::endl;
+    }
 }
 
 void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudio* rws)
@@ -187,8 +194,22 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
 
 void HMIWidget::startROSThread()
 {
-    // ROS Spin (handle callbacks etc)
-    ros::spin();
+    // Sleep rate
+    ros::Rate r(25);
+
+    // ROS Spin: Handle callbacks
+    while(ros::ok())
+    {
+        ros::spinOnce();
+        r.sleep();
+    }
+
+    // Close log file
+    if(file.is_open())
+    {
+        file.close();
+        std::cout << "Closing log file.. ros" << std::endl;
+    }
 }
 
 void HMIWidget::mainCallback(std_msgs::String msg)
@@ -655,8 +676,15 @@ void HMIWidget::eventBtn()
 
 void HMIWidget::writeToLog(QString text)
 {
-    QTime time;
-    _txtBrowser->setText(time.currentTime().toString() + ": " + text + "\n" + _txtBrowser->toPlainText());
+    _txtBrowser->setText(QTime::currentTime().toString() + ": " + text + "\n" + _txtBrowser->toPlainText());
+
+    QDate date = QDate::currentDate();
+    std::stringstream dateStr;
+    dateStr << date.year() << "-" << date.month() << "-" << ((date.day()<10)?("0"):("")) << date.day();
+
+    // Log
+    if(file.is_open())
+        file << dateStr.str() + " " + (QTime::currentTime().toString() + "  " + text).toStdString() << std::endl;
 }
 
 bool HMIWidget::msgBoxHelper(QString text, QString informativeText)

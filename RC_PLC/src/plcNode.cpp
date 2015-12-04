@@ -75,7 +75,7 @@ ros::Publisher _hmiConsolePub;
 // Functions
 void printConsole(std::string msg)
 {
-    ROS_ERROR_STREAM(msg.c_str());
+    //ROS_INFO_STREAM(msg.c_str());
     std_msgs::String pubMsg;
     pubMsg.data = "PLC: " + msg;
     _hmiConsolePub.publish(pubMsg);
@@ -83,6 +83,9 @@ void printConsole(std::string msg)
 
 bool changeDirectionCallback(rc_plc::ChangeDirection::Request &req, rc_plc::ChangeDirection::Response &res)
 {
+    // Log
+    printConsole("Changing conveyer direction!");
+
     //true = reverse. false = forward.
     if(req.direction)
         _queue.enqueue("r");
@@ -94,17 +97,24 @@ bool changeDirectionCallback(rc_plc::ChangeDirection::Request &req, rc_plc::Chan
 
 bool moveCallback(rc_plc::MoveConv::Request &req, rc_plc::MoveConv::Response &res)
 {
+    // Log
+    printConsole("Moving conveyer for " + SSTR(req.duration) + " seconds!");
+
     if(req.direction)
         _queue.enqueue("r");
     else
         _queue.enqueue("s");
     sleep(req.duration);
     _queue.enqueue("t");
+
     return true;
 }
 
 bool startCallback(rc_plc::StartConv::Request &req, rc_plc::StartConv::Response &res)
 {
+    // Log
+    printConsole("Starting conveyer!");
+
     if(req.direction)
         _queue.enqueue("r");
     else
@@ -114,6 +124,9 @@ bool startCallback(rc_plc::StartConv::Request &req, rc_plc::StartConv::Response 
 
 bool stopCallback(rc_plc::StopConv::Request &req, rc_plc::StopConv::Response &res)
 {
+    // Log
+    printConsole("Stopping conveyer!");
+
     _queue.enqueue("t");
     return true;
 }
@@ -220,7 +233,7 @@ int main()
     int argc = 0;
 
     // Init ROS Node
-    ros::init(argc, argv, "rc_plc");
+    ros::init(argc, argv, "RC_PLC");
     ros::NodeHandle nh;
     ros::NodeHandle pNh("~");
 
@@ -254,9 +267,15 @@ int main()
     // Start serial read thread
     _writeThread = new boost::thread(writeSerialThread);
 
+    // Sleep rate
+    ros::Rate r(10);
+
     // ROS Spin: Handle callbacks
     while(ros::ok())
+    {
         ros::spinOnce();
+        r.sleep();
+    }
 
     // Close connection
     _writeThread->interrupt();

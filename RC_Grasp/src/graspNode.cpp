@@ -30,6 +30,7 @@
 #include <iostream>
 
 // Defines
+#define SSTR(x)                     dynamic_cast< std::ostringstream & >(( std::ostringstream() << std::dec << x )).str()
 #define DEGREETORAD                 (M_PI/180.0)
 #define RADTODEGREE                 (180.0/M_PI)
 #define ROBOT_NAME                  "KukaKR6R700"
@@ -37,6 +38,7 @@
 #define CONNECT_PG70                true
 #define PITCH_OFFSET                (-18*DEGREETORAD)
 #define GRIPPER_MAX                 0.034
+#define SPEED                       100
 
 // Global variables
 ros::ServiceClient _serviceKukaSetConf, _serviceKukaStop, _serviceKukaGetConf, _serviceKukaGetQueueSize, _serviceKukaGetIsMoving;
@@ -80,7 +82,7 @@ bool moveRobotWait(rw::math::Q q, rw::math::Q speed = rw::math::Q(6,0,0,0,0,0,0)
 
 void printConsole(std::string msg)
 {
-    ROS_ERROR_STREAM(msg.c_str());
+    //ROS_INFO_STREAM(msg.c_str());
     std_msgs::String pubMsg;
     pubMsg.data = "Grasp: " + msg;
     _hmiConsolePub.publish(pubMsg);
@@ -104,6 +106,7 @@ rw::math::Q getQFromPinBrickFrame(rw::math::Vector3D<> p, double rotation)
     std::vector<rw::math::Q> qVec = _inverseKinGripper->solve(transform, _state);
     if(qVec.empty())
     {
+        // Log
         printConsole("Pick up frame: Error in inverse kinematics!");
         return qRet;
     }
@@ -112,8 +115,10 @@ rw::math::Q getQFromPinBrickFrame(rw::math::Vector3D<> p, double rotation)
 
     // Fix rotation
     if(qRet[5] + rotation < _limits.first[5])
+        // Log
         printConsole("Joint 5 reached its limit!");
     else if(qRet[5] + rotation > _limits.second[5])
+        // Log
         printConsole("Joint 5 reached its limit!");
     else
         qRet[5] += rotation;
@@ -166,11 +171,13 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     // Check limits
     if(req.x>_xMax || req.x<-_xMax || req.y>_yMax || req.y<-_yMax)
     {
+        // Log
         printConsole("Position larger than workspace!");
         return false;
     }
     if(req.size>GRIPPER_MAX)
     {
+        // Log
         printConsole("Lego size larger than workspace!");
         return false;
     }
@@ -185,6 +192,9 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     if(checkQ(qBrickLifted) == false || checkQ(qBrick) == false)
         return false;
 
+    // Log
+    printConsole("Opening gripper!");
+
     // 1. Open gripper
     // Gripper max cmd: 0.034m. Equals an opening of 0.068m. If 5cm opening is wanted: Send 0.025
     if(!getStatus())
@@ -197,12 +207,18 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     if(PG70SetConf(qGripperOpen) == false)
         return false;
 
+    // Log
+    printConsole("Moving robot to just above brick!");
+
     // 2. Move to brick lifted (blocking call)
     if(!getStatus())
         return false;
-    rw::math::Q speed = getSpeed(80);
+    rw::math::Q speed = getSpeed(SPEED);
     if(moveRobotWait(qBrickLifted, speed) == false)
         return false;
+
+    // Log
+    printConsole("Moving robot to grasp brick(" + SSTR(req.x) + "," + SSTR(req.y) + "," + SSTR(req.theta) + ")");
 
     // 3. Move to brick down (blocking call)
     if(!getStatus())
@@ -210,6 +226,9 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     speed = getSpeed(10);
     if(moveRobotWait(qBrick, speed) == false)
         return false;
+
+    // Log
+    printConsole("Grasping brick!");
 
     // 4. Close gripper to req.size
     if(!getStatus())
@@ -222,23 +241,29 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     // 5. Move to brick lifted (blocking call)
     if(!getStatus())
         return false;
-    speed = getSpeed(80);
+    speed = getSpeed(SPEED);
     if(moveRobotWait(qBrickLifted, speed) == false)
         return false;
 
     // 6. Go to idle Q (when camera is taking pictures)
     /*if(!getStatus())
         return false;
-    speed = getSpeed(80);
+    speed = getSpeed(SPEED);
     if(moveRobotWait(_idleQ, speed) == false)
         return false;*/
+
+    // Log
+    printConsole("Moving robot to release area!");
 
     // 7. Go to release-lego-to-mr Q
     if(!getStatus())
         return false;
-    speed = getSpeed(80);
+    speed = getSpeed(SPEED);
     if(moveRobotWait(_releaseBrickQ, speed) == false)
         return false;
+
+    // Log
+    printConsole("Releasing brick!");
 
     // 8. Open gripper
     if(!getStatus())
@@ -247,10 +272,13 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
         return false;
     sleep(2);
 
+    // Log
+    printConsole("Moving robot to idle position!");
+
     // 9. Go back to idle Q
     if(!getStatus())
         return false;
-    speed = getSpeed(80);
+    speed = getSpeed(SPEED);
     if(moveRobotWait(_idleQ, speed) == false)
         return false;
 
@@ -265,7 +293,7 @@ int main()
     int argc = 0;
 
     // Init ROS Node
-    ros::init(argc, argv, "rc_grasp");
+    ros::init(argc, argv, "RC_Grasp");
     ros::NodeHandle nh;
     ros::NodeHandle pNh("~");
 
@@ -309,6 +337,7 @@ int main()
     // Check if loaded
     if(_device == NULL)
     {
+        // Log
         printConsole("Device not found!");
         return -1;
     }
@@ -317,6 +346,7 @@ int main()
     _brickFrame = _workcell->findFrame("Brick");
     if(!_brickFrame)
     {
+        // Log
         printConsole("Cannot find Brick frame in Scene file!");
         return -1;
     }
@@ -325,6 +355,7 @@ int main()
     _gripperFrame = _workcell->findFrame("PG70.TCP");
     if(!_gripperFrame)
     {
+        // Log
         printConsole("Cannot find PG70.TCP frame in Scene file!");
         return -1;
     }
@@ -333,6 +364,7 @@ int main()
     _cameraFrame = _workcell->findFrame("Camera");
     if(!_cameraFrame)
     {
+        // Log
         printConsole("Cannot find Camera frame in Scene file!");
         return -1;
     }
@@ -365,6 +397,7 @@ int main()
     std::vector<rw::math::Q> qVec = _inverseKinCamera->solve(transform, _state);
     if(qVec.empty())
     {
+        // Log
         printConsole("Idle Q: Error in inverse kinematics!");
         return -1;
     }
@@ -374,6 +407,7 @@ int main()
     rw::kinematics::Frame *mobileRobotFrame = _workcell->findFrame("MobileRobot");
     if(!mobileRobotFrame)
     {
+        // Log
         printConsole("Cannot find MobileRobot frame in Scene file!");
         return -1;
     }
@@ -382,6 +416,7 @@ int main()
     qVec = _inverseKinGripper->solve(transform, _state);
     if(qVec.empty())
     {
+        // Log
         printConsole("Release brick: Error in inverse kinematics!");
         return -1;
     }
@@ -391,9 +426,15 @@ int main()
     KukaSetConf(_idleQ);
     PG70Open();
 
-    // Set loop rate
+    // Sleep rate
+    ros::Rate r(10);
+
+    // ROS Spin: Handle callbacks
     while(ros::ok())
+    {
         ros::spinOnce();
+        r.sleep();
+    }
 
     // Return
     return 0;
@@ -418,6 +459,7 @@ bool KukaIsMoving()
         kuka_rsi::getIsMoving isMoveObj;
         if(!_serviceKukaGetIsMoving.call(isMoveObj))
         {
+            // Log
             printConsole("Failed to call the 'serviceKukaGetIsMoving'");
             return true;
         }
@@ -448,6 +490,7 @@ bool KukaSetConf(rw::math::Q q, rw::math::Q speed)
         // Call service
         if(!_serviceKukaSetConf.call(config))
         {
+            // Log
             printConsole("Failed to call the 'serviceKukaSetConf'");
             return false;
         }
@@ -466,6 +509,7 @@ int KukaGetQueueSize()
         kuka_rsi::getQueueSize SizeObj;
         if(!_serviceKukaGetQueueSize.call(SizeObj))
         {
+            // Log
             printConsole("Failed to call the 'serviceKukaGetQueueSize'");
             return -1;
         }
@@ -487,6 +531,7 @@ rw::math::Q KukaGetConf()
         kuka_rsi::getConfiguration confObj;
         if(!_serviceKukaGetConf.call(confObj))
         {
+            // Log
             printConsole("Failed to call the 'serviceKukaGetConf'");
             return qRet;
         }
@@ -514,6 +559,7 @@ bool PG70SetConf(rw::math::Q q)
         // Call service
         if(!_servicePG70Move.call(config))
         {
+            // Log
             printConsole("Failed to call the 'servicePG70Move'");
             return false;
         }
@@ -528,6 +574,9 @@ void PG70Stop()
 {
     if(CONNECT_PG70)
     {
+        // Log
+        printConsole("Gripper stop!");
+
         // Stop
         pg70::Stop stopObj;
         if(!_servicePG70Stop.call(stopObj))
@@ -539,6 +588,9 @@ void PG70Open()
 {
     if(CONNECT_PG70)
     {
+        // Log
+        printConsole("Gripper open!");
+
         // Open
         pg70::Open openObj;
         openObj.request.power = 10.0;

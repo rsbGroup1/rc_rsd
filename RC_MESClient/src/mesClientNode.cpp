@@ -13,6 +13,9 @@
 #include "tinyxml2.h"
 #include "rc_mes_client/server.h"
 
+// Defines
+#define SSTR(x)                 dynamic_cast< std::ostringstream & >(( std::ostringstream() << std::dec << x )).str()
+
 // Constants
 const int BUFFER_SIZE = 1024;
 
@@ -28,9 +31,9 @@ bool _waitForStatus = false;
 // Functions
 void printConsole(std::string msg)
 {
-    ROS_ERROR_STREAM(msg.c_str());
+    //ROS_INFO_STREAM(msg.c_str());
     std_msgs::String pubMsg;
-    pubMsg.data = "MES: " + msg;
+    pubMsg.data = "MES Client: " + msg;
     _hmiConsolePub.publish(pubMsg);
 }
 
@@ -45,8 +48,6 @@ void sendMsgCallback(std_msgs::String msg)
         // Reset
         _waitForStatus = false;
         _waitForServer = true;
-
-        std::cout << msg.data << std::endl;
     }
 }
 
@@ -88,7 +89,7 @@ int main()
     int argc = 0;
 
     // Init ROS Node
-    ros::init(argc, argv, "rc_mes_client");
+    ros::init(argc, argv, "RC_MES_Client");
     ros::NodeHandle nh;
     ros::NodeHandle pNh("~");
 

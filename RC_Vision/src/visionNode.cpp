@@ -111,9 +111,9 @@ int _hMin = 0, _hMax = 255;
 int _sMin = 0, _sMax = 255;
 int _vMin = 50, _vMax = 255;
 int _minBlobSize = 500;
-int _minRedSize = 4300, _maxRedSize = 6000;
-int _minYellowSize = 7000, _maxYellowSize = 9200;
-int _minBlueSize = 1800, _maxBlueSize = 3000;
+int _minRedSize = 4000, _maxRedSize = 6000;
+int _minYellowSize = 6900, _maxYellowSize = 9200;
+int _minBlueSize = 1700, _maxBlueSize = 3000;
 int _closeKernelSize = 5;
 int _pixelToM = 3200; //3070;   // Pixels per meter
 int _baseLegoSize = 50; // Half the width of all bricks: 1 tap on lego brick
@@ -130,7 +130,7 @@ double _fingerWidthM = 0.0;
 // Functions
 void printConsole(std::string msg)
 {
-    ROS_ERROR_STREAM(msg.c_str());
+    //ROS_INFO_STREAM(msg.c_str());
     std_msgs::String pubMsg;
     pubMsg.data = "Vision: " + msg;
     _hmiConsolePub.publish(pubMsg);
@@ -757,7 +757,7 @@ int main()
     int argc = 0;
 
     // Init ROS Node
-    ros::init(argc, argv, "rc_vision");
+    ros::init(argc, argv, "RC_Vision");
     ros::NodeHandle nh;
     ros::NodeHandle pNh("~");
 
@@ -797,9 +797,15 @@ int main()
     // Brick detection thread
     boost::thread detectionThread(detectBricksThread);
 
-    // Loop
+    // Sleep rate
+    ros::Rate r(30);
+
+    // ROS Spin: Handle callbacks
     while(ros::ok())
+    {
         ros::spinOnce();
+        r.sleep();
+    }
 
     // Interrupt thread
     detectionThread.interrupt();

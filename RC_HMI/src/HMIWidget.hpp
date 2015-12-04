@@ -68,6 +68,7 @@
 
 // Other
 #include <queue>
+#include <fstream>
 
 // Defines
 #define DEGREETORAD             (M_PI/180.0)
@@ -196,6 +197,7 @@ class HMIWidget : public QWidget, private Ui::HMIWidgetClass
         // Order
         int _red, _blue, _yellow;
         boost::mutex _orderMutex;
+        std::ofstream file;
 };
 
 #endif // HMIWIDGET_HPP

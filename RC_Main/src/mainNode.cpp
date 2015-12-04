@@ -41,14 +41,11 @@ bool _positionQIdle = false;
 int _red = 0, _blue = 0, _yellow = 0;
 
 // Functions
-void printConsole(std::string msg, bool ros_print = false)
+void printConsole(std::string msg)
 {
-    if(ros_print)
-        ROS_INFO_STREAM(msg.c_str());
     std_msgs::String pubMsg;
     pubMsg.data = "Main: " + msg;
     _hmiConsolePub.publish(pubMsg);
-    std::cout << pubMsg.data << std::endl;
 }
 
 bool grabBrick(Brick brick)
@@ -174,19 +171,25 @@ void mesRecCallback(rc_mes_client::server msg)
 
             if(_blue == 0 && _red == 0 && _yellow == 0)
             {
+                // Log
                 printConsole("Empty order received.. Doing nothing!");
             }
             else
             {
                 _mesOrder = true;
-                printConsole("Order received.. Waiting for MR!");
+
+                // Log
+                printConsole("Order received.. Red: " + SSTR(_red) + " Blue: " + SSTR(_blue) + " Yellow: " + SSTR(_yellow));
+                printConsole("Waiting for MR!");
             }
         }
         else
         {
             boost::unique_lock<boost::mutex> lock(_startConveyerMutex);
             _startConveyer = true;
-            printConsole("MR is here! Starting conveyer belt..");
+
+            // Log
+            printConsole("MR is here! Processing order!");
         }
     }
 }
@@ -219,6 +222,7 @@ void hmiStatusCallback(std_msgs::String msg)
 
 void orderDone()
 {
+    // Log
     //printConsole("Clearing conveyer belt..");
     printConsole("Order done..");
     printConsole("Waiting for new order!");
@@ -314,6 +318,9 @@ void mainHandlerThread()
                         {
                             if(bricks.empty() == false)
                             {
+                                // Log
+                                printConsole("Picking up red brick..");
+
                                 // Filter and choose the correct bricks
                                 _orderMutex.lock();
                                 int brickToPick = -1;
@@ -328,6 +335,7 @@ void mainHandlerThread()
                                         msg.data = "red";
                                         _mainStatusPub.publish(msg);
 
+                                        // Log
                                         printConsole("Picking up red brick..");
 
                                         break;
@@ -341,6 +349,7 @@ void mainHandlerThread()
                                         msg.data = "blue";
                                         _mainStatusPub.publish(msg);
 
+                                        // Log
                                         printConsole("Picking up blue brick..");
 
                                         break;
@@ -354,6 +363,7 @@ void mainHandlerThread()
                                         msg.data = "yellow";
                                         _mainStatusPub.publish(msg);
 
+                                        // Log
                                         printConsole("Picking up yellow brick..");
 
                                         break;
@@ -376,7 +386,8 @@ void mainHandlerThread()
                                         msg.data = "grabError";
                                         _mainStatusPub.publish(msg);
 
-                                        printConsole("Grab error!", true);
+                                        // Log
+                                        printConsole("Grab error!");
                                     }
                                 }
                                 else
@@ -410,6 +421,9 @@ void mainHandlerThread()
                         }
                         else
                         {
+                            // Log
+                            printConsole("Safety breached, emergency stopped!");
+
                             // Get run
                             _runMutex.lock();
                             _run = false;
@@ -428,6 +442,7 @@ void mainHandlerThread()
                         // Inform user
                         if(waitForBrick == false)
                         {
+                            // Log
                             printConsole("Waiting for bricks!");
                             waitForBrick = true;
                         }
@@ -438,6 +453,7 @@ void mainHandlerThread()
                     // Inform user
                     if(waitForIdle == false)
                     {
+                        // Log
                         printConsole("Waiting for idle position!");
                         waitForIdle = true;
                     }
