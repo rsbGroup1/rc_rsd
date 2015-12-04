@@ -9,7 +9,7 @@ import time
 MOBILE_ROBOT = 1
 ROBOT_CELL = 2
 BUFF = 1024
-ADR = ('10.115.253.233', 21240)
+ADR = ('10.115.253.233', 21240) # 127.0.0.1   10.115.253.233
 MAX_BRICKS = 100
 
 # Global variables
@@ -233,16 +233,19 @@ def clientHandler(clientsock, addr):
 
 
 
-
 			# ------------------------------------------------------------------------------------ #
 			# Wait for at-robot message
 			feedback = clientsock.recv(100)
+
+			print feedback
+
 			if "Ok" in feedback:
 				mrToRcRobot = 1
 				print "\nMR: At robot!\n\nWaiting for RC to finish order!"
 			else:
 				mrToRcRobot = -1 
 				print "\nMR: Error!"
+
 			# ------------------------------------------------------------------------------------ #
 
 
@@ -327,7 +330,7 @@ def clientHandler(clientsock, addr):
 			except SocketError as e:
 				mrConnected = False
 				break 	
-
+		
 			# Reset
 			mrToRcConveyer = 0
 			# ------------------------------------------------------------------------------------ #
