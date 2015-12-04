@@ -218,7 +218,7 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
         return false;
 
     // Log
-    printConsole("Moving robot to grasp brick(" + SSTR(req.x) + "," + SSTR(req.y) + "," + SSTR(req.theta) + ")");
+    printConsole("Moving robot to grasp brick (x,y,theta) (" + SSTR(req.x) + "," + SSTR(req.y) + "," + SSTR(req.theta) + ")");
 
     // 3. Move to brick down (blocking call)
     if(!getStatus())
