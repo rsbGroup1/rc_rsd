@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'HMIWidgetW24784.ui'
+** Form generated from reading UI file 'HMIWidgetf39653.ui'
 **
 ** Created by: Qt User Interface Compiler version 4.8.6
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef HMIWIDGETW24784_H
-#define HMIWIDGETW24784_H
+#ifndef HMIWIDGETF39653_H
+#define HMIWIDGETF39653_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -199,8 +199,9 @@ public:
 "border: 1px solid #aaa;\n"
 "border-radius: 4px;\n"
 "}"));
+        _sliderSMin->setMinimum(0);
         _sliderSMin->setMaximum(255);
-        _sliderSMin->setValue(0);
+        _sliderSMin->setValue(85);
         _sliderSMin->setOrientation(Qt::Horizontal);
 
         horizontalLayout->addWidget(_sliderSMin);
@@ -358,7 +359,7 @@ public:
 "border-radius: 4px;\n"
 "}"));
         _sliderVMin->setMaximum(255);
-        _sliderVMin->setValue(50);
+        _sliderVMin->setValue(35);
         _sliderVMin->setOrientation(Qt::Horizontal);
 
         horizontalLayout_3->addWidget(_sliderVMin);
@@ -1270,5 +1271,5 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // HMIWIDGETW24784_H
+#endif // HMIWIDGETF39653_H
 

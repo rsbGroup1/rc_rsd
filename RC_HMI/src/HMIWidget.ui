@@ -149,11 +149,14 @@ border: 1px solid #aaa;
 border-radius: 4px;
 }</string>
        </property>
+       <property name="minimum">
+        <number>0</number>
+       </property>
        <property name="maximum">
         <number>255</number>
        </property>
        <property name="value">
-        <number>0</number>
+        <number>85</number>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -347,7 +350,7 @@ border-radius: 4px;
         <number>255</number>
        </property>
        <property name="value">
-        <number>50</number>
+        <number>35</number>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
