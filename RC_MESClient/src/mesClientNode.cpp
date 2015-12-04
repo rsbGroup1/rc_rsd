@@ -60,7 +60,7 @@ bool connectToServer()
     addr.sin_addr.s_addr = inet_addr(_serverIP.c_str());
     addr.sin_port = htons(_serverPort);
 
-    std::cout << _serverIP << " " << _serverPort << std::endl;
+    //std::cout << _serverIP << " " << _serverPort << std::endl;
 
     // Create socket
     _socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -137,7 +137,6 @@ int main()
                 std::string msg(buffer);
                 size_t found = msg.find(MESServer);
                 msg = msg.substr(0, found+12);
-                std::cout << msg << std::endl;
 
                 // Open document
                 tinyxml2::XMLDocument doc;
