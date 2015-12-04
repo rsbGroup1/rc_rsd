@@ -27,6 +27,7 @@ int _socket;
 bool _connected = false;
 bool _waitForServer = true;
 bool _waitForStatus = false;
+int _okCounter = 0;
 
 // Functions
 void printConsole(std::string msg)
@@ -161,8 +162,14 @@ int main()
                         msg.cell = 1;
                         msg.status = status;
 
+                        _okCounter++;
+
                         // Reset
-                        _waitForServer = false;
+                        if(_okCounter == 2)
+                        {
+                            _okCounter = 0;
+                            _waitForServer = false;
+                        }
                     }
                     else
                     {

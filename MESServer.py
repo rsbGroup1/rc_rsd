@@ -23,7 +23,8 @@ sendMsg = ""
 mrSend = False
 rcSend = False
 rcToMrSend = 0 # -1 = Error, 0 = Idle, 1 = Ok
-mrToRcSend = 0 # -1 = Error, 0 = Idle, 1 = Ok 
+mrToRcRobot = 0 # -1 = Error, 0 = Idle, 1 = Ok 
+mrToRcConveyer = 0 # -1 = Error, 0 = Idle, 1 = Ok 
 mrDone = False
 rcDone = False
 mrConnected = False
@@ -166,7 +167,7 @@ def clientHandler(clientsock, addr):
 	global sendMsg
 	global rcSend
 	global mrSend
-	global mrToRcSend
+	global mrToRcConveyer, mrToRcRobot
 	global rcToMrSend
 	global mrDone
 	global rcDone
@@ -219,10 +220,19 @@ def clientHandler(clientsock, addr):
 			# Wait for at-conveyer-belt message
 			feedback = clientsock.recv(100)
 			if "Ok" in feedback:
-				mrToRcSend = 1
-				print "\nMR: At conveyer!\n\nWaiting for RC to finish order!"
+				mrToRcConveyer = 1
+				print "\nMR: At conveyer!\n\nStarting conveyer!"
 			else:
-				mrToRcSend = -1 
+				mrToRcConveyer = -1 
+				print "\nMR: Error!"
+
+			# Wait for at-robot message
+			feedback = clientsock.recv(100)
+			if "Ok" in feedback:
+				mrToRcRobot = 1
+				print "\nMR: At robot!\n\nWaiting for RC to finish order!"
+			else:
+				mrToRcRobot = -1 
 				print "\nMR: Error!"
 
 			# Wait for robot-cell-done message
@@ -278,12 +288,33 @@ def clientHandler(clientsock, addr):
 			rcSend = False
 
 			# Wait for GO message (start conveyer)
-			while(mrToRcSend == 0):
+			while(mrToRcConveyer == 0):
 				time.sleep(2)
 			
 			# Create message
 			msg = ""
-			if(mrToRcSend == 1):
+			if(mrToRcConveyer == 1):
+				msg = '<MESServer>' + '<Status>' + str(1) + '</Status>' + '</MESServer>' 
+			else:# if(rcToMrSend == -1):
+				msg = '<MESServer>' + '<Status>' + str(2) + '</Status>' + '</MESServer>' 
+
+			# Send msg
+			try:
+				clientsock.send(msg)
+			except SocketError as e:
+				mrConnected = False
+				break 	
+
+			# Reset
+			mrToRcConveyer = 0
+
+			# Wait for GO message (start sorting)
+			while(mrToRcRobot == 0):
+				time.sleep(2)
+
+			# Create message
+			msg = ""
+			if(mrToRcRobot == 1):
 				msg = '<MESServer>' + '<Status>' + str(1) + '</Status>' + '</MESServer>' 
 			else:# if(rcToMrSend == -1):
 				msg = '<MESServer>' + '<Status>' + str(2) + '</Status>' + '</MESServer>' 
@@ -296,8 +327,7 @@ def clientHandler(clientsock, addr):
 				break 	
 
 			# Reset
-			mrToRcSend = 0
-			#time.sleep(2)
+			mrToRcRobot = 0
 
 			# Wait for done message
 			feedback = clientsock.recv(100)

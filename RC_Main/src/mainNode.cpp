@@ -39,6 +39,7 @@ boost::mutex _runMutex, _safetyMutex, _anyBricksMutex, _qMutex, _orderMutex, _st
 double _qIdle[6] = {1.34037, 0.696857, 0.158417, 0.418082, -0.736247, -0.531764};
 bool _positionQIdle = false;
 int _red = 0, _blue = 0, _yellow = 0;
+bool _waitForRobot = true;
 
 // Functions
 void printConsole(std::string msg)
@@ -185,11 +186,26 @@ void mesRecCallback(rc_mes_client::server msg)
         }
         else
         {
-            boost::unique_lock<boost::mutex> lock(_startConveyerMutex);
-            _startConveyer = true;
+            if(_waitForRobot)
+            {
+                // Move forward for 3 seconds
+                moveCoveyerBelt(3);
 
-            // Log
-            printConsole("MR is here! Processing order!");
+                // Log
+                printConsole("MR is at conveyer! Running for 3 seconds!");
+
+                _waitForRobot = false;
+            }
+            else
+            {
+                boost::unique_lock<boost::mutex> lock(_startConveyerMutex);
+                _startConveyer = true;
+
+                // Log
+                printConsole("MR is at robot! Processing order!");
+
+                _waitForRobot = true;
+            }
         }
     }
 }
@@ -210,6 +226,7 @@ void hmiStatusCallback(std_msgs::String msg)
         _run = false;
     else if(msg.data == "clear")
     {
+        _waitForRobot = true;
         _run = false;
 
         boost::unique_lock<boost::mutex> lock(_orderMutex);
@@ -318,9 +335,6 @@ void mainHandlerThread()
                         {
                             if(bricks.empty() == false)
                             {
-                                // Log
-                                printConsole("Picking up red brick..");
-
                                 // Filter and choose the correct bricks
                                 _orderMutex.lock();
                                 int brickToPick = -1;
