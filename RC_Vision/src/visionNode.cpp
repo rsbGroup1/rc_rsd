@@ -108,12 +108,12 @@ SynchronisedQueue<cv::Mat> _queueImage;
 ros::Publisher _anyBricksPub, _hmiConsolePub;
 image_transport::Publisher _imagePub;
 int _hMin = 0, _hMax = 255;
-int _sMin = 0, _sMax = 255;
-int _vMin = 50, _vMax = 255;
+int _sMin = 85, _sMax = 255;
+int _vMin = 35, _vMax = 255;
 int _minBlobSize = 500;
-int _minRedSize = 4000, _maxRedSize = 6000;
-int _minYellowSize = 6900, _maxYellowSize = 9200;
-int _minBlueSize = 1700, _maxBlueSize = 3000;
+int _minRedSize = 3800, _maxRedSize = 6000;
+int _minYellowSize = 6600, _maxYellowSize = 9300;
+int _minBlueSize = 1800, _maxBlueSize = 3000;
 int _closeKernelSize = 5;
 int _pixelToM = 3200; //3070;   // Pixels per meter
 int _baseLegoSize = 50; // Half the width of all bricks: 1 tap on lego brick
@@ -194,14 +194,18 @@ std::string determineColor(cv::Point3d point)
     // Determine color
     if(redAmount > 0.3 && greenAmount < 0.3 && blueAmount < 0.3)
         retString = "red";
-    else if(redAmount < 0.3 && greenAmount > 0.3 && blueAmount < 0.3)
-        retString = "green";
+    /*else if(redAmount < 0.3 && greenAmount > 0.3 && blueAmount < 0.3)
+        retString = "green";*/
+    else if(redAmount > 0.23 && greenAmount > 0.28 && blueAmount > 0.35)
+        retString = "tape";
     else if(redAmount < 0.5 && greenAmount < 0.5 && blueAmount > 0.3)
         retString = "blue";
     else if(redAmount > 0.3 && greenAmount > 0.3 && blueAmount < 0.3)
         retString = "yellow";
     else
         retString = "undefined";
+
+    //std::cout << retString << " R: " << redAmount << " G: " << greenAmount << " B: " << blueAmount << std::endl;
 
     // Return
     return retString;
@@ -393,13 +397,13 @@ cv::Point2f convertPixelToM(cv::Point2f pointPixel, const cv::Mat &image)
 
 //! Projects a 2d polygon onto an 2d axis
 /*!
-	\param Axis defined by a vector
-	\param Polygon as a set of points
-	\param ref to Min value of Polygon intersection
-	\param ref to Max value of Polygon intersection
+    \param Axis defined by a vector
+    \param Polygon as a set of points
+    \param ref to Min value of Polygon intersection
+    \param ref to Max value of Polygon intersection
 */
 void projectPolygon(cv::Vec2f axis, cv::Point2f poly[4], float &min, float &max)
-{		
+{
     // Use dot-product to project
     float projected = axis[0]*poly[0].x + axis[1] * poly[0].y;
     min = max = projected;
@@ -419,69 +423,69 @@ void projectPolygon(cv::Vec2f axis, cv::Point2f poly[4], float &min, float &max)
 
 //! Checks if two OBB is intersecting
 /*!
-	Uses the Separating Axis Theorem to compute if they are intersecting
-	\param first OBB
-	\param Second OBB
-	\return True if the two OBB is intersecting, else false
+    Uses the Separating Axis Theorem to compute if they are intersecting
+    \param first OBB
+    \param Second OBB
+    \return True if the two OBB is intersecting, else false
 */
 bool isRotatedRectIntersecting(cv::RotatedRect a, cv::RotatedRect b)
-{	
+{
     // Points of rectangles
-	cv::Point2f aPoints[4];
-	cv::Point2f bPoints[4];
+    cv::Point2f aPoints[4];
+    cv::Point2f bPoints[4];
     a.points(aPoints);
-	b.points(bPoints);
+    b.points(bPoints);
 
     // Check all non parallel edges of the OBB
     for(unsigned int i=0; i<4; ++i)
-	{
+    {
         // Define edge
-		cv::Point2f p1 = aPoints[i];
-		cv::Point2f p2 = aPoints[i+1];
-		
+        cv::Point2f p1 = aPoints[i];
+        cv::Point2f p2 = aPoints[i+1];
+
         // Find the axis perpendicular to the current edge.
-		cv::Vec2f normal(p2.y-p1.y, p1.x-p2.x);
+        cv::Vec2f normal(p2.y-p1.y, p1.x-p2.x);
 
         // Project both polygons on that axis and Find the 2 outer points of both projections
-		float minA = 0;
-		float maxA = 0;
+        float minA = 0;
+        float maxA = 0;
         projectPolygon(normal, aPoints, minA, maxA);
 
-		float minB = 0;
-		float maxB = 0;
+        float minB = 0;
+        float maxB = 0;
         projectPolygon(normal, bPoints, minB, maxB);
 
         // Test if projection overlap
         if(maxA < minB || maxB < minA)
-		{
+        {
             // If projections don't overlap, the polygons don't intersect
             return false;
-		}
-	}
+        }
+    }
 
-	return true;			
+    return true;
 }
 
 //! Finds which bricks can be grasped without collision with other bricks
 /*!
-	\param vector of found bricks in the image.
-	\param Grasp width.
-	\param width of grasp fingers.
-	\return vector of collision free bricks
+    \param vector of found bricks in the image.
+    \param Grasp width.
+    \param width of grasp fingers.
+    \return vector of collision free bricks
 */
 std::vector<Brick> findNoGraspCollisionBricks(std::vector<Brick> brickVec,std::vector<cv::RotatedRect> monsterRectVec, float graspWidthPix, float fingerWidthPix)
-{	
-	// Return var
-	std::vector<Brick> freeBricksVec;
+{
+    // Return var
+    std::vector<Brick> freeBricksVec;
 
-	// Iterate and check for all bricks 
-	for(std::vector<Brick>::iterator brickIt= brickVec.begin(); brickIt != brickVec.end(); ++brickIt)
-	{
+    // Iterate and check for all bricks
+    for(std::vector<Brick>::iterator brickIt= brickVec.begin(); brickIt != brickVec.end(); ++brickIt)
+    {
         // Define OBB which encapsulates the grasp
-		cv::RotatedRect graspBox = brickIt->box;
+        cv::RotatedRect graspBox = brickIt->box;
 
         graspBox.angle = brickIt->theta;
-		
+
         if(graspBox.size.height > graspBox.size.width)
         {
             // Height of box equals the finger width
@@ -494,23 +498,23 @@ std::vector<Brick> findNoGraspCollisionBricks(std::vector<Brick> brickVec,std::v
             graspBox.size.height = graspWidthPix;
             graspBox.size.width = fingerWidthPix;
         }
-		
-		bool brickisIntersecting = false;
+
+        bool brickisIntersecting = false;
 
         // Check the OBB against all bricks
-		for(std::vector<Brick>::iterator brickIt2= brickVec.begin(); brickIt2 != brickVec.end(); ++brickIt2)
-		{
+        for(std::vector<Brick>::iterator brickIt2= brickVec.begin(); brickIt2 != brickVec.end(); ++brickIt2)
+        {
             // Dont check against the brick which should be grasped
-			if(brickIt != brickIt2)
-			{
+            if(brickIt != brickIt2)
+            {
                 // Check for intersections
-				if(isRotatedRectIntersecting(graspBox,brickIt2->box))
-				{
-					brickisIntersecting = true;
+                if(isRotatedRectIntersecting(graspBox,brickIt2->box))
+                {
+                    brickisIntersecting = true;
                     break;
-				}
-			}
-		}
+                }
+            }
+        }
 
         // Check the OBB against all monster rectangels
         for(std::vector<cv::RotatedRect>::iterator monstRectIt= monsterRectVec.begin(); monstRectIt != monsterRectVec.end(); ++monstRectIt)
@@ -523,14 +527,14 @@ std::vector<Brick> findNoGraspCollisionBricks(std::vector<Brick> brickVec,std::v
             }
         }
 
-		if(!brickisIntersecting)
-		{
+        if(!brickisIntersecting)
+        {
             // Add brick to vector of bricks which a free to grasp without collision.
-			freeBricksVec.push_back(*brickIt);
-		}
-	} 
-	
-	return freeBricksVec;
+            freeBricksVec.push_back(*brickIt);
+        }
+    }
+
+    return freeBricksVec;
 }
 
 std::vector<Brick> findBricks()
@@ -628,8 +632,11 @@ std::vector<Brick> findBricks()
             }
             else
             {
-                // Save monster rect in vector
-                monsterRectVec.push_back(box);
+                if(color != "tape")
+                    // Save monster rect in vector
+                    monsterRectVec.push_back(box);
+                //else
+                  //  std::cout << "tape" << std::endl;
             }
         }
 
@@ -701,7 +708,7 @@ bool analyzeFrameCallback(rc_vision::getBricks::Request &req, rc_vision::getBric
 {
     // Fetch image and analyze
     std::vector<Brick> bricks = findBricks();
-    
+
 
     // Resize return vectors
     res.color.resize(bricks.size());
