@@ -1,0 +1,10 @@
+<!-- PG70 Gripper launch file -->
+
+<launch>
+	<group ns="PG70">
+		<node pkg="pg70" name="PG70" type="pg70">
+			  <param name="SerialName" value="/dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_D-if00-port0"/>
+		</node>
+	</group>
+</launch>
+

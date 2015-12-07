@@ -1,0 +1,5 @@
+Et par ting der dog lige skal klares
+1)	RobWorkHardware skal compiles – nærmere bestemt schunkpg70, serialport og powercube modulerne. Vedhæftet er også en config.cmake fil til RobWorkHardware som aktivere disse funktioner.
+2)	Der skal defineres RWHW_ROOT i .bashrc filen
+3)	Vi skal være sikre på at brugeren har skriverettigheder til den serielle port på computeren.
+4)	Til at starte selve ROS knuden er der en property-fil der indeholder dens navn og port. Denne ligger i pg70 folderen.
