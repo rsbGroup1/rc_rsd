@@ -200,6 +200,7 @@ void mesRecCallback(rc_mes_client::server msg)
             {
                 boost::unique_lock<boost::mutex> lock(_startConveyerMutex);
                 _startConveyer = true;
+                startConveyerBelt();
 
                 // Log
                 printConsole("MR is at robot! Processing order!");
@@ -234,21 +235,21 @@ void hmiStatusCallback(std_msgs::String msg)
         _mesOrder = false;
 
         stopConveyerBelt();
+
+        // Reset
+        boost::unique_lock<boost::mutex> lock2(_startConveyerMutex);
+        _startConveyer = false;
     }
 }
 
 void orderDone()
 {
     // Log
-    //printConsole("Clearing conveyer belt..");
     printConsole("Order done..");
     printConsole("Waiting for new order!");
 
     // Tell MES Server
     mesSend("Ok");
-
-    // Move conveyer so that remaining bricks can be removed
-    //moveCoveyerBelt(15);
 
     // Reset
     boost::unique_lock<boost::mutex> lock(_orderMutex);
@@ -257,6 +258,9 @@ void orderDone()
     // Reset
     boost::unique_lock<boost::mutex> lock2(_startConveyerMutex);
     _startConveyer = false;
+
+    // Reset
+    stopConveyerBelt();
 }
 
 void mainHandlerThread()
@@ -280,7 +284,7 @@ void mainHandlerThread()
             mesOrder = _mesOrder;
             _orderMutex.unlock();
 
-            // Get if conveyer can be started
+            // Get if conv
             _startConveyerMutex.lock();
             startConveyer = _startConveyer;
             _startConveyerMutex.unlock();
@@ -296,7 +300,13 @@ void mainHandlerThread()
                 // Check if in idle position
                 if(positionIdle)
                 {
-                    waitForIdle == false;
+                    waitForIdle = false;
+
+                    if(conveyerRunning == false)
+                    {
+                        conveyerRunning = true;
+                        startConveyerBelt();
+                    }
 
                     // Get anyBricks
                     _anyBricksMutex.lock();
@@ -307,21 +317,6 @@ void mainHandlerThread()
                     if(anyBricks)
                     {
                         waitForBrick = false;
-
-                        // Stop conveyer belt
-                        if(conveyerRunning)
-                        {
-                            // Move slightly more forward and stop
-                            moveCoveyerBelt(1);
-                            conveyerRunning = false;
-                        }
-
-                        // Wait til robot is not moving
-                        if(isRobotMoving())
-                            continue;
-
-                        // Sleep in order for image to settle
-                        sleep(3.5);
 
                         // Get bricks
                         std::vector<Brick> bricks = getBricks();
@@ -342,44 +337,17 @@ void mainHandlerThread()
                                 {
                                     if(bricks[i].color == "red" && _red > 0)
                                     {
-                                        _red--;
                                         brickToPick = i;
-
-                                        std_msgs::String msg;
-                                        msg.data = "red";
-                                        _mainStatusPub.publish(msg);
-
-                                        // Log
-                                        printConsole("Picking up red brick..");
-
                                         break;
                                     }
                                     else if(bricks[i].color == "blue" && _blue > 0)
                                     {
-                                        _blue--;
                                         brickToPick = i;
-
-                                        std_msgs::String msg;
-                                        msg.data = "blue";
-                                        _mainStatusPub.publish(msg);
-
-                                        // Log
-                                        printConsole("Picking up blue brick..");
-
                                         break;
                                     }
                                     else if(bricks[i].color == "yellow" && _yellow > 0)
                                     {
-                                        _yellow--;
                                         brickToPick = i;
-
-                                        std_msgs::String msg;
-                                        msg.data = "yellow";
-                                        _mainStatusPub.publish(msg);
-
-                                        // Log
-                                        printConsole("Picking up yellow brick..");
-
                                         break;
                                     }
                                 }
@@ -387,50 +355,110 @@ void mainHandlerThread()
 
                                 if(brickToPick >= 0)
                                 {
-                                    // Grab brick
-                                    bricks[brickToPick].size = 0.014; // Default size of standard LEGO width
-                                    if(grabBrick(bricks[brickToPick]) == false)
+                                    stopConveyerBelt();
+                                    conveyerRunning = false;
+
+                                    // Sleep in order for image to settle
+                                    sleep(2);
+
+                                    bricks = getBricks();
+
+                                    if(bricks.empty() == false)
                                     {
-                                        // Get run
-                                        _runMutex.lock();
-                                        _run = false;
-                                        _runMutex.unlock();
+                                        // Filter and choose the correct bricks
+                                        _orderMutex.lock();
+                                        brickToPick = -1;
+                                        for(unsigned int i = 0; i<bricks.size(); i++)
+                                        {
+                                            if(bricks[i].color == "red" && _red > 0)
+                                            {
+                                                brickToPick = i;
+                                                printConsole("Picking up red brick..");
+                                                break;
+                                            }
+                                            else if(bricks[i].color == "blue" && _blue > 0)
+                                            {
+                                                brickToPick = i;
+                                                printConsole("Picking up blue brick..");
+                                                break;
+                                            }
+                                            else if(bricks[i].color == "yellow" && _yellow > 0)
+                                            {
+                                                brickToPick = i;
+                                                printConsole("Picking up yellow brick..");
+                                                break;
+                                            }
+                                        }
+                                        _orderMutex.unlock();
 
-                                        std_msgs::String msg;
-                                        msg.data = "grabError";
-                                        _mainStatusPub.publish(msg);
+                                        if(brickToPick >= 0)
+                                        {
 
-                                        // Log
-                                        printConsole("Grab error!");
+                                            // Grab brick
+                                            bricks[brickToPick].size = 0.014; // Default size of standard LEGO width
+                                            if(grabBrick(bricks[brickToPick]) == false)
+                                            {
+                                                // Log
+                                                printConsole("Grab error!\nTrying again!");
+                                            }
+                                            else
+                                            {
+                                                _orderMutex.lock();
+                                                if(bricks[brickToPick].color == "red")
+                                                {
+                                                    _red--;
+
+                                                    std_msgs::String msg;
+                                                    msg.data = "red";
+                                                    _mainStatusPub.publish(msg);
+
+                                                    // Log
+                                                    printConsole("Picked up red brick!");
+                                                }
+                                                else if(bricks[brickToPick].color == "yellow")
+                                                {
+                                                    _yellow--;
+
+                                                    std_msgs::String msg;
+                                                    msg.data = "yellow";
+                                                    _mainStatusPub.publish(msg);
+
+                                                    // Log
+                                                    printConsole("Picked up yellow brick!");
+                                                }
+                                                else if(bricks[brickToPick].color == "blue")
+                                                {
+                                                    _blue--;
+                                                    std_msgs::String msg;
+                                                    msg.data = "blue";
+                                                    _mainStatusPub.publish(msg);
+
+                                                    // Log
+                                                    printConsole("Picked up blue brick!");
+                                                }
+                                                _orderMutex.unlock();
+                                            }
+                                        }
+                                    }
+
+                                    if(conveyerRunning == false)
+                                    {
+                                        conveyerRunning = true;
+                                        startConveyerBelt();
                                     }
                                 }
                                 else
                                 {
                                     // If no more bricks to pick
                                     if(!_red && !_blue && !_yellow)
-                                    {
                                         orderDone();
-                                    }
-                                    else
-                                    {
-                                        // Move slightly more forward and stop
-                                        moveCoveyerBelt(1);
-                                    }
                                 }
                             }
                             else
                             {
                                 // If no more bricks to pick
                                 if(!_red && !_blue && !_yellow)
-                                {
                                     orderDone();
-                                }
-                                // Bricks are to far from robot, move forward
-                                else
-                                {
-                                    startConveyerBelt();
-                                    conveyerRunning = true;
-                                }
                             }
                         }
                         else
@@ -446,13 +474,6 @@ void mainHandlerThread()
                     }
                     else
                     {
-                        // Start conveyer if not already running
-                        if(conveyerRunning == false)
-                        {
-                            startConveyerBelt();
-                            conveyerRunning = true;
-                        }
-
                         // Inform user
                         if(waitForBrick == false)
                         {
@@ -475,8 +496,6 @@ void mainHandlerThread()
             }
             else
             {
-                // Not running
-
                 // Set run
                 conveyerRunning = false;
                 waitForBrick = false;

@@ -236,7 +236,7 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
     rw::math::Q qGripperClose(1, req.size/2.0);
     if(PG70SetConf(qGripperClose) == false)
         return false;
-    sleep(1);
+    //sleep(1);
 
     // 5. Move to brick lifted (blocking call)
     if(!getStatus())
@@ -270,7 +270,7 @@ bool grabBrickCallback(rc_grasp::grabBrick::Request &req, rc_grasp::grabBrick::R
         return false;
     if(PG70SetConf(qGripperOpen) == false)
         return false;
-    sleep(2);
+    //sleep(2);
 
     // Log
     printConsole("Moving robot to idle position!");

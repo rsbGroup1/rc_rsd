@@ -800,7 +800,7 @@ int main()
 
     // Subscribers
     image_transport::ImageTransport itImg(nh);
-    image_transport::Subscriber subImg = itImg.subscribe(imageSub, 1, imageCallback);
+    image_transport::Subscriber subImg = itImg.subscribe(imageSub, 1, imageCallback, image_transport::TransportHints("compressed"));
     ros::Subscriber paramSub = nh.subscribe(visionParamSub, 10, paramCallback);
 
     // Publishers

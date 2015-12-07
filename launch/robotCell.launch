@@ -17,13 +17,13 @@
 		</node>
 	</group>
 
-	<group ns="RC_Camera">
-		<!-- Camera node -->
+	<!--<group ns="RC_Camera">
+		
 		<node pkg="rc_camera" name="rc_camera"  type="rc_camera">
 			<param name="image_pub" value="/rcCamera/image_raw"/> 
 			<param name="width" type="int" value="1280" />
 			<param name="height" type="int" value="720" />
-			<param name="fps" type="int" value="10" />
+			<param name="fps" type="int" value="30" />
 			<param name="contrast" type="int" value="50" />
 			<param name="brightness" type="int" value="100" />
 			<param name="focus_auto" type="bool" value="false" />
@@ -31,18 +31,16 @@
 			<param name="exposure_auto" type="bool" value="0" />
 			<param name="exposure_absolute" type="int" value="200" />
 			<param name="gain" type="int" value="0" />
-			<!-- Other supported params: auto_exposure, exposure_absolute, brightness, power_line_frequency -->
 
 			<param name="device" type="string" value="/dev/video1" />
 			<param name="camera_info_url" type="string" value="file:////home/yonas/catkin_ws/src/rc_rsd/RC_Camera/camera.yaml" />
 		</node>
 
-		<!-- Image rectification node -->
 		<node pkg="image_proc" type="image_proc" name="image_proc">
 			<remap from="image_raw" to="/rcCamera/image_raw"/>
-			<remap from="camera_info" to="/rcCamera/camera_info"/> <!-- /rcCamera/camera_info -->
+			<remap from="camera_info" to="/rcCamera/camera_info"/> 
 		</node>
-	</group>
+	</group>-->
 
 	<!--<group ns="PG70">
 		<node pkg="pg70" name="PG70" type="pg70" output="screen">

@@ -183,8 +183,8 @@ void HMIWidget::initialize(rw::models::WorkCell::Ptr workcell, rws::RobWorkStudi
         _mesMessageSub = _nodeHandle->subscribe(mesSub, 10, &HMIWidget::mesRecCallback, this);
         _consoleSub = _nodeHandle->subscribe(consoleSub, 100, &HMIWidget::consoleCallback, this);
         _itImg = new image_transport::ImageTransport(*_nodeHandle);
-        _subLiveImg = _itImg->subscribe(liveImageSub, 1, &HMIWidget::liveImageCallback, this);
-        _subVisionImg = _itImg->subscribe(visionImageSub, 1, &HMIWidget::visionImageCallback, this);
+        _subLiveImg = _itImg->subscribe(liveImageSub, 1, &HMIWidget::liveImageCallback, this, image_transport::TransportHints("compressed"));
+        _subVisionImg = _itImg->subscribe(visionImageSub, 1, &HMIWidget::visionImageCallback, this, image_transport::TransportHints("compressed"));
         _mainStatusSub = _nodeHandle->subscribe("/rcMain/status", 10, &HMIWidget::mainCallback, this);
 
         // Start new threads
@@ -427,7 +427,10 @@ void HMIWidget::stateChangedListener(const rw::kinematics::State &state)
 
         // Fill out information
         for(int i = 0; i<6; i++)
-           setQObj.request.q[i] = qRobot(i);
+        {
+           setQObj.request.q[i] = qRobot(i);   
+           setQObj.request.speed[i] = 50;
+        }
 
         // Call service
         if(!_serviceKukaSetConf.call(setQObj))
